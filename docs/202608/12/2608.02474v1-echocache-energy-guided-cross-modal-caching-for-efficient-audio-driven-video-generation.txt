@@ -1,0 +1,409 @@
+Title: EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation
+
+URL Source: https://arxiv.org/pdf/2608.02474v1
+
+Published Time: Tue, 04 Aug 2026 02:52:06 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation 
+
+# Jiayu Chen 
+
+Peking University Beijing, China jiayu.chen.25@stu.pku.edu.cn 
+
+# Xiaoyu Wu 
+
+Peking University Beijing, China jiayu.chen.25@stu.pku.edu.cn 
+
+# Rongshan Gao 
+
+Taiyuan University of Technology Taiyuan, China 2023002338@link.tyut.edu.cn 
+
+# Maoliang Li 
+
+Peking University Beijing, China maoliang.li@stu.pku.edu.cn 
+
+# Zihao Zheng 
+
+Peking University Beijing, China zhengzihao@stu.pku.edu.cn 
+
+# Xinhao Sun 
+
+Peking University Beijing, China sunxinhao5513@gmail.com 
+
+# Hailong Zou 
+
+Peking University Beijing, China zouhailong26@stu.pku.edu.cn 
+
+# Guojie Luo 
+
+Peking University Beijing, China gluo@pku.edu.cn 
+
+# Xiang Chen ∗
+
+Peking University Beijing, China xiang.chen@pku.edu.cn 
+
+## Abstract 
+
+Audio-driven video generation (A2V) has achieved promising progress in synthesizing temporally coherent and audio-visually aligned videos, yet its inference remains expensive due to the iterative denoising process of diffusion models. Existing caching methods mainly exploit temporal redundancy in visual features, while over-looking the cross-modal alignment of A2V, where audio drives visual generation with highly non-uniform temporal importance. In this paper, we identify two levels of misalignments in existing A2V caching methods: temporal-semantic and computation-storage. To address them, we propose EchoCache, an energy-guided cross-modal caching framework for efficient A2V generation. EchoCache leverages audio time-frequency energy as a saliency anchor to guide latent-level cache updates, and further introduces a dynamic timestep-latent caching mechanism with quantized cache man-agement for joint efficiency and memory optimization. Extensive experiments on mainstream A2V models show that EchoCache consistently improves the latency-quality trade-off while preserv-ing generation quality and audio-visual consistency. In particular, on Wan2.2-S2V over the EMTD benchmark, EchoCache achieves 2.46 × speedup with the best overall performance. code is available at https://github.com/IF-LAB-PKU/EchoCache. 
+
+## CCS Concepts 
+
+• Information systems → Multimedia content creation .
+
+## Keywords 
+
+audio-driven video generation, cross-modal caching, diffusion trans-formers, efficient generative models 
+
+> ∗Corresponding author.
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> MM ’26, Rio de Janeiro, Brazil.
+> © 2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2213-4/2026/11 https://doi.org/10.1145/3767308.3835504
+
+ACM Reference Format: 
+
+Jiayu Chen, Xiaoyu Wu, Rongshan Gao, Maoliang Li, Zihao Zheng, Xinhao Sun, Hailong Zou, Guojie Luo, and Xiang Chen. 2026. EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation. In Proceedings of the 34th ACM International Conference on Multimedia (MM ’26), November 10–14, 2026, Rio de Janeiro, Brazil. ACM, New York, NY, USA, 10 pages. https://doi.org/10.1145/3767308.3835504 
+
+## 1 Introduction 
+
+In recent years, DiT-based video generation models [43, 47, 54] have leveraged their superior generation quality and spatiotempo-ral modeling capabilities to become an important paradigm in the video generation field. Among these models, audio-driven video generation (A2V) models [9, 38, 40] synthesize temporally coherent and audio-visually aligned videos based on input audio, demonstrat-ing important application value in scenarios such as digital humans [3, 12], virtual avatars [48], and cinematic content creation [36]. Unlike text- or image-driven video generation, A2V is inherently a 
+
+cross-modal alignment process in which low-dimensional audio signals drive the generation of high-dimensional visual content. The input audio provides not only global semantic guidance but also fine-grained temporal cues, such as speaking rate and rhythm, which govern the timing and intensity of local motions and changes in the generated video, as shown in Fig. 1. However, this cross-modal upscaling process remains constrained by the inherently iterative and progressively refined nature of diffusion sampling. The model requires tens to hundreds of denoising steps over the full video latent sequence, resulting in substantial inference latency that hinders real-time A2V applications. To alleviate this issue, caching has emerged as a promising plug-and-play approach for accelerating video generation. As shown in Fig. 2(a), existing methods reduce redundant computation by reusing intermediate visual features across adjacent sampling steps, using either static scheduling [20, 29, 45] with fixed reuse inter-vals or dynamic scheduling [19, 24, 28] that adapts reuse decisions based on the difference between current visual and cached features. Despite these advances, most existing methods assume temporal arXiv:2608.02474v1 [cs.CV] 3 Aug 2026 MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. Jiayu Chen et al. Audio Cross Modal Alignment   
+
+> Video
+> Audio token High-dimensional Video Outputs
+> Noise Video Latent
+> Low-dimensional Audio Signals Temporal Semantic Level Information Sound Intensity Rhythm Computation-Storage Level Demands Local Motion and Changes
+
+Figure 1: Overview of Audio-driven Video Generation. 
+
+similarity within the visual modality and design scheduling solely around visual features, without fully exploiting the distinctive cross-modal interaction in A2V. In the A2V generation process, the model continuously performs cross-modal alignment between audio sig-nals and visual synthesis. Audio affects video latents highly non-uniformly at both the temporal-semantic and computation-storage 
+
+levels, leading to diverse update demands across temporal clips. Based on this observation, we find that existing dynamic caching methods suffer from two levels of misalignment in the A2V model. 
+
+(i) Temporal-semantic level : a unified step-level coarse-grained strategy implicitly assumes that different latents within the current step require similar updates, while neglecting the differences in semantic importance and motion sensitivity among audio-driven temporal clips. As a result, dynamic and smooth clips are often treated uniformly, causing truly critical clips that carry local motion changes to be insufficiently updated. (ii) Computation-storage level : cache scheduling based on visual feature differences ignores the temporal-semantic priors embedded in the audio modality, mak-ing it difficult to identify critical clips while storing non-critical ones, thereby limiting further efficiency gains. Motivated by these observations, we argue that a more effective A2V acceleration strategy should return to the cross-modal nature of the task itself. Caching is no longer a passive reuse mechanism for visual redundancy, but rather an active computation allocation mechanism driven by cross-modal alignment. To this end, we propose EchoCache , an energy-guided cross-modal caching framework for efficient A2V generation, as shown in Fig. 2(b). The core idea of EchoCache is to explicitly transform the fine-grained temporal dynamics embedded in the audio modality into cross-modal alignment signals that guide video generation, thereby unifying saliency anchoring, cache scheduling, and cache management in a principled manner. Specifically, at the temporal-semantic level , EchoCache models the time-frequency energy distribution of audio signals as Cross-modal Saliency Anchors in the interaction process, and uses it to characterize the potential driving strength of different audio clips for video generation. Based on these saliency anchors, at the computation-storage level , we design an Energy-Guided Step-Latent Cache Scheduling mechanism, which prioritizes updating critical clips at the latent level while reusing historical cache for non-critical ones, and further adjusts the cache ratio dynamically at the step level according to the state difference, enabling fine-grained quality-efficiency co-optimization. Furthermore, since fine-grained caching introduces additional over-head for intermediate-state storage, we propose a Memory-efficient Cache Management strategy, which effectively reduces the memory burden of caching through the collaborative storage of reference caches and quantized residuals. We conduct extensive experiments on mainstream audio-driven video generation models, including Wan2.2-S2V and LongCat-Avatar. The results show that EchoCache significantly reduces A2V infer-ence latency while preserving generation quality and audio-visual consistency, and achieves a better latency-quality trade-off than existing caching baselines. For example, on the Wan2.2-S2V model with EMTD benchmark, EchoCache achieves a 2 .46 × speedup while obtaining the best performance in terms of FID, FVD, and Sync-D, validating the effectiveness of the proposed framework. 
+
+## 2 Related Work 2.1 Audio-driven Video Generation 2.2 Audio-driven Video Generation 
+
+Diffusion Transformer (DiT)-based video generation models [32, 42] have recently become a dominant paradigm due to their strong gen-eration quality and spatiotemporal modeling capabilities [1, 10, 34, 47]. Alternative architectures, such as Mamba-attention and multi-modal Mamba, have also been explored for efficient video modeling [11, 17]. Early Audio-driven Video (A2V) methods typi-cally adopt a two-stage framework, first mapping audio to interme-diate motion representations such as 3DMM or FLAME and then generating videos through GAN-based models or rendering mod-ules [6, 13, 51]. However, their limited intermediate representations and cascading errors make it difficult to jointly ensure realism, tem-poral consistency, and audio-visual synchronization. Recent meth-ods have shifted toward end-to-end diffusion modeling that jointly learns audio conditions and video dynamics, substantially improv-ing generation quality and synchronization [4, 5, 9, 38]. Related stud-ies have further extended A2V generation from facial animation to body motion [21, 40], human-object interaction [16, 55], and multi-identity or multi-speaker scenarios [18, 44], demonstrating broad potential in digital humans, virtual anchors, and cinematic content creation. Nevertheless, existing methods remain constrained by iterative diffusion sampling, which repeatedly denoises the entire video latent and incurs substantial inference latency, particularly for long videos, thereby limiting practical deployment. 
+
+## 2.3 Video Generation Acceleration 
+
+Although video generation techniques [39, 43, 54] have developed rapidly, the self-attention mechanism requires computational com-plexity of 𝑂 (𝑛 2), leading to a high computational cost and a long inference time, which severely restricts practical deployment under limited computational resources. To address this issue, existing ac-celeration methods mainly focus on model distillation [27, 33, 37], quantization compression [8, 14, 35], and sparse attention mecha-nisms [25, 26, 46, 49]. While these approaches can effectively im-prove inference efficiency, they typically require additional training EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. (a) Previous Caching Methods (b) EchoCache Caching Method t+2 t+1 t t+2 t+1 t  
+
+> Computation Storage Level
+> Single Visual Modal Difference Cross-modal Saliency from Audio Dynamics Step Feature Cache and Skip Step Latent Dynamic Caching Schedule and Manage
+> Temporal Semantic Level
+
+Figure 2: Comparison of previous caching methods and the proposed EchoCache for audio-driven video generation. 
+
+or structural modifications to the original model, thereby limiting their applicability to large-scale video generation systems. Feature cache reuse has recently emerged as a promising di-rection for accelerating diffusion-based video generation due to its plug-and-play nature and the fact that it does not require re-training. These methods reduce redundant computation by reusing intermediate features across adjacent diffusion timesteps. Early caching approaches [2, 20, 29, 45] primarily adopt static scheduling strategies, where features are reused at fixed intervals along the gen-eration trajectory to achieve stable speedup. For example, PAB [53] selects fixed timestep intervals for each attention block to perform acceleration. More recent methods introduce dynamic schedul-ing mechanisms [19, 24, 28] that adaptively determine whether to reuse cached features based on the difference between current and cached representations, thereby reducing cache-induced errors. For instance, TeaCache [22] and MagCache [30] estimate output variations by measuring the distance between input features, while TaylorSeer [23] predicts subsequent features through Taylor expan-sion, achieving cache-based acceleration from reuse to prediction. Compared with the above methods, this paper focuses on the Audio-driven Video generation task, introduces audio energy as a saliency anchor for cache scheduling, and further refines cache reuse to the latent granularity, achieving dynamic allocation of computation to critical clips. 
+
+## 3 Methodology 3.1 Preliminary 
+
+Audio-driven Video Generation. A2V aims to synthesize tem-porally coherent and audio-visually aligned videos conditioned on an input audio signal. Most existing methods model this task based on a latent diffusion framework, where a clean video is first mapped into a latent representation 𝑥 0 via a variational encoder. For video generation, the latent representation is typically denoted as 𝑥 0 ∈ R𝐻 ×𝑊 ×𝐹 ×𝐶 , where 𝐻 , 𝑊 , 𝐹 , and 𝐶 represent the height, width, number of frames, and number of channels of the latent fea-ture, respectively. At timestep 𝑡 ∈ { 0, . . . ,𝑇 }, the forward noising process is defined as 𝑥 𝑡 = 𝑎 𝑡 𝑥 0 + 𝑏 𝑡 𝜖, 𝜖 ∼ N ( 0, 𝐼 ), where 𝑇 denotes the total number of denoising steps, and 𝑎 𝑡 and 𝑏 𝑡 are determined by the noise schedule. A denoising network conditioned on the audio signal 𝑦 , denoted as 𝑓 𝜃 (𝑥 𝑡 , 𝑡, 𝑦 ), progressively predicts the clean latent representation through iterative denoising. Since the latent evolution is typically smooth both across denoising steps and within each denoising step, there exists significant temporal redundancy during sampling, which provides the foundation for cache-based acceleration. 
+
+Timestep-level Dynamic Caching. In diffusion-based A2V mod-els, the latent representation is encoded as a sequence of spatiotem-poral latent tokens. The intermediate latent output at timestep 𝑡 
+
+is denoted as ℎ𝑡 = {ℎ(𝑖 ) 
+
+> 𝑡
+
+}𝑇 ×𝑁 𝑖 =1 , where ℎ(𝑖 ) 
+
+> 𝑡
+
+represents the feature representation of the 𝑖 -th latent token, 𝑇 denotes the number of latent segments along the temporal dimension, and 𝑁 denotes the number of spatial latents corresponding to each temporal position. Existing timestep-level dynamic caching methods [22, 30] mainly exploit the strong redundancy between adjacent denoising steps by reusing intermediate latent features. Specifically, the relative change between two adjacent timesteps is defined as 
+
+Δ𝑡 = ∥ℎ𝑡 − ℎ𝑡 +1 ∥1
+
+∥ℎ𝑡 +1 ∥1 + 𝜉 , (1) where 𝜉 is a small constant for numerical stability. Assume that the model performs a full computation at timestep 
+
+𝑡 𝑎 and obtains the corresponding intermediate latent representation 
+
+ℎ𝑡 𝑎 = {ℎ(𝑖 ) 
+
+> 𝑡 𝑎
+
+}𝑇 ×𝑁 𝑖 =1 . This representation is then cached and reused in subsequent timesteps to reduce redundant computation. Such cache reuse is maintained until the accumulated inter-step feature vari-ation exceeds a predefined threshold 𝛿 , beyond which the cached feature is no longer a reliable approximation of the current latent state. Specifically, let 𝑡 𝑏 > 𝑡 𝑎 be the earliest timestep satisfying:  
+
+> 𝑡 𝑏 −1
+
+∑︁ 
+
+> 𝑠 =𝑡 𝑎
+
+Δ𝑠 ≤ 𝛿 <
+
+> 𝑡 𝑏
+
+∑︁ 
+
+> 𝑠 =𝑡 𝑎
+
+Δ𝑠 . (2) For all 𝑡 ∈ [ 𝑡 𝑎 , 𝑡 𝑏 −1], the current latent feature can be approximated by the cached result as ℎ𝑡 = ℎ𝑡 𝑎 , and a refresh recomputation is triggered at timestep 𝑡 𝑏 . However, existing timestep-level strategies rely mainly on visual similarity, overlooking the cross-modal inter-action between audio dynamics and visual synthesis. To address this, EchoCache introduces an energy-guided cross-modal caching framework with latent-level cache scheduling. 
+
+## 3.2 Analysis 
+
+Existing video diffusion caching methods are primarily designed around visual temporal similarity, making cache reuse decisions MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. Jiayu Chen et al. FID 0.9 0.80 0.85 0.75 Cache Ratio 68 66 64 62    
+
+> 0.70 (a) Correlation between Audio Dynamics and Visual Changes 20 01.0 1.5 0.5 510 Latent
+> Audio Energy(×10⁴) (b) Audio Energy Distribution across Video Latent 15
+> 0
+> (c) Different Impact of Active and Inactive Latents 70 Active Latent Inactive Latent
+> Audio is active Audio is inactive Audio-inactive latents have limited impact Audio-active video latents align with stronger visual changes Audio-inactive video latents align with visually similar clips.
+
+Figure 3: (a) A2V is inherently a cross-modal alignment process, where audio dynamics drive corresponding local visual changes. (b) Audio energy distribution in the time-frequency domain provides saliency cues for cross-modal cache scheduling. (c) Impact of cache reuse rates on generation quality for active and inactive latents. 
+
+at the timestep level based on adjacent-step feature differences. However, this design is suboptimal for A2V, where generation is inherently a cross-modal alignment process between audio signals and visual synthesis. As shown in Fig. 4(a), audio dynamics affect video latents in a highly non-uniform manner, leading to diverse update demands across temporal clips. Therefore, we analyze latent sensitivity under different levels of audio variation to motivate subsequent fine-grained computation allocation. 
+
+Cross-modal Saliency Analysis. According to cross-modal saliency cues, we divide video latents into active and inactive groups and analyze their quality sensitivity under different cache ratios. As shown in Fig. 4(c), increasing the cache ratio causes a much larger FID increase for active latents than for inactive ones, indicating that audio-active regions are more sensitive to feature reuse and require more frequent updates during denoising. In contrast, in-active latents remain robust even under aggressive caching, with limited quality degradation, suggesting that audio-inactive regions contribute less to final visual fidelity and are more amenable to cache reuse. These results reveal a clear sensitivity gap between latent groups and provide direct support for our fine-grained cache scheduling and computation allocation design. 
+
+Quality Sensitivity Analysis. According to cross-modal saliency cues, we divide video latents into active and inactive groups and study their quality sensitivity under different cache ratios. As shown in Fig. 4(c), increasing the cache ratio causes a much larger FID increase for active latents than for inactive ones, indicating that audio-active regions are more sensitive to reuse and require more frequent updates. In contrast, inactive latents remain relatively robust even under aggressive caching, suggesting that they have limited impact on final generation quality and are better suited for cache reuse. This observation directly motivates our fine-grained cache scheduling and management design. 
+
+Insight for EchoCache. This observation directly motivates our cache design philosophy: for A2V, the true potential for cross-step cache reuse lies not in all latents within each denoising step, but in a stable latent subset corresponding to low-change audio seg-ments. Otherwise, unified coarse-grained timestep-level strategies inevitably introduce temporal-semantic misalignment by coupling critical dynamic segments with smooth ones, and further lead to computation-storage misalignment by failing to align computation and cache allocation with audio-driven saliency. Therefore, more effective A2V cache scheduling should move beyond timestep-level reuse and leverage audio-conditioned saliency priors to identify, at the latent level, which tokens are most worthy of updates. 
+
+## 3.3 Energy-Guided Cross-modal Caching 
+
+Cross-modal Saliency Anchors. To fully leverage the temporal priors provided by audio conditioning, EchoCache constructs audio energy in the time-frequency domain and establishes a saliency mapping from the audio domain to the latent level. We term this audio-derived prior the Cross-modal Saliency Anchor , as it explicitly transforms fine-grained temporal dynamics in the audio modality into cross-modal alignment signals for video generation. Specifi-cally, given input audio 𝑆 , we first divide it evenly into 𝑇 temporal segments and obtain the corresponding time-frequency representa-tion through STFT. Subsequently, we compute the L2 norm of the time-frequency matrix for each segment to quantify the overall en-ergy response of that audio segment, constructing an audio energy vector energy ∈ R𝑇 .The analysis in Sec. 3.2 reveals that the energy distribution of the audio signal in the time-frequency domain closely correlates with the amount of generative information it contains. Generally, high-energy audio segments correspond to regions with more dra-matic signal changes, containing richer time-frequency structure information and thus should not be excessively reused during latent space generation. Based on this observation, we further map the energy distribution in the audio domain to saliency at the latent level. Specifically, before generation begins, we employ a Top-K strategy to select indices of high-energy audio segments from the audio energy vector: idx = argmax topk (energy , 𝑘 ). Here, idx repre-sents the index set corresponding to high-energy segments, used to locate latent segments more critical for generation. Based on this, we further construct a latent-level saliency mask with shape 
+
+[𝐵,𝑇 , 𝑁 , 1] to mark important latents requiring full updates. To adapt to the dimension organization within self-attention modules, we further flatten this mask to shape [𝐵,𝑇 × 𝑁 , 1] for direct use during subsequent cache computation. EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. (a) Cross-modal Saliency Anchoring (b) Fine-Grained Latent-level Caching (c) Energy-guided Step-Latent Cache Scheduling (d) Memory-efficient Cache Management  
+
+> STFT Audio
+> Audio Energy
+> Representation Saliency Anchor Mask
+
+idx = argmax !"#$ energy , 𝑘 
+
+> Noise Latent Mask
+> Active Inactive  N×DiT Block
+> Attention FFN Active Query Full K/V
+> Updated Cache
+
+# ……
+
+> Audio Compute
+
+…     
+
+> Cache
+> X!"# ∈!"#
+> Compute Compute Compute Skip ∈!"#
+> Compute Compute Skip
+
+## …X!"$    
+
+> Skip ∈!
+> Compute Skip Skip
+
+…X!  
+
+> Skip ∈!%$
+> Compute Compute Compute
+
+…X!%$        
+
+> Reuse
+> Intermediate latent h!"#
+> Intermediate latent h!"$
+> Intermediate latent h!
+> Intermediate latent h!%$
+> Latent Update Ratio r &"$
+> Reuse Cached Latent
+> Timestep Visual difference Δ&"$
+> Latent 0 Latent 1
+
+…       
+
+> Generated Latent
+> Reference Latent Latent l
+> sim 𝑥 ', 𝑟 =𝑥 ', 𝑟 |𝑥 '||r| sim 𝑥 ', 𝑟 > 𝜏 ?Not Similar Similar
+> Δ'= 𝑥 '− 𝑟
+> Residual
+
+…   
+
+> Reference Latent Quantized Residual Quantized Residual
+> A𝑥 '= 𝑟 + C Δ'
+> Int8 Quantize Reconstruct DiT
+> Latent-level Cache Manager
+> Fusion L2 Norm
+
+Figure 4: Overview of EchoCache. (a) Cross-modal saliency anchors from audio energy. (b) Fine-grained latent-level caching. (c) Energy-guided step-latent cache scheduling. (d) Memory-efficient cache management with adaptive quantization. Fine-grained latent-level caching. With the audio-guided latent-level saliency mask, EchoCache performs latent-level cache com-putation within each denoising timestep to reduce redundant up-date overhead for non-critical latents. This design directly alle-viates temporal-semantic misalignment by prioritizing updates on audio-salient latent clips while reusing cached representations for non-salient ones. Specifically, for the current layer input 𝑥 ∈
+
+R𝐵 × ( 𝑇 ×𝑁 ) × 𝐷 , the saliency mask constructed from audio energy is 
+
+𝑚 ∈ { 0, 1}𝐵 × ( 𝑇 ×𝑁 ) × 1. Here, 𝑚 𝑖 = 1 indicates the 𝑖 -th latent belongs to active latents requiring update in the current step, while 𝑚 𝑖 = 0indicates that latent token can directly reuse the cached result. Based on this mask, we select active latents from the complete latent sequence and perform current-step main computation only for these positions, thus avoiding redundant updates on all latents. To improve computational efficiency during fine-grained caching, we extract active latents before attention computation based on the mask and execute query branch computation only on these, while keys and values are still provided by the complete latent set. De-noting active queries, keys, and values as 𝑄 ′, 𝐾 , and 𝑉 respectively, attention is computed only on (𝑄 ′, 𝐾, 𝑉 ) to obtain updated results for salient latents. Subsequently, we restore updated active latents to their original positions in the complete latent layout and fuse with historical cache as: 𝑥 attn = 𝑚 ⊙ 𝑥 new + ( 1 − 𝑚 ) ⊙ ˜𝑥, where ˜ 𝑥 
+
+represents cached features and ⊙ denotes multiplication. We further extend the same strategy to FFN modules, executing FFN computation only on active latents with other positions di-rectly reusing cached results. Considering that non-critical latents may experience feature degradation during residual propagation if they continuously skip updates within a block, we perform feature fusion again based on the mask after the FFN residual connection to maintain stability of representations at unupdated positions. 
+
+Energy-Guided Step-Latent Cache Scheduling. Although fine-grained latent-level caching reduces redundant updates of non-critical latents within a single denoising step, continuous cache reuse across multiple timesteps still introduces accumulated errors, affecting generation quality. To address this, EchoCache further introduces a timestep-latent dynamic caching schedule that dy-namically adjusts the latent-level cache rate at timestep granular-ity according to the current generation state, balancing inference efficiency and generation quality. This design further mitigates computation-storage misalignment by jointly allocating computa-tion and cache reuse across both timestep and latent granularities. Specifically, considering that early denoising stages exhibit larger latent representation changes and are more sensitive to errors, we retain full computation in early steps and enable fine-grained latent-level caching only in subsequent steps. Furthermore, to avoid er-ror accumulation from fixed latent cache ratios, we dynamically adjust the current timestep’s update rate based on the step-level visual difference indicator in Eq. (1). Denoting the normalized result as ˆ Δ𝑡 , the update rate for the current step is defined as: 
+
+𝑟 𝑡 = clip 
+
+
+
+𝑟 min + 𝛼 ˆΔ𝑡 , 𝑟 min , 𝑟 max 
+
+
+
+, where 𝑟 min and 𝑟 max denote mini-mum and maximum update ratios respectively, and 𝛼 is an adjust-ment coefficient. Subsequently, for high-saliency latent segments selected by audio energy in the current timestep, we determine the number of active latents according to the update rate: 𝑘 𝑡 = ⌈𝑁 · 𝑟 𝑡 ⌉,
+
+where 𝑁 denotes the number of latents at each temporal position. In this manner, when the visual difference in the current timestep is large, 𝑟 𝑡 increases, preserving more active latents for updates to suppress error accumulation. When the visual difference is small, 
+
+𝑟 𝑡 decreases, updating only a small number of critical latents while remaining positions directly reuse historical cache results. Through this approach, EchoCache adaptively allocates computational over-head at both timestep and latent granularities, achieving superior efficiency-quality trade-offs. 
+
+## 3.4 Memory-efficient Cache Management 
+
+Although fine-grained timestep-latent caching effectively reduces redundant computation, it typically requires maintaining a separate cache for multiple latents in each denoising step, causing cache consumption to grow linearly with the number of modules. To resolve the additional storage burden introduced by fine-grained reuse, we further design a Memory-efficient Cache Management MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. Jiayu Chen et al. 
+
+Table 1: Quantitative comparison of EchoCache with baselines on Wan2.2-S2V and LongCat-Avatar. Best and second-best results among acceleration methods are shown in bold and underlined. Latency and FLOPs are measured under the same settings. Dataset Method Quality Efficiency 
+
+FID ↓ FVD ↓ Sync-C ↑ Sync-D ↓ CSIM ↑ Latency(s) ↓ Speed ↑ PFLOPs ↓ Speed ↑
+
+HDTF 
+
+Wan2.2-S2V 60.76 108.18 6.23 5.58 0.903 1039 1.00 × 108.90 1.00 ×
+
+TeaCache 77.62 151.09 6.10 6.63 0.882 542 1.92 × 59.82 1.82 ×
+
+TaylorSeer 76.73 135.22 5.78 7.03 0.882 803 1.29 × 95.32 1.14 ×
+
+MagCache 66.91 128.71 5.94 7.00 0.882 611 1.70 × 63.99 1.70 ×
+
+EchoCache 66.88 117.67 5.94 5.93 0.899 423 2.46 × 54.81 1.98 ×
+
+LongCat-Avatar 51.63 206.46 9.23 6.51 0.754 742 1.00 × 97.46 1.00 ×
+
+TeaCache 61.88 311.04 8.88 7.83 0.654 467 1.58 × 61.63 1.58 ×
+
+TaylorSeer 81.43 282.47 8.44 7.89 0.667 535 1.39 × 68.15 1.43 ×
+
+MagCache 61.08 254.52 8.50 7.89 0.668 510 1.45 × 65.85 1.48 ×
+
+EchoCache 57.82 215.75 9.08 6.83 0.702 413 1.80 × 52.26 1.86 ×
+
+EMTD 
+
+Wan2.2-S2V 65.66 129.57 6.51 5.95 0.877 1039 1.00 × 108.94 1.00 ×
+
+TeaCache 100.23 174.14 5.65 6.83 0.799 542 1.92 × 59.82 1.82 ×
+
+TaylorSeer 79.58 176.15 6.26 6.80 0.810 803 1.29 × 95.32 1.14 ×
+
+MagCache 110.78 199.00 6.49 6.72 0.817 611 1.70 × 63.99 1.70 ×
+
+EchoCache 76.01 162.66 6.39 6.01 0.816 423 2.46 × 54.81 1.98 ×
+
+LongCat-Avatar 65.05 433.26 8.71 6.93 0.672 742 1.00 × 97.46 1.00 ×
+
+TeaCache 113.15 527.19 7.36 8.19 0.615 467 1.58 × 61.63 1.58 ×
+
+TaylorSeer 76.74 652.68 7.52 8.03 0.602 535 1.39 × 68.15 1.43 ×
+
+MagCache 114.33 492.99 7.55 8.06 0.612 510 1.45 × 65.85 1.48 ×
+
+EchoCache 74.85 467.12 8.48 7.07 0.621 412 1.80 × 52.26 1.86 ×
+
+strategy with adaptive quantization, which improves the alignment between computation scheduling and storage management. We observe that cached representations of adjacent latents within the same denoising step typically exhibit high similarity. Therefore, rather than always storing the complete cache output 𝑥 𝑙 for the 𝑙 -th latent in the current timestep, we first compute its cosine similarity with the current reference cache 𝑟 : sim (𝑥 𝑙 , 𝑟 ) = ⟨𝑥 𝑙 ,𝑟 ⟩∥𝑥 𝑙 ∥2 ∥𝑟 ∥2 . When sim (𝑥 𝑙 , 𝑟 ) > 𝜏 , where 𝜏 is the cache quantization threshold, we store only the residual relative to the reference cache Δ𝑙 = 𝑥 𝑙 − 𝑟 and quantize Δ𝑙 to int8. Otherwise, we store 𝑥 𝑙 as the new reference cache in full precision. Through this design, the cache manager adaptively switches between full cache and reference-cache-plus-quantized-residual forms to reduce storage redundancy. During cache retrieval, if the target latent is stored in residual form, we reconstruct its output according to reference cache 𝑟 and dequantized residual ˆ Δ𝑙 : ˆ 𝑥 𝑙 = 𝑟 + ˆΔ𝑙 . The reconstructed result is then converted back to the original computation precision to ensure consistency for subsequent operations. Additionally, since reference caches evolve over time, we in-troduce a reference-based release mechanism: before writing new cache, we first delete old residual entries and check whether their dependent reference caches are still referenced by other latents. If not, we release them as well. Through this design, EchoCache compresses the additional GPU memory overhead introduced by fine-grained caching without affecting generation quality. 
+
+## 4 Experiments 4.1 Experimental Setup 
+
+Models and Baselines. We evaluate the proposed method on two open-source audio-driven video (A2V) generation models, namely Wan2.2-S2V [9] and LongCat-Avatar [38]. We further compare our method with three SOTA caching-based acceleration methods, in-cluding TeaCache [22], MagCache [30], and TaylorSeer [23]. To ensure a fair comparison, all methods are evaluated under strictly aligned hyperparameters in the video generation process. Specif-ically, Wan2.2-S2V is used to generate 5-second videos with 81 frames at 720P resolution, while LongCat-Avatar is used to generate 5-second videos with 93 frames at 480P resolution. All experiments are conducted on NVIDIA H200 141GB GPUs. 
+
+Datasets. To verify the effectiveness of the proposed method, we follow the experimental settings of Wan2.2-S2V and LongCatA-vatar [9, 38], and adopt two types of datasets for evaluation: talking-head and talking-body. Specifically, HDTF [52] is used for talking-head evaluation, and EMTD [31] is used for talking-body evaluation. 
+
+Evaluation Metrics. We evaluate the proposed method from two aspects: quality and efficiency. For quality, we adopt FID [15], FVD [41], Sync-C, Sync-D [7], and CSIM to comprehensively mea-sure the visual quality, audio-visual synchronization, and identity consistency of the generated videos. For efficiency, we report La-tency, FLOPs, and Speedup. EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. HDTF Dataset  “a woman in a white shirt.” 
+
+> Wan2.2-S2V +Teacache +Magcache +Taylorseer +Echocache
+> EMTD Dataset
+> “A woman in a black top and green skirt.
+> ”
+
+Lip-Sync Mismatch Unnatural Facial Expression Hand Visual Artifacts Consistent Lip Motion 
+
+Figure 5: Qualitative comparison of EchoCache and baseline methods on Wan2.2-S2V across the HDTF and EMTD datasets. Longcat-Avatar +Teacache +Magcache +Taylorseer +Echocache 
+
+> EMTD Dataset
+> “A woman in a black top and green skirt.
+> ”
+> HDTF Dataset  “a man in a suit and tie is talking to the camera.”
+
+Figure 6: Qualitative comparison of EchoCache and baselines on LongCat-Avatar across the HDTF and EMTD datasets. 
+
+## 4.2 Main Results 
+
+Quantitative Comparison on HDTF. We evaluate EchoCache on HDTF to measure the quality–efficiency trade-off in talking-head generation, as shown in Table 1. On Wan2.2-S2V, EchoCache reduces latency from 1039 s to 423 s and FLOPs from 108.9 to 54.81, achieving 2.46 × and 1.98 × speedups, respectively. It also improves generation quality over caching baselines, reducing FID and FVD to 66.88 and 117.67, while achieving a CSIM of 0.899 and maintaining performance close to the original model. These results show that EchoCache substantially lowers inference cost while preserving visual details, identity consistency, and lip synchronization. 
+
+Quantitative Comparison on EMTD. We further evaluate EchoCache on EMTD in the more challenging talking-body scenario. On LongCat-Avatar, it reduces latency from 742 s to 412 s and FLOPs from 97.46 to 52.26, corresponding to 1.80 × and 1.86 × speedups. EchoCache achieves the lowest FVD of 467.12 among caching methods, together with a Sync-C of 8.48, a Sync-D of 7.07, and a CSIM of 0.621, while closely matching the original model. These results demonstrate a favorable quality–efficiency trade-off under complex body motion and spatiotemporal variation, confirming its robust cross-scenario generalization across diverse motion patterns. 
+
+Qualitative Visualizations of Different Methods. The qualita-tive comparisons in Fig. 5 and Fig. 6 show that existing caching methods often introduce lip-sync errors, detail blurring, and tem-poral inconsistency at high acceleration ratios, especially under complex articulation and motion. In contrast, EchoCache better preserves appearance, fine-grained lip dynamics, and temporal co-herence across HDTF and EMTD on both Wan2.2-S2V and LongCat-Avatar. These results further demonstrate its superior quality– efficiency trade-off over prior caching baselines. 
+
+## 4.3 Ablation Study 
+
+Impact of the Anchor Selection Strategy. To verify the effective-ness of the anchor selection strategy, we replace it with Uniform MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. Jiayu Chen et al. 
+
+Table 2: Module ablation of EchoCache on Wan2.2-S2V. Method FVD ↓ Sync-C ↑ CSIM ↑ Latency(s) ↓ Peak Memory(GB) ↓                                                           
+
+> Wan2.2-S2V 129.57 6.51 0.877 1039 57.23 +TaylorSeer 176.15 6.26 0.810 803 99.16 +EchoCache 162.66 6.39 0.816 423 59.12
+> EchoCache without Anchor Selection Strategy
+> Uniform 176.05 6.24 0.821 412 58.99 Random 192.26 6.28 0.825 420 59.04
+> EchoCache without Cache Scheduling Strategy
+> Step-only 174.14 5.65 0.799 542 58.34 Latent-only 169.21 5.72 0.801 402 68.17
+> EchoCache without Cache Quantization Strategy
+> FP16 163.11 6.63 0.841 435 81.02 Naive INT8 183.26 6.01 0.805 445 58.57 FVD CSIM Latency(s)
+> 500 400 6.30 6.70 100 0.84
+> 𝜶 00.025 0.050 0.075 0.100 256.05 186.49 168.88 6.35 6.58 6.61 6.63 6.67 0.821 0.836 0.841 0.841 0.842 408 423 441 474 495 0.82 200
+> Sync-C
+> Threshold 0.90 0.92 0.94 0.96 0.98
+> FVD Sync-C CSIM Peak VRAM(GB)
+> 249.03 6.45 6.53 6.54 6.57 6.60 0.833 0.839 0.839 0.840 0.840 58.01 58.96 59.18 60.13 62.38 60 55 0.82 0.84 6.40 6.60 100 200 159.37 159.04 214.39 200.63 172.56 165.41
+
+Figure 7: Hyperparameter sensitivity analysis of EchoCache, showing the effects of update ratio coefficient 𝛼 and cache similarity threshold on quality, latency, and peak VRAM. 
+
+and Random selection. As shown in Table. 2, removing the audio-energy-based anchor selection leads to clear performance degrada-tion: FVD rises to 176.05 and 192.26, while Sync-C drops to 6.24 and 6.28, respectively. In contrast, full EchoCache achieves a better FVD of 162.66 and Sync-C of 6.39, showing that audio-energy-guided saliency modeling can more accurately identify critical latents. 
+
+Impact of the Cache Scheduling Strategy. As shown in Table. 2, we further analyze the effect of the cache scheduling strategy. Using only the Step-only strategy increases latency to 542 s and worsens FVD to 174.14. Using only the Latent-only strategy reduces latency to 402 s, but significantly increases peak memory to 68.17 GB, while FVD remains 169.21. By comparison, full EchoCache achieves a better FVD of 162.66 with 423s latency and 59.12 GB peak mem-ory. These results show that step-latent collaborative scheduling is necessary for balancing quality, efficiency, and memory overhead. 
+
+Impact of the Cache Quantization Strategy. As shown in Ta-ble. 2, we evaluate the effect of the cache quantization strategy on quality and memory usage. Direct FP16 storage achieves relatively good Sync-C of 6.63 and CSIM of 0.841, but increases peak memory to 81.02 GB. In contrast, Naive INT8 reduces memory to 58.57 GB, but degrades FVD to 183.26, indicating large reconstruction errors. Full EchoCache, however, maintains an FVD of 162.66 and a Sync-C of 6.39 with only 59.12 GB peak memory, demonstrating that the Longcat-Avatar +Teacache +Magcache +Taylorseer +Echocache AVSync15 Dataset 
+
+> “A dog is barking.
+> ”
+
+Figure 8: Qualitative ablation results on AVSync15. Compared with baseline caching methods, EchoCache better preserves appearance details and motion coherence in motion-rich audio-driven video generation. 
+
+proposed cache quantization strategy effectively reduces memory overhead while alleviating quality loss caused by quantization. 
+
+Hyperparameter Sensitivity Analysis. As shown in Fig. 7, we an-alyze the sensitivity of EchoCache to 𝛼 and 𝜏 . Increasing 𝛼 improves quality, but incurs higher latency, revealing the quality–efficiency trade-off of dynamic scheduling. Increasing 𝜏 similarly improves generation quality, while raising peak memory due to less aggres-sive cache quantization. Overall, 𝛼 controls the quality–latency trade-off, whereas 𝜏 determines the quality–memory trade-off. 
+
+Ablation Study on AVSync15. As shown in Fig. 8, we further conduct ablation experiments on AVSync15 [50] to evaluate the generality of EchoCache beyond the talking-head and talking-body settings used in the main experiments. AVSync15 is a subset of VGG-Sound containing fifteen classes of in-the-wild activities with highly synchronized audio and video. The results show that EchoCache remains effective on AVSync15, further confirming the generaliz-ability of the proposed energy-guided caching strategy. 
+
+## 5 Limitations and Future Directions 
+
+EchoCache still has limitations. Its audio-energy prior may not fully capture richer cross-modal cues, and its cache scheduling remains partly heuristic across models and settings. Future work may extend the framework to broader multimodal conditions, such as video inputs and other motion-related trajectory modalities, to enable more robust and generalizable modality-aware caching for video generation. We hope this work can inspire unified modality-aware caching frameworks for fine-grained computation allocation. 
+
+## 6 Conclusion 
+
+In this paper, we identify temporal-semantic and computation-storage misalignments in existing caching methods for audio-driven video generation and propose EchoCache, an energy-guided cross-modal caching framework. By combining cross-modal saliency an-choring, step-latent cache scheduling, and memory-efficient cache management, EchoCache enables fine-grained computation allo-cation based on audio dynamics. We hope this work advances modality-aware acceleration for diffusion-based video generation. EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. 
+
+## References 
+
+[1] Tim Brooks, Bill Peebles, Connor Holmes, Will DePue, Yufei Guo, Leo Jing, David Schnurr, Joe Taylor, Troy Luhman, Eric Luhman, et al. 2024. Video generation models as world simulators. OpenAI Blog 1, 8 (2024), 1. [2] Jiayu Chen, Hengyi Zhang, Maoliang Li, Minyu Li, Zihao Zheng, Xuanzhe Liu, Guojie Luo, and Xiang Chen. 2026. EcoVideo: Entropy-Orchestrated Video Generation Paradigm in Cloud-Edge Dynamics. Proceedings of the European Conference on Computer Vision (ECCV) (2026). [3] Ming Chen, Liyuan Cui, Wenyuan Zhang, Haoxian Zhang, Yan Zhou, Xiaohan Li, Songlin Tang, Jiwen Liu, Borui Liao, Hejia Chen, et al. 2025. Midas: Multimodal interactive digital-human synthesis via real-time autoregressive video generation. 
+
+arXiv preprint arXiv:2508.19320 (2025). [4] Siyan Chen, Yanfei Chen, Ying Chen, Zhuo Chen, Feng Cheng, Xuyan Chi, Jian Cong, Qinpeng Cui, Qide Dong, Junliang Fan, et al. 2025. Seedance 1.5 pro: A Native Audio-Visual Joint Generation Foundation Model. arXiv preprint arXiv:2512.13507 (2025). [5] Yi Chen, Sen Liang, Zixiang Zhou, Ziyao Huang, Yifeng Ma, Junshu Tang, Qin Lin, Yuan Zhou, and Qinglin Lu. 2025. Hunyuanvideo-avatar: High-fidelity audio-driven human animation for multiple characters. arXiv preprint arXiv:2505.20156 
+
+(2025). [6] Kun Cheng, Xiaodong Cun, Yong Zhang, Menghan Xia, Fei Yin, Mingrui Zhu, Xuan Wang, Jue Wang, and Nannan Wang. 2022. Videoretalking: Audio-based lip synchronization for talking head video editing in the wild. In SIGGRAPH Asia 2022 Conference Papers . 1–9. [7] Joon Son Chung and Andrew Zisserman. 2016. Out of time: automated lip sync in the wild. In Asian conference on computer vision . Springer, 251–263. [8] Weilun Feng, Haotong Qin, Chuanguang Yang, Xiangqi Li, Han Yang, Yuqi Li, Zhulin An, Libo Huang, Michele Magno, and Yongjun Xu. 2025. S2Q-VDiT: Accurate Quantized Video Diffusion Transformer with Salient Data and Sparse Token Distillation. arXiv preprint arXiv:2508.04016 (2025). [9] Xin Gao, Li Hu, Siqi Hu, Mingyang Huang, Chaonan Ji, Dechao Meng, Jinwei Qi, Penchong Qiao, Zhen Shen, Yafei Song, et al. 2025. Wan-s2v: Audio-driven cinematic video generation. arXiv preprint arXiv:2508.18621 (2025). [10] Yu Gao, Haoyuan Guo, Tuyen Hoang, Weilin Huang, Lu Jiang, Fangyuan Kong, Huixia Li, Jiashi Li, Liang Li, Xiaojie Li, et al. 2025. Seedance 1.0: Exploring the boundaries of video generation models. arXiv preprint arXiv:2506.09113 (2025). [11] Yu Gao, Jiancheng Huang, Xiaopeng Sun, Zequn Jie, Yujie Zhong, and Lin Ma. 2024. Matten: Video Generation with Mamba-Attention. arXiv preprint arXiv:2405.03025 (2024). [12] Jiazhi Guan, Kaisiyuan Wang, Zhiliang Xu, Quanwei Yang, Yasheng Sun, Shengyi He, Borong Liang, Yukang Cao, Yingying Li, Haocheng Feng, et al. 2025. Audcast: Audio-driven human video generation by cascaded diffusion transformers. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition .10678–10689. [13] Jiazhi Guan, Zhanwang Zhang, Hang Zhou, Tianshu Hu, Kaisiyuan Wang, Dongliang He, Haocheng Feng, Jingtuo Liu, Errui Ding, Ziwei Liu, et al. 2023. Stylesync: High-fidelity generalized and personalized lip sync in style-based generator. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 1505–1515. [14] Yefei He, Luping Liu, Jing Liu, Weijia Wu, Hong Zhou, and Bohan Zhuang. 2023. Ptqd: Accurate post-training quantization for diffusion models. Advances in Neural Information Processing Systems 36 (2023), 13237–13249. [15] Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter. 2017. Gans trained by a two time-scale update rule converge to a local nash equilibrium. Advances in neural information processing systems 30 (2017). [16] Jiancheng Huang, Mingfu Yan, Songyan Chen, Yi Huang, and Shifeng Chen. 2024. MagicFight: Personalized Martial Arts Combat Video Generation. In Proceedings of the 32nd ACM International Conference on Multimedia . 10833–10842. doi:10. 1145/3664647.3680849 [17] Jiancheng Huang, Gengwei Zhang, Zequn Jie, Siyu Jiao, Yinlong Qian, Ling Chen, Yunchao Wei, and Lin Ma. 2026. M4V: Multi-Modal Mamba for Text-to-Video Generation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition .[18] Yubo Huang, Weiqiang Wang, Sirui Zhao, Tong Xu, Lin Liu, and Enhong Chen. 2025. Bind-your-avatar: Multi-talking-character video generation with dynamic 3d-mask-based embedding router. arXiv preprint arXiv:2506.19833 (2025). [19] Kumara Kahatapitiya, Haozhe Liu, Sen He, Ding Liu, Menglin Jia, Chenyang Zhang, Michael S Ryoo, and Tian Xie. 2025. Adaptive caching for faster video gen-eration with diffusion transformers. In Proceedings of the IEEE/CVF International Conference on Computer Vision . 15240–15252. [20] Senmao Li, Taihang Hu, Fahad Shahbaz Khan, Linxuan Li, Shiqi Yang, Yaxing Wang, Ming-Ming Cheng, and Jian Yang. 2023. Faster diffusion: Rethinking the role of unet encoder in diffusion models. arXiv preprint arXiv:2312.09608 3 (2023). [21] Gaojie Lin, Jianwen Jiang, Chao Liang, Tianyun Zhong, Jiaqi Yang, Zerong Zheng, and Yanbo Zheng. 2025. Cyberhost: A one-stage diffusion framework for audio-driven talking body generation. In The Thirteenth International Conference on Learning Representations .[22] Feng Liu, Shiwei Zhang, Xiaofeng Wang, Yujie Wei, Haonan Qiu, Yuzhong Zhao, Yingya Zhang, Qixiang Ye, and Fang Wan. 2025. Timestep Embedding Tells: It’s Time to Cache for Video Diffusion Model. In Proceedings of the Computer Vision and Pattern Recognition Conference . 7353–7363. [23] Jiacheng Liu, Chang Zou, Yuanhuiyi Lyu, Junjie Chen, and Linfeng Zhang. 2025. From reusing to forecasting: Accelerating diffusion models with taylorseers. In 
+
+Proceedings of the IEEE/CVF International Conference on Computer Vision . 15853– 15863. [24] Jiacheng Liu, Chang Zou, Yuanhuiyi Lyu, Fei Ren, Shaobo Wang, Kaixin Li, and Linfeng Zhang. 2025. Speca: Accelerating diffusion transformers with speculative feature caching. In Proceedings of the 33rd ACM International Conference on Multimedia . 10024–10033. [25] Jiayi Luo, Jiayu Chen, Jiankun Wang, Cong Wang, Hanxin Zhu, Qingyun Sun, Chen Gao, Zhibo Chen, and Jianxin Li. 2026. Attention Sparsity is Input-Stable: Training-Free Sparse Attention for Video Generation via Offline Sparsity Profiling and Online QK Co-Clustering. Proceedings of the International Conference on Machine Learning(ICML) (2026). [26] Jiayi Luo, Jiayu Chen, Jiankun Wang, Cong Wang, Hanxin Zhu, Qingyun Sun, Chen Gao, Zhibo Chen, and Jianxin Li. 2026. Training-Free Sparse Attention for Fast Video Generation via Offline Layer-Wise Sparsity Profiling and Online Bidirectional Co-Clustering. arXiv preprint arXiv:2603.18636 (2026). [27] Simian Luo, Yiqin Tan, Longbo Huang, Jian Li, and Hang Zhao. 2023. Latent consistency models: Synthesizing high-resolution images with few-step inference. 
+
+arXiv preprint arXiv:2310.04378 (2023). [28] Zhengyao Lv, Chenyang Si, Junhao Song, Zhenyu Yang, Yu Qiao, Ziwei Liu, and Kwan-Yee K Wong. 2024. Fastercache: Training-free video diffusion model acceleration with high quality. arXiv preprint arXiv:2410.19355 (2024). [29] Xinyin Ma, Gongfan Fang, and Xinchao Wang. 2024. Deepcache: Accelerating diffusion models for free. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 15762–15772. [30] Zehong Ma, Longhui Wei, Feng Wang, Shiliang Zhang, and Qi Tian. 2025. Magcache: Fast video generation with magnitude-aware cache. arXiv preprint arXiv:2506.09045 (2025). [31] Rang Meng, Xingyu Zhang, Yuming Li, and Chenguang Ma. 2024. EchoMimicV2: Towards Striking, Simplified, and Semi-Body Human Animation. arXiv preprint arXiv:2411.10061 (2024). [32] William Peebles and Saining Xie. 2023. Scalable diffusion models with transform-ers. In Proceedings of the IEEE/CVF international conference on computer vision .4195–4205. [33] Tim Salimans and Jonathan Ho. 2022. Progressive distillation for fast sampling of diffusion models. arXiv preprint arXiv:2202.00512 (2022). [34] Seedance Team, De Chen, Liyang Chen, Xin Chen, Ying Chen, Zhuo Chen, et al. 2026. Seedance 2.0: Advancing Video Generation for World Complexity. arXiv preprint arXiv:2604.14148 (2026). [35] Yuzhang Shang, Zhihang Yuan, Bin Xie, Bingzhe Wu, and Yan Yan. 2023. Post-training quantization on diffusion models. In Proceedings of the IEEE/CVF confer-ence on computer vision and pattern recognition . 1972–1981. [36] Kaixin Shen, Ruijie Quan, Linchao Zhu, Jun Xiao, and Yi Yang. 2024. Audioscenic: Audio-driven video scene editing. arXiv preprint arXiv:2404.16581 (2024). [37] Yang Song, Prafulla Dhariwal, Mark Chen, and Ilya Sutskever. 2023. Consistency models. (2023). [38] Meituan LongCat Team. 2025. LongCat-Video-Avatar Technical Report. [39] Meituan LongCat Team, Xunliang Cai, Qilong Huang, Zhuoliang Kang, Hongyu Li, Shijun Liang, Liya Ma, Siyu Ren, Xiaoming Wei, Rixu Xie, et al. 2025. Longcat-video technical report. arXiv preprint arXiv:2510.22200 (2025). [40] Linrui Tian, Siqi Hu, Qi Wang, Bang Zhang, and Liefeng Bo. 2025. Emo2: End-effector guided audio-driven avatar video generation. arXiv preprint arXiv:2501.10687 (2025). [41] Thomas Unterthiner, Sjoerd Van Steenkiste, Karol Kurach, Raphaël Marinier, Marcin Michalski, and Sylvain Gelly. 2019. FVD: A new metric for video genera-tion. (2019). [42] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017. Attention is all you need. Advances in neural information processing systems 30 (2017). [43] Team Wan, Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haiming Zhao, Jianxiao Yang, et al. 2025. Wan: Open and advanced large-scale video generative models. arXiv preprint arXiv:2503.20314 (2025). [44] Cong Wei, Bo Sun, Haoyu Ma, Ji Hou, Felix Juefei-Xu, Zecheng He, Xiaoliang Dai, Luxin Zhang, Kunpeng Li, Tingbo Hou, et al. 2025. Mocha: Towards movie-grade talking character synthesis. arXiv preprint arXiv:2503.23307 (2025). [45] Felix Wimbauer, Bichen Wu, Edgar Schoenfeld, Xiaoliang Dai, Ji Hou, Zijian He, Artsiom Sanakoyeu, Peizhao Zhang, Sam Tsai, Jonas Kohler, et al. 2024. Cache me if you can: Accelerating diffusion models through block caching. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 6211–6220. [46] Haocheng Xi, Shuo Yang, Yilong Zhao, Chenfeng Xu, Muyang Li, Xiuyu Li, Yujun Lin, Han Cai, Jintao Zhang, Dacheng Li, et al. 2025. Sparse videogen: Accelerating video diffusion transformers with spatial-temporal sparsity. arXiv preprint arXiv:2502.01776 (2025). MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil. Jiayu Chen et al. 
+
+[47] Zhuoyi Yang, Jiayan Teng, Wendi Zheng, Ming Ding, Shiyu Huang, Jiazheng Xu, Yuanming Yang, Wenyi Hong, Xiaohan Zhang, Guanyu Feng, et al. 2024. Cogvideox: Text-to-video diffusion models with an expert transformer. arXiv preprint arXiv:2408.06072 (2024). [48] Haojie Yu, Zhaonian Wang, Yihan Pan, Meng Cheng, Hao Yang, Chao Wang, Tao Xie, Xiaoming Xu, Xiaoming Wei, and Xunliang Cai. 2025. LLIA–Enabling Low-Latency Interactive Avatars: Real-Time Audio-Driven Portrait Video Generation with Diffusion Models. arXiv preprint arXiv:2506.05806 (2025). [49] Zhihang Yuan, Hanling Zhang, Pu Lu, Xuefei Ning, Linfeng Zhang, Tianchen Zhao, Shengen Yan, Guohao Dai, and Yu Wang. 2024. Ditfastattn: Attention compression for diffusion transformer models. Advances in Neural Information Processing Systems 37 (2024), 1196–1219. [50] Lin Zhang, Shentong Mo, Yijing Zhang, and Pedro Morgado. 2024. Audio-Synchronized Visual Animation. In Proceedings of the European Conference on Computer Vision (ECCV) .[51] Wenxuan Zhang, Xiaodong Cun, Xuan Wang, Yong Zhang, Xi Shen, Yu Guo, Ying Shan, and Fei Wang. 2023. Sadtalker: Learning realistic 3d motion coefficients for stylized audio-driven single image talking face animation. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 8652–8661. [52] Zhimeng Zhang, Lincheng Li, Yu Ding, and Changjie Fan. 2021. Flow-Guided One-Shot Talking Face Generation With a High-Resolution Audio-Visual Dataset. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition .3661–3670. [53] Xuanlei Zhao, Xiaolong Jin, Kai Wang, and Yang You. 2024. Real-time video generation with pyramid attention broadcast. arXiv preprint arXiv:2408.12588 
+
+(2024). [54] Zangwei Zheng, Xiangyu Peng, Tianji Yang, Chenhui Shen, Shenggui Li, Hongxin Liu, Yukun Zhou, Tianyi Li, and Yang You. 2024. Open-sora: Democratizing efficient video production for all. arXiv preprint arXiv:2412.20404 (2024). [55] Yingjie Zhou, Xilei Zhu, Siyu Ren, Ziyi Zhao, Ziwen Wang, Farong Wen, Yu Zhou, Jiezhang Cao, Xiongkuo Min, Fengjiao Chen, et al. 2025. EvalTalker: Learning to Evaluate Real-Portrait-Driven Multi-Subject Talking Humans. arXiv preprint arXiv:2512.01340 (2025).

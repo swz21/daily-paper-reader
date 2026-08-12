@@ -1,0 +1,281 @@
+{
+  "date": "20260812",
+  "date_label": "",
+  "generated_at": "2026-08-12 20:45:38 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.10439v1",
+      "route": "202608/12/2608.10439v1-stream-forcing-constructing-unified-training-trajectory-for-robust-streaming-video-generation",
+      "title": "Stream Forcing: Constructing Unified Training Trajectory for Robust Streaming Video Generation",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 10.0,
+      "evidence": "流式视频扩散模型与统一训练轨迹",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.04956v1",
+      "route": "202608/12/2608.04956v1-contextmaster-interactive-multi-shot-video-creation-via-fixed-budget-sparse-context-routing",
+      "title": "ContextMaster: Interactive Multi-Shot Video Creation via Fixed-Budget Sparse Context Routing",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向交互式多镜头视频创作的统一模型，涵盖生成、参考条件与编辑，且包含去噪过程",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.05811v1",
+      "route": "202608/12/2608.05811v1-energy-guided-flow-matching",
+      "title": "Energy-Guided Flow Matching",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "基于能量引导的流匹配，采用移动端点",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.10479v1",
+      "route": "202608/12/2608.10479v1-bridging-event-streams-and-dit-event-guided-video-frame-interpolation",
+      "title": "Bridging Event Streams and DiT: Event-Guided Video Frame Interpolation",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "基于潜在扩散的事件引导视频插帧",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.02406v1",
+      "route": "202608/12/2608.02406v1-a-unified-kullback--leibler-divergence-analysis-of-generative-diffusion-models-via-entropy-production-rate",
+      "title": "A Unified Kullback--Leibler Divergence Analysis of Generative Diffusion Models via Entropy Production Rate",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "对生成扩散模型进行统一的KL散度误差分析",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.02474v1",
+      "route": "202608/12/2608.02474v1-echocache-energy-guided-cross-modal-caching-for-efficient-audio-driven-video-generation",
+      "title": "EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "使用扩散模型的音频驱动视频生成与跨模态缓存",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.02487v1",
+      "route": "202608/12/2608.02487v1-computational-and-statistical-guarantees-of-the-textitc-rectified-flow",
+      "title": "Computational and Statistical Guarantees of the \\textit{c}-Rectified flow",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "对整流流（一种流匹配框架）进行理论研究，分析其计算与统计保证。",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.03117v1",
+      "route": "202608/12/2608.03117v1-simulation-free-and-finite-time-diffusion-model",
+      "title": "Simulation-free and finite-time diffusion model",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "提出扩散模型框架，条件流匹配为其小噪声极限",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.03135v1",
+      "route": "202608/12/2608.03135v1-rectify-then-diffuse-disentangling-concepts-before-denoising-trajectory-unfolds",
+      "title": "Rectify Then Diffuse: Disentangling Concepts Before Denoising Trajectory Unfolds",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向文生图的扩散模型组合生成",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.03335v1",
+      "route": "202608/12/2608.03335v1-spade-an-input-adaptive-sparse-attention-engine-for-fast-video-diffusion-models-inference",
+      "title": "SPADE: An Input-Adaptive Sparse Attention Engine for Fast Video Diffusion Models Inference",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向快速视频扩散模型推理的稀疏注意力引擎",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.05450v1",
+      "route": "202608/12/2608.05450v1-mosaik-multi-patch-content-aware-spatial-allocation-of-image-tokens-for-efficient-generation",
+      "title": "MOSAIK: Multi-Patch Content-Aware Spatial Allocation of Image Tokens for Efficient Generation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "通过自适应补丁分配优化像素空间扩散模型的高效生成，属于扩散生成模型方向",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.06240v1",
+      "route": "202608/12/2608.06240v1-prism-distribution-gated-flow-matching-for-controllable-unpaired-image-translation",
+      "title": "PRISM: Distribution-Gated Flow Matching for Controllable Unpaired Image Translation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "流匹配框架结合逐特征门控",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.06794v1",
+      "route": "202608/12/2608.06794v1-past-prompt-adaptive-sampling-termination-for-efficient-diffusion-model",
+      "title": "PAST: Prompt-Adaptive Sampling Termination for Efficient Diffusion Model",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "通过提示自适应终止与内在奖励提升扩散模型效率",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.07620v1",
+      "route": "202608/12/2608.07620v1-flowerase-opd-multi-concept-erasure-via-anchored-on-policy-distillation-in-flow-matching-models",
+      "title": "FlowErase-OPD: Multi-Concept Erasure via Anchored On-Policy Distillation in Flow Matching Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "基于在线策略蒸馏的流匹配多概念擦除",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.08125v1",
+      "route": "202608/12/2608.08125v1-staying-true-to-the-origin-continuous-image-stylization-with-smooth-transitions",
+      "title": "Staying True to the Origin: Continuous Image Stylization with Smooth Transitions",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "基于扩散Transformer的图像风格化与连续控制",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.08519v1",
+      "route": "202608/12/2608.08519v1-ebird-event-based-intensity-image-reconstruction-using-controllable-diffusion-models",
+      "title": "eBIRD: Event-based Intensity Image Reconstruction Using Controllable Diffusion Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "可控制扩散模型用于事件基图像重建",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    },
+    {
+      "paper_id": "2608.08555v1",
+      "route": "202608/12/2608.08555v1-sc-diff-semantically-calibrated-diffusion-for-visible-to-infrared-image-translation",
+      "title": "SC-Diff: Semantically Calibrated Diffusion for Visible-to-Infrared Image Translation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "语义校准的扩散模型用于图像翻译",
+      "first_seen_at": "2026-08-12 20:45:38 UTC",
+      "updated_at": "2026-08-12 20:45:38 UTC"
+    }
+  ]
+}

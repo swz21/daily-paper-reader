@@ -41,17 +41,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-08-03 ~ 2026-08-12</span>
+      <span class="dpr-home-dashboard-kicker">2026-08-12</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 23 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 17 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
     <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>12</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>6</dd></div>
     <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>11</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-08-12 02:52:07 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-08-12 20:45:38 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -62,7 +62,7 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日共处理23篇论文，精读12篇、速读11篇，覆盖可控视频生成与物理传输建模两大热点。最值得关注的是满分论文《EmoWorld》——通过解耦情感场实现可控情感视频生成，以及《Beckmann Transport Models》对自主流到一步映射的数学简化，二者分别在情感表达与效率上有突破。建议普通读者优先浏览这两篇精读论文，并顺带关注速读中的《LiveLight》实时视频重照明技术，后续可结合实践探索其在影视创作中的潜力。</p>
+<p>今日精读17篇论文，聚焦视频生成新突破；《Stream Forcing》满分领跑，构建统一训练轨迹实现鲁棒流式视频生成。重点看视频生成轨迹统一化与多镜次稀疏上下文路由（ContextMaster）两个方向，前者提升长视频稳定性，后者节省算力。下一步可先试读满分论文的代码与视频demo，再结合速读中的音频驱动缓存方案验证实战效果。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -71,12 +71,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">精读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">12 篇</strong>
+    <strong class="dpr-home-dashboard-count">6 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="EmoWorld: A Decoupled Affective Field for Controllable Emotional Video Generation">EmoWorld: A Decoupled Affective Field for Controllable Emotional Video Generation</span></li><li><span class="dpr-home-dashboard-paper-title" title="Beckmann Transport Models: From Autonomous Flows to One-Step Maps">Beckmann Transport Models: From Autonomous Flows to One-Step Maps</span></li><li><span class="dpr-home-dashboard-paper-title" title="Token Radius Attention for Efficient Video Generation">Token Radius Attention for Efficient Video Generation</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Stream Forcing: Constructing Unified Training Trajectory for Robust Streaming Video Generation">Stream Forcing: Constructing Unified Training Trajectory for Robust Streaming Video Generation</span></li><li><span class="dpr-home-dashboard-paper-title" title="ContextMaster: Interactive Multi-Shot Video Creation via Fixed-Budget Sparse Context Routing">ContextMaster: Interactive Multi-Shot Video Creation via Fixed-Budget Sparse Context Routing</span></li><li><span class="dpr-home-dashboard-paper-title" title="Energy-Guided Flow Matching">Energy-Guided Flow Matching</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>12</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>6</strong></span></div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-skim-card">
   <div class="dpr-home-dashboard-header">
@@ -87,7 +87,7 @@
     <strong class="dpr-home-dashboard-count">11 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="LiveLight: Real-time Streaming Video Relighting with Interactive Control">LiveLight: Real-time Streaming Video Relighting with Interactive Control</span></li><li><span class="dpr-home-dashboard-paper-title" title="WorldDynCache: Risk-Controlled Latent Dynamics Approximation for Diffusion World Model">WorldDynCache: Risk-Controlled Latent Dynamics Approximation for Diffusion World Model</span></li><li><span class="dpr-home-dashboard-paper-title" title="UniMoCa: Unifying Motion and Camera Controls as Visual Proxies for Faithful Human Video Generation">UniMoCa: Unifying Motion and Camera Controls as Visual Proxies for Faithful Human Video Generation</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation">EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation</span></li><li><span class="dpr-home-dashboard-paper-title" title="Computational and Statistical Guarantees of the \textit{c}-Rectified flow">Computational and Statistical Guarantees of the \textit{c}-Rectified flow</span></li><li><span class="dpr-home-dashboard-paper-title" title="Rectify Then Diffuse: Disentangling Concepts Before Denoising Trajectory Unfolds">Rectify Then Diffuse: Disentangling Concepts Before Denoising Trajectory Unfolds</span></li></ul>
   </div>
   <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>11</strong></span></div>
 </section>

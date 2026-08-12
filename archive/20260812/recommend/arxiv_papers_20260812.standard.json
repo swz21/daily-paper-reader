@@ -1,0 +1,704 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-12T20:32:56.850002+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 21,
+    "deep_cap": 6,
+    "deep_selected": 6,
+    "quick_candidates": 28,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2608.10439v1",
+      "source": "arxiv",
+      "title": "Stream Forcing: Constructing Unified Training Trajectory for Robust Streaming Video Generation",
+      "abstract": "Streaming video generation holds strong potential for world modeling, where future frames must be inferred online sequentially to form a continuous video stream. However, streaming video diffusion models introduce a fundamental train-inference mismatch: inference follows a specialized denoising order, whereas advanced training strategies typically require diverse noise-level configurations. To address this trade-off between train-inference consistency and training coverage, we reformulate the video diffusion sampling as a frame-indexed stochastic process over noise levels. Within this stochastic process space, we construct a continuous training trajectory along which the sampling schedule progressively evolves from independent sampling to inference-consistent sampling. We further introduce a joint calibration algorithm and a temporal correlative sampling algorithm to ensure trajectory smoothness and cross-frame correlation. Building on these designs, we propose Stream Forcing, a unified training framework for streaming video generation that balances training sufficiency and inference efficiency. Extensive experiments demonstrate that Stream Forcing significantly improves generation quality with a 36.6% FVD improvement on the UCF-101 benchmark. Furthermore, our method facilitates robust zero-shot extrapolation to long-horizon video generation with a 27.9% FVD improvement on the UCF-101 benchmark.",
+      "authors": [
+        "Yueting Zhu",
+        "Yuehao Song",
+        "Kaicheng Zhang",
+        "Bao Tang",
+        "Shaoyu Chen",
+        "Qian Zhang",
+        "Wenyu Liu",
+        "Xinggang Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-11T03:39:05+00:00",
+      "link": "https://arxiv.org/pdf/2608.10439v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Streaming video diffusion models with a unified training trajectory",
+      "llm_evidence_cn": "流式视频扩散模型与统一训练轨迹",
+      "llm_evidence": "流式视频扩散模型与统一训练轨迹",
+      "canonical_evidence": "流式视频扩散模型与统一训练轨迹",
+      "llm_tldr_en": "Addresses train-inference mismatch in streaming video diffusion by reformulating sampling as a frame-indexed stochastic process and constructing a continuous training trajectory for robust streaming video generation.",
+      "llm_tldr_cn": "针对流式视频扩散模型中训练与推理噪声分布不一致的问题，本文把视频扩散采样重构为按帧索引的随机过程，并构造从独立采样逐步演化的连续训练轨迹。该方法统一了训练与推理的噪声级路径，在不牺牲训练覆盖度的前提下保持推理顺序一致性。实验表明所提策略能显著提升流式视频生成的稳定性与连贯性，为在线世界模型提供了更可靠的视频扩散训练范式。",
+      "llm_tldr": "针对流式视频扩散模型中训练与推理噪声分布不一致的问题，本文把视频扩散采样重构为按帧索引的随机过程，并构造从独立采样逐步演化的连续训练轨迹。该方法统一了训练与推理的噪声级路径，在不牺牲训练覆盖度的前提下保持推理顺序一致性。实验表明所提策略能显著提升流式视频生成的稳定性与连贯性，为在线世界模型提供了更可靠的视频扩散训练范式。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.04956v1",
+      "source": "arxiv",
+      "title": "ContextMaster: Interactive Multi-Shot Video Creation via Fixed-Budget Sparse Context Routing",
+      "abstract": "Recent video models increasingly support generation, reference conditioning, and editing within a single model, yet typically expose them as separate operations over fixed inputs. Practical creation unfolds across multiple shots, requiring one model to generate from text, follow a reference, or edit source footage while maintaining shared history. We formalize this setting as interactive multi-shot video creation (IMVC) and introduce ContextMaster, a unified model with a role-aware context representation for these operations. An interactive model must retain access to an expanding history without allowing the context read cost at each denoising step to grow. ContextMaster combines reusable clean context states with fixed budget sparse context routing and uses ConstraintSink to keep task constraints visible. To address the dual challenges of sparse context access and inference with few denoising steps, we propose a two-stage privileged context distillation framework, which transfers full context behavior from a dense teacher through consistency distillation and then refines deployment rollouts with distribution matching. Experiments on the three primitive tasks demonstrate improved task fulfillment and consistency across shots over specialized baselines. User studies further validate flexibly composed workflows, while the model reaches 16 FPS on a single GPU.",
+      "authors": [
+        "Xu Guo",
+        "Zhengxuan Wei",
+        "Xinghui Li",
+        "Hanzhuo Huang",
+        "Xinyu Liu",
+        "Xiangyang Luo",
+        "Min Wei",
+        "Yiran Zhu",
+        "Qiulin Wang",
+        "Yulong Xu",
+        "Xintao Wang",
+        "Pengfei Wan",
+        "Qi Fan",
+        "Xiangwang Hou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-05T15:27:26+00:00",
+      "link": "https://arxiv.org/pdf/2608.04956v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Unified model for interactive multi-shot video creation involving generation, reference conditioning, and editing with denoising steps",
+      "llm_evidence_cn": "面向交互式多镜头视频创作的统一模型，涵盖生成、参考条件与编辑，且包含去噪过程",
+      "llm_evidence": "面向交互式多镜头视频创作的统一模型，涵盖生成、参考条件与编辑，且包含去噪过程",
+      "canonical_evidence": "面向交互式多镜头视频创作的统一模型，涵盖生成、参考条件与编辑，且包含去噪过程",
+      "llm_tldr_en": "Formalizes interactive multi-shot video creation and proposes ContextMaster, a unified role-aware context model that keeps denoising-step context read cost fixed while maintaining shared history across shots.",
+      "llm_tldr_cn": "实际视频创作往往跨多个镜头，需要同一模型兼顾文本生成、参考跟随和编辑，并维护共享历史。本文形式化交互式多镜头视频创建（IMVC）并引入ContextMaster，通过角色感知上下文表示和固定预算稀疏路由，在每步去噪中以固定成本读取不断增长的上下文历史。实验表明该模型可高效完成多镜头视频生成与编辑任务，为交互式视频工具提供了统一高效的解决方案。",
+      "llm_tldr": "实际视频创作往往跨多个镜头，需要同一模型兼顾文本生成、参考跟随和编辑，并维护共享历史。本文形式化交互式多镜头视频创建（IMVC）并引入ContextMaster，通过角色感知上下文表示和固定预算稀疏路由，在每步去噪中以固定成本读取不断增长的上下文历史。实验表明该模型可高效完成多镜头视频生成与编辑任务，为交互式视频工具提供了统一高效的解决方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "video generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.05811v1",
+      "source": "arxiv",
+      "title": "Energy-Guided Flow Matching",
+      "abstract": "Pixel-space generative models bypass lossy latent compression, yet necessitate joint learning of global structure and fine-grained details in a high-dimensional space. Standard flow matching interpolates noise toward a fixed clean-image endpoint, leaving the spectral evolution to be learned implicitly. In this paper, we introduce Energy-Guided Flow Matching(EG-FM) that explicitly models a coarse-to-fine generative trajectory by moving endpoint. Specifically, EG-FM replaces the fixed endpoint with a heat-kernel-filtered endpoint that evolves smoothly from low-frequency image to clean image.The fraction of high-frequency signal in moving endpoint is released by an image-specific energy-guided scheduling, leading to the re-targeting of velocity in flow matching.Our framework requires no adaptation of the backbone and training data, bringing negligible cost on the training and inference stages. In our experiment, EG-FM consistently achieves lower FID on the ImageNet class-conditional image generation task at $256 \\times 256$ with fewer epochs, reaching an FID of 1.55 at 200 epochs and 1.45 at 600 epochs. We continue training the generation task on the setting of $512 \\times 512$ resolution, yielding a FID of 1.58 after only 40 high-resolution adaptation epochs.Furthermore, we transfer EG-FM on text-to-image generation and achieve 0.85 on GenEval score and 83.9 on DPG-Bench. Code is available at https://github.com/ysng123/EG-FM.",
+      "authors": [
+        "Haoyang Tong",
+        "Yu He",
+        "Fang Li",
+        "Lichen Ma",
+        "Jingling Fu",
+        "Dong Chen",
+        "Zhen Chen",
+        "Junshi Huang",
+        "Jie Cao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-06T09:44:00+00:00",
+      "link": "https://arxiv.org/pdf/2608.05811v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Energy-guided flow matching with moving endpoint",
+      "llm_evidence_cn": "基于能量引导的流匹配，采用移动端点",
+      "llm_evidence": "基于能量引导的流匹配，采用移动端点",
+      "canonical_evidence": "基于能量引导的流匹配，采用移动端点",
+      "llm_tldr_en": "Introduces Energy-Guided Flow Matching that explicitly models a coarse-to-fine generative trajectory by replacing the fixed endpoint with a heat-kernel-filtered endpoint and energy-guided scheduling.",
+      "llm_tldr_cn": "标准流匹配将噪声固定地插值到干净图像端点，频谱演化依赖隐式学习。本文提出能量引导流匹配（EG-FM），用热核滤波的移动端点取代固定端点，并依据图像特定能量调度逐步释放高频信号。该方法无需适配现有框架，即可在像素空间中建模从低频到清晰的粗细粒度生成轨迹。实验显示EG-FM改善了生成质量，为流匹配生成模型提供了更可控的频域演化方式。",
+      "llm_tldr": "标准流匹配将噪声固定地插值到干净图像端点，频谱演化依赖隐式学习。本文提出能量引导流匹配（EG-FM），用热核滤波的移动端点取代固定端点，并依据图像特定能量调度逐步释放高频信号。该方法无需适配现有框架，即可在像素空间中建模从低频到清晰的粗细粒度生成轨迹。实验显示EG-FM改善了生成质量，为流匹配生成模型提供了更可控的频域演化方式。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.10479v1",
+      "source": "arxiv",
+      "title": "Bridging Event Streams and DiT: Event-Guided Video Frame Interpolation",
+      "abstract": "Latent diffusion models have recently advanced video frame interpolation by synthesizing intermediate frames between input images. However, handling large temporal gaps and complex motion remains challenging, often resulting in motion blur, structural distortions, and temporal inconsistencies. Event cameras provide high-temporal-resolution motion cues that are well suited for bridging these gaps and improving interpolation quality. To exploit this advantage without training an event-assisted model from scratch, we propose an adapter-based framework that incorporates event-derived cues into a pre-trained image-to-video diffusion model with minimal architectural changes. Specifically, our method leverages Image Warped Events (IWEs) and bidirectional sparse optical flow to provide spatially and temporally aligned guidance during generation. By injecting these event-guided structural and motion cues into the diffusion process, our approach reduces interpolation artifacts and improves both reconstruction fidelity and temporal coherence. Experimental results on real and synthetic benchmarks show that our method consistently outperforms existing state-of-the-art approaches. The project page is at https://joseph-lin-tech.github.io/BridgeEventDiT-VFI/.",
+      "authors": [
+        "Guixu Lin",
+        "Yuyang Yu",
+        "Xiang Ji",
+        "Linyao Chen",
+        "Zhengwei Yin",
+        "Mengshun Hu",
+        "Mingdeng Cao",
+        "Shengfeng He",
+        "Yinqiang Zheng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-11T04:47:44+00:00",
+      "link": "https://arxiv.org/pdf/2608.10479v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Latent diffusion for video frame interpolation with event guidance",
+      "llm_evidence_cn": "基于潜在扩散的事件引导视频插帧",
+      "llm_evidence": "基于潜在扩散的事件引导视频插帧",
+      "canonical_evidence": "基于潜在扩散的事件引导视频插帧",
+      "llm_tldr_en": "Proposes an adapter-based event-guided video frame interpolation method that injects event cues into a pretrained image-to-video diffusion model, improving large-gap motion and temporal consistency with minimal architecture changes.",
+      "llm_tldr_cn": "针对视频帧插值在大时间间隔和复杂运动中容易产生模糊、结构失真与时间不一致的挑战，提出一种基于适配器的事件引导插帧框架。框架利用事件相机的高时间分辨率运动线索，将图像扭曲事件和双向稀疏特征注入预训练图像到视频扩散模型，仅需最小架构改动，无需从零训练事件辅助模型。实验表明，新方法在大运动跨度插值上有效减少伪影并提升时间一致性。该工作为事件流与预训练扩散模型的结合提供了高效实用方案。",
+      "llm_tldr": "针对视频帧插值在大时间间隔和复杂运动中容易产生模糊、结构失真与时间不一致的挑战，提出一种基于适配器的事件引导插帧框架。框架利用事件相机的高时间分辨率运动线索，将图像扭曲事件和双向稀疏特征注入预训练图像到视频扩散模型，仅需最小架构改动，无需从零训练事件辅助模型。实验表明，新方法在大运动跨度插值上有效减少伪影并提升时间一致性。该工作为事件流与预训练扩散模型的结合提供了高效实用方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.03117v1",
+      "source": "arxiv",
+      "title": "Simulation-free and finite-time diffusion model",
+      "abstract": "The performance of generative diffusion models is determined by the choice of the reference diffusion process connecting the empirical and prior distributions. Conventional approaches typically trade off simulation-free training against finite-time generation. We propose a framework for designing the reference process that achieves both simultaneously. The key idea is to prescribe tractable time-dependent conditional distributions and then construct the reference process realizing them as its marginals. This framework reveals that score matching is not fundamental to diffusion-model training but instead emerges naturally through reversal of the reference process. We further show that conditional flow matching arises as the small-noise limit of the proposed framework.",
+      "authors": [
+        "Kentaro Kaba",
+        "Masayuki Ohzeki",
+        "Yuki Sughiyama"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-04T04:39:14+00:00",
+      "link": "https://arxiv.org/pdf/2608.03117v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Proposes diffusion model framework; conditional flow matching as small-noise limit",
+      "llm_evidence_cn": "提出扩散模型框架，条件流匹配为其小噪声极限",
+      "llm_evidence": "提出扩散模型框架，条件流匹配为其小噪声极限",
+      "canonical_evidence": "提出扩散模型框架，条件流匹配为其小噪声极限",
+      "llm_tldr_en": "New framework designs reference diffusion process for simulation-free training and finite-time generation; shows score matching emerges naturally and conditional flow matching is a small-noise limit.",
+      "llm_tldr_cn": "现有扩散模型常在无模拟训练和有限时间生成之间做权衡。该文提出通过指定可处理的时变条件分布来构造参考过程的框架，可同时实现两者。框架显示得分匹配并非训练本质，而是在参考过程反转中自然涌现；条件流匹配则是该框架的小噪声极限。这一统一视角有助于改进扩散模型和流匹配方法的设计。",
+      "llm_tldr": "现有扩散模型常在无模拟训练和有限时间生成之间做权衡。该文提出通过指定可处理的时变条件分布来构造参考过程的框架，可同时实现两者。框架显示得分匹配并非训练本质，而是在参考过程反转中自然涌现；条件流匹配则是该框架的小噪声极限。这一统一视角有助于改进扩散模型和流匹配方法的设计。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.02406v1",
+      "source": "arxiv",
+      "title": "A Unified Kullback--Leibler Divergence Analysis of Generative Diffusion Models via Entropy Production Rate",
+      "abstract": "We introduce a unified framework for the error analysis of generative models based on the entropy production rate of the forward-reverse diffusion process pair. For a pair of continuity equation flows, the rate admits a closed velocity form identity whose time integral decomposes the terminal Kullback--Leibler (KL) divergence into the sum of an initialization error, a score approximation error, and a time-discretization error. By analyzing the entropy production at the level of marginal distributions, rather than in path space, our framework yields a sharp convergence rate of $\\mathcal{O}(h^2)$   for the Euler-Maruyama sampler, where $h$   is the step size. This improves upon the $\\mathcal{O}(h)$ rates typically obtained from Girsanov's path-space analyses. Furthermore, our framework unifies the analysis of score-based SDEs, probability-flow ODEs, and stochastic interpolants by varying diffusion coefficients within a single inequality, revealing the trade-off between deterministic and stochastic sampling. Numerical experiments confirm the predicted scaling with step size and terminal time.",
+      "authors": [
+        "Han Wu",
+        "Zhiwen Zhang"
+      ],
+      "primary_category": "math.NA",
+      "categories": [
+        "math.NA",
+        "stat.ML"
+      ],
+      "published": "2026-08-03T15:49:08+00:00",
+      "link": "https://arxiv.org/pdf/2608.02406v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "unified error analysis for generative diffusion models",
+      "llm_evidence_cn": "对生成扩散模型进行统一的KL散度误差分析",
+      "llm_evidence": "对生成扩散模型进行统一的KL散度误差分析",
+      "canonical_evidence": "对生成扩散模型进行统一的KL散度误差分析",
+      "llm_tldr_en": "Provides a unified KL divergence error analysis for generative diffusion models via entropy production rate, decomposing terminal error into initialization, score approximation, and time-discretization errors, with improved O(h^2) convergence rate.",
+      "llm_tldr_cn": "针对生成扩散模型误差缺乏统一分析的问题，提出基于正反向扩散过程熵产生率的框架，在速度场恒等式下将终端KL散度分解为初始化误差、得分逼近误差和时间离散误差。该框架在边际分布层面分析熵产生，得到欧拉-马鲁亚马采样器O(h^2)的收敛速度，比常规O(h)结果更优，为扩散模型误差控制提供统一理论工具。",
+      "llm_tldr": "针对生成扩散模型误差缺乏统一分析的问题，提出基于正反向扩散过程熵产生率的框架，在速度场恒等式下将终端KL散度分解为初始化误差、得分逼近误差和时间离散误差。该框架在边际分布层面分析熵产生，得到欧拉-马鲁亚马采样器O(h^2)的收敛速度，比常规O(h)结果更优，为扩散模型误差控制提供统一理论工具。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "carryover_cache",
+      "paper_id": "2608.02406v1"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.02474v1",
+      "source": "arxiv",
+      "title": "EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation",
+      "abstract": "Audio-driven video generation (A2V) has achieved promising progress in synthesizing temporally coherent and audio-visually aligned videos, yet its inference remains expensive due to the iterative denoising process of diffusion models. Existing caching methods mainly exploit temporal redundancy in visual features while overlooking the cross-modal alignment of A2V, where audio drives visual generation with highly non-uniform temporal importance. In this paper, we identify two levels of misalignment in existing A2V caching methods: temporal-semantic and computation-storage misalignment. To address them, we propose EchoCache, an energy-guided cross-modal caching framework for efficient A2V generation. EchoCache leverages audio time-frequency energy as a saliency anchor to guide latent-level cache updates and further introduces a dynamic timestep-latent caching mechanism with quantized cache management for joint efficiency and memory optimization. Extensive experiments on mainstream A2V models show that EchoCache consistently improves the latency-quality trade-off while preserving generation quality and audio-visual consistency. In particular, on Wan2.2-S2V over the EMTD benchmark, EchoCache achieves a 2.46x speedup with the best overall performance. Code is available at https://github.com/IF-LAB-PKU/EchoCache.",
+      "authors": [
+        "Jiayu Chen",
+        "Xiaoyu Wu",
+        "Rongshan Gao",
+        "Maoliang Li",
+        "Zihao Zheng",
+        "Xinhao Sun",
+        "Hailong Zou",
+        "Guojie Luo",
+        "Xiang Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-03T16:42:54+00:00",
+      "link": "https://arxiv.org/pdf/2608.02474v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Audio-driven video generation using diffusion models with cross-modal caching",
+      "llm_evidence_cn": "使用扩散模型的音频驱动视频生成与跨模态缓存",
+      "llm_evidence": "使用扩散模型的音频驱动视频生成与跨模态缓存",
+      "canonical_evidence": "使用扩散模型的音频驱动视频生成与跨模态缓存",
+      "llm_tldr_en": "EchoCache introduces energy-guided cross-modal caching for efficient audio-driven video generation, addressing temporal-semantic and computation-storage misalignment in diffusion-based A2V models.",
+      "llm_tldr_cn": "音频驱动视频生成(A2V)依赖扩散模型的迭代去噪，推理成本高，且现有缓存方法忽略跨模态对齐。EchoCache识别出时间-语义错配与计算-存储错配，提出能量引导的跨模态缓存框架，根据音频时频重要性调度缓存。实验表明EchoCache在保持音视频一致性的同时大幅降低推理开销，为高效A2V生成提供了新方案。",
+      "llm_tldr": "音频驱动视频生成(A2V)依赖扩散模型的迭代去噪，推理成本高，且现有缓存方法忽略跨模态对齐。EchoCache识别出时间-语义错配与计算-存储错配，提出能量引导的跨模态缓存框架，根据音频时频重要性调度缓存。实验表明EchoCache在保持音视频一致性的同时大幅降低推理开销，为高效A2V生成提供了新方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "papers on diffusion models applied to video generation",
+      "matched_requirement_id": "req-5",
+      "selection_source": "carryover_cache",
+      "paper_id": "2608.02474v1",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.05450v1",
+      "source": "arxiv",
+      "title": "MOSAIK: Multi-Patch Content-Aware Spatial Allocation of Image Tokens for Efficient Generation",
+      "abstract": "Pixel-space diffusion models avoid the reconstruction ceiling of latent diffusion models by generating directly in image space. However, their substantially higher token count makes generation expensive due to the quadratic complexity of self-attention. Several existing efficiency methods reduce this cost by using larger patches at selected denoising steps, thereby representing the image with fewer tokens. Yet, each step still uses a single patch size uniformly across the entire image, overlooking that different regions suffer different fidelity losses when coarsened. We introduce MOSAIK, a damage-guided framework that varies patch size across regions and denoising steps. MOSAIK adapts the PixelDiT backbone to generate arbitrary heterogeneous patch layouts, and a lightweight predictor uses intermediate denoising features to estimate the fidelity loss caused by coarsening each region. Given a token budget, our damage-guided layout predictor assigns fine patches to sensitive regions and coarse patches elsewhere. Remarkably, while reducing FLOPs by 70% and token count by 83%, MOSAIK matches the full-compute PixelDiT on GenEval and its DPG-Bench score drops by only 1.0 point. Compared to diverse efficiency paradigms, including temporal patch scheduling and feature caching, our approach delivers highly competitive performance at moderate budgets and consistently outperforms these baselines in highly constrained compute regimes.",
+      "authors": [
+        "Mohammadreza Hami",
+        "Mohammadreza Samadi",
+        "Chao Gao",
+        "Negar Hassanpour"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-05T22:52:41+00:00",
+      "link": "https://arxiv.org/pdf/2608.05450v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Efficient generation method for pixel-space diffusion models by adaptive patch allocation, relevant to diffusion generative models",
+      "llm_evidence_cn": "通过自适应补丁分配优化像素空间扩散模型的高效生成，属于扩散生成模型方向",
+      "llm_evidence": "通过自适应补丁分配优化像素空间扩散模型的高效生成，属于扩散生成模型方向",
+      "canonical_evidence": "通过自适应补丁分配优化像素空间扩散模型的高效生成，属于扩散生成模型方向",
+      "llm_tldr_en": "Introduces MOSAIK, a damage-guided framework that varies patch size across regions and denoising steps in pixel-space DiT, cutting self-attention cost while preserving fidelity.",
+      "llm_tldr_cn": "像素空间扩散模型直接生成图像，但自注意力的二次复杂度使生成成本高昂。现有方法在整幅图上统一使用一种补丁尺寸，忽略了不同区域对粗粒化的敏感度差异。MOSAIK根据损伤程度引导，在不同区域和不同去噪步上自适应分配补丁尺寸，在保持图像质量的同时降低令牌数和计算开销。该框架可广泛用于图像扩散生成加速，并有望扩展到视频扩散模型。",
+      "llm_tldr": "像素空间扩散模型直接生成图像，但自注意力的二次复杂度使生成成本高昂。现有方法在整幅图上统一使用一种补丁尺寸，忽略了不同区域对粗粒化的敏感度差异。MOSAIK根据损伤程度引导，在不同区域和不同去噪步上自适应分配补丁尺寸，在保持图像质量的同时降低令牌数和计算开销。该框架可广泛用于图像扩散生成加速，并有望扩展到视频扩散模型。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.08125v1",
+      "source": "arxiv",
+      "title": "Staying True to the Origin: Continuous Image Stylization with Smooth Transitions",
+      "abstract": "Recent advances in generative models have achieved remarkable performance in text- and image-conditioned editing. However, preserving the content of a given image while referencing style patterns from another remains challenging, often leading to uncontrollable stylization results. In this paper, we approach image stylization from the perspective of continuous control, aiming to enable modern Diffusion Transformer (DiT)-based multi-reference editing models to (1) faithfully preserve the semantic structure of the content image, (2) render strong stylization effects, and (3) smoothly transition between the two. To this end, we propose a simple yet effective two-stage training strategy along with a style-strength-aware spline formulation. Specifically, in the first stage, the model is trained to produce strongly stylized outputs while preserving the content semantics as much as possible. In the second stage, with the base model frozen, we learn a set of anchor projectors that map various stylization strengths into the model parameter space. During inference, by performing style-strength-aware spline interpolation in a low-rank space, our method enables continuous control over stylization strength, even though the model is trained with only a few discrete strength levels. Extensive experiments demonstrate that our method supports precise and continuous manipulation of stylization strength while generating high-fidelity results with modern DiT models. Project page: https://reychiaro.github.io/StyleController.",
+      "authors": [
+        "Rui Xu",
+        "Hanmo Zhang",
+        "Songhua Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-08T13:17:51+00:00",
+      "link": "https://arxiv.org/pdf/2608.08125v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Diffusion Transformer based image stylization with continuous control",
+      "llm_evidence_cn": "基于扩散Transformer的图像风格化与连续控制",
+      "llm_evidence": "基于扩散Transformer的图像风格化与连续控制",
+      "canonical_evidence": "基于扩散Transformer的图像风格化与连续控制",
+      "llm_tldr_en": "This image stylization method uses a two-stage training and style-strength-aware spline for DiT-based editing, preserving content while enabling smooth style transitions.",
+      "llm_tldr_cn": "基于扩散Transformer的多参考图像编辑需要同时保持内容语义和实现强风格化，往往难以控制。该文提出两阶段训练策略和风格强度感知样条公式，使模型能连续控制风格强度，既忠实保留原始结构，又能平滑过渡到目标风格。实验证明了其在可控图像风格化中的有效性。",
+      "llm_tldr": "基于扩散Transformer的多参考图像编辑需要同时保持内容语义和实现强风格化，往往难以控制。该文提出两阶段训练策略和风格强度感知样条公式，使模型能连续控制风格强度，既忠实保留原始结构，又能平滑过渡到目标风格。实验证明了其在可控图像风格化中的有效性。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.02487v1",
+      "source": "arxiv",
+      "title": "Computational and Statistical Guarantees of the \\textit{c}-Rectified flow",
+      "abstract": "Recently, rectified flow has emerged as a fundamental framework for large-scale image generation, powering state-of-the-art systems such as FLUX.1 and Stable Diffusion 3. Despite its remarkable empirical success, the computational and statistical guarantees of iterative rectified flow have remained largely unexplored. We address this problem by studying \\textit{c}-rectified flow, a cost-aware class of rectified flow that projects velocity fields onto a gradient class while preserving endpoint marginals. The ordinary rectified flow can fail to recover the optimal transport coupling: in a Gaussian case study, the iteration converges to the optimal coupling if and only if the source and target covariance matrices commute. In contrast, under suitable compactness and uniform-integrability assumptions, iterative \\textit{c}-rectified flow always converges to the optimal transport coupling. We further establish quantitative one-step contraction and exponential convergence guarantees under projection-stability assumptions for both quadratic and strongly convex displacement costs. Finally, under a Hölder ball assumption, we develop new minimax-optimal score estimation rates and show that, when combined with iterative \\textit{c}-rectified flow, they yield a rate-optimal estimator of the optimal transport for the dimension \\(d \\ge 3\\) and a nearly parametric rate for \\(d=1,2\\).",
+      "authors": [
+        "Leda Wang",
+        "Zhehao Xu",
+        "Qiang Liu",
+        "Harrison H. Zhou"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG",
+        "math.OC",
+        "math.PR",
+        "math.ST"
+      ],
+      "published": "2026-08-03T16:53:29+00:00",
+      "link": "https://arxiv.org/pdf/2608.02487v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Theoretical study of rectified flow, a flow matching framework, analyzing computational and statistical guarantees.",
+      "llm_evidence_cn": "对整流流（一种流匹配框架）进行理论研究，分析其计算与统计保证。",
+      "llm_evidence": "对整流流（一种流匹配框架）进行理论研究，分析其计算与统计保证。",
+      "canonical_evidence": "对整流流（一种流匹配框架）进行理论研究，分析其计算与统计保证。",
+      "llm_tldr_en": "Presents c-rectified flow, a cost-aware class of rectified flow that projects velocity fields onto a gradient class while preserving endpoint marginals. The paper provides computational and statistical guarantees, and shows conditions for convergence to optimal transport coupling, with implications for flow matching based generation.",
+      "llm_tldr_cn": "整流流已成为大规模图像生成的基础框架，但其计算与统计保证此前缺乏深入研究。本文提出c-整流流，将速度场投影到梯度类并保持端点边缘分布，同时给出其计算与统计保证。在Gaussian案例中，普通整流流仅在源协方差与目标协方差可交换时收敛到最优传输耦合，而c-整流流在合适条件下表现更优，为流匹配类生成模型提供了理论基础。",
+      "llm_tldr": "整流流已成为大规模图像生成的基础框架，但其计算与统计保证此前缺乏深入研究。本文提出c-整流流，将速度场投影到梯度类并保持端点边缘分布，同时给出其计算与统计保证。在Gaussian案例中，普通整流流仅在源协方差与目标协方差可交换时收敛到最优传输耦合，而c-整流流在合适条件下表现更优，为流匹配类生成模型提供了理论基础。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "carryover_cache",
+      "paper_id": "2608.02487v1",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.06240v1",
+      "source": "arxiv",
+      "title": "PRISM: Distribution-Gated Flow Matching for Controllable Unpaired Image Translation",
+      "abstract": "Unpaired image-to-image translation must decide, per image, what to change and what to preserve without paired supervision. Many diffusion-based unpaired translators control preservation through a single global noise or guidance value applied across the image, which cannot separate content to keep from appearance to change. We present PRISM, a GAN-free flow-matching framework that replaces this global control with a learned per-feature gate. The gate's spatial prior is derived from each source feature's standardized distance to the target feature distribution, so features far from the target are freed while target-consistent features are preserved. The same gate controls both the initialization, which mixes the real source latent with a task-matched corruption, and the transport timing during Ordinary Differential Equation (ODE) integration. The corruption is matched to the task, content-anchored (AdaIN) for structure-preserving translation and partially anchored for structure-changing translation, and the gate can be overridden locally at inference from text or a detector without retraining, preserving important structures of the original image while still generating realistic results. We evaluate PRISM on five natural and biomedical benchmarks (AFHQ cat->dog, CelebA-HQ appearance translation, day->night relighting, virtual staining, and breast frozen->permanent histopathology). Among the evaluated methods under a shared same-split protocol, PRISM attains the best Inception FID and KID on four benchmarks and a competitive result on the fifth, and on histopathology yields the nuclei-count ratio closest to the ideal, supporting a favorable balance between target realism and structural preservation.",
+      "authors": [
+        "Elad Yoshai",
+        "Natan T. Shaked"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-06T16:26:43+00:00",
+      "link": "https://arxiv.org/pdf/2608.06240v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Flow matching framework with learned per-feature gating",
+      "llm_evidence_cn": "流匹配框架结合逐特征门控",
+      "llm_evidence": "流匹配框架结合逐特征门控",
+      "canonical_evidence": "流匹配框架结合逐特征门控",
+      "llm_tldr_en": "PRISM replaces global guidance in unpaired image translation with a learned per-feature gate applied to flow matching, freeing target-distant features while preserving consistent ones for controllable GAN-free translation.",
+      "llm_tldr_cn": "无配对图像翻译需要决定每张图像中哪些内容保留、哪些外观改变，而现有方法多依赖全局控制。PRISM提出免GAN的流匹配框架，用学习的逐特征门控代替全局控制，门的空间先验来自源特征到目标分布的标准化距离。该门同时作用于初始化与生成，实现对内容保留和外观改变的精细控制。",
+      "llm_tldr": "无配对图像翻译需要决定每张图像中哪些内容保留、哪些外观改变，而现有方法多依赖全局控制。PRISM提出免GAN的流匹配框架，用学习的逐特征门控代替全局控制，门的空间先验来自源特征到目标分布的标准化距离。该门同时作用于初始化与生成，实现对内容保留和外观改变的精细控制。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.08519v1",
+      "source": "arxiv",
+      "title": "eBIRD: Event-based Intensity Image Reconstruction Using Controllable Diffusion Models",
+      "abstract": "Intensity-image reconstruction from event streams remains a challenging problem due to the binary, sparse, and asynchronous nature of event data. This work proposes eBIRD, an event-guided reconstruction framework that combines a DDPM with ControlNet-based conditioning. We analyze generic and specialized diffusion learning strategies for handwritten digit (N-MNIST) and face (RGBE-Gaze) reconstruction using 33ms event windows. On N-MNIST, the general model achieves the best reconstruction quality (MSE 0.0052, SSIM 0.8982, PSNR 23.34dB), whereas the specialized model performs best on RGBE-Gaze (MSE 0.0161, SSIM 0.7605, PSNR 19.08dB). These preliminary results suggest that controllable diffusion models are a promising approach for event-guided intensity-image reconstruction, while highlighting that the preferred learning strategy depends on the reconstruction domain.",
+      "authors": [
+        "Ignacio Bugueno-Cordova",
+        "Fabian Valderrama",
+        "Rodrigo Verschae"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T06:37:58+00:00",
+      "link": "https://arxiv.org/pdf/2608.08519v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Controllable diffusion models for event-based image reconstruction",
+      "llm_evidence_cn": "可控制扩散模型用于事件基图像重建",
+      "llm_evidence": "可控制扩散模型用于事件基图像重建",
+      "canonical_evidence": "可控制扩散模型用于事件基图像重建",
+      "llm_tldr_en": "eBIRD combines DDPM with ControlNet conditioning to reconstruct intensity images from event streams, showing strong results on N-MNIST and RGBE-Gaze across generic and specialized diffusion strategies.",
+      "llm_tldr_cn": "事件流是二值、稀疏且异步的，其强度图像重建十分困难。提出eBIRD框架，将去噪扩散概率模型（DDPM）与控制网络（ControlNet）条件机制结合，并比较通用与专门化扩散学习策略在N-MNIST和RGBE-Gaze上的重建效果。结果显示，通用模型在手写数字重建上取得最佳（MSE 0.0052），专门模型在人脸重建上最优（PSNR 19.08dB）。这些初步结果表明可控制扩散模型在事件引导重建中的潜力，值得进一步探索。",
+      "llm_tldr": "事件流是二值、稀疏且异步的，其强度图像重建十分困难。提出eBIRD框架，将去噪扩散概率模型（DDPM）与控制网络（ControlNet）条件机制结合，并比较通用与专门化扩散学习策略在N-MNIST和RGBE-Gaze上的重建效果。结果显示，通用模型在手写数字重建上取得最佳（MSE 0.0052），专门模型在人脸重建上最优（PSNR 19.08dB）。这些初步结果表明可控制扩散模型在事件引导重建中的潜力，值得进一步探索。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.03135v1",
+      "source": "arxiv",
+      "title": "Rectify Then Diffuse: Disentangling Concepts Before Denoising Trajectory Unfolds",
+      "abstract": "Text-to-image diffusion models can generate individual concepts well, but they often omit or merge concepts incorrectly with multiple concepts. We trace these failures to an early coordination bottleneck: before denoising begins, prompt-conditioned attention may allocate different concepts to strongly overlapping spatial support, which can keep their attention coupled as denoising proceeds. This observation motivates treating compositional generation as a boundary-condition problem rather than repeatedly controlling the evolving trajectory. To this end, we propose Rectify-then-Diffuse (RTD), a training-free framework that rectifies the initial allocation once before standard denoising. Firstly, we propose Soft-Overlap Disentanglement (SOD), which converts normalized overlap between pilot concept maps into a differentiable and layout-agnostic separation objective. Secondly, we introduce Isotropic Gradient Rectification (IGR), which normalizes the SOD gradient and applies a bounded latent displacement with a consistent scale across prompts and initializations. Extensive experiments show that RTD achieves state-of-the-art compositional fidelity and robust gains. On the AE-Bench object pair subset, RTD improves BLIP-VQA by 45.8% and ImageReward by 19.6% over CO3 while running 2.3$\\times$ faster. Code will be released at https://github.com/Z-yiwei/rectify-then-diffuse",
+      "authors": [
+        "Ning Zhu",
+        "An Chen",
+        "Mengfei Zhao",
+        "Juntao Xu",
+        "Jingze Liang",
+        "Boyuan Gu",
+        "Liang-Jian Deng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-04T05:03:17+00:00",
+      "link": "https://arxiv.org/pdf/2608.03135v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Diffusion model for text-to-image compositional generation",
+      "llm_evidence_cn": "面向文生图的扩散模型组合生成",
+      "llm_evidence": "面向文生图的扩散模型组合生成",
+      "canonical_evidence": "面向文生图的扩散模型组合生成",
+      "llm_tldr_en": "Rectify-then-Diffuse is a training-free framework that rectifies initial concept allocation before denoising in text-to-image diffusion models, improving compositional multi-concept generation.",
+      "llm_tldr_cn": "文本到图像扩散模型在组合生成时经常丢失或混淆概念，本文将其归因于去噪开始前的早期协调瓶颈。为此提出训练免费的Rectify-then-Diffuse框架，在标准去噪前一次性修正初始分配，并设计软重叠解耦模块。在多个概念组合任务上显著提升了生成质量，表明将组合生成视为边界条件问题比反复控制生成轨迹更有效。",
+      "llm_tldr": "文本到图像扩散模型在组合生成时经常丢失或混淆概念，本文将其归因于去噪开始前的早期协调瓶颈。为此提出训练免费的Rectify-then-Diffuse框架，在标准去噪前一次性修正初始分配，并设计软重叠解耦模块。在多个概念组合任务上显著提升了生成质量，表明将组合生成视为边界条件问题比反复控制生成轨迹更有效。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.06794v1",
+      "source": "arxiv",
+      "title": "PAST: Prompt-Adaptive Sampling Termination for Efficient Diffusion Model",
+      "abstract": "While diffusion models have made significant progress in text-to-image tasks, they still exhibit limitations when directly optimizing downstream objectives. Although Reinforcement Learning (RL) enables targeted optimization, existing methods are generally constrained by low-efficiency fine-tuning and sparse rewards. To address these challenges, we propose PAST, which provides differentiated rewards while adaptively regulating training episode length by jointly perceiving denoising progress and prompt difficulty. Specifically, we design an intrinsic reward paradigm to compensate for sparse extrinsic rewards and guide the model to explore paths that diverge more efficiently from noise patterns. We further provide theoretical justification for intrinsic rewards. Then, PAST dynamically monitors denoising completion and semantic alignment between image structures and prompt semantics. When both metrics satisfy generation requirements, the system adaptively terminates training. This enables appropriate allocation of episode lengths based on prompt difficulty and the current generation process. Finally, based on the predicted residual noise level, we establish a dual adaptive coordination mechanism. Specifically, it not only balances the extrinsic and intrinsic rewards but also balances the exploration and convergence. Experimental results demonstrate that PAST enhances computational efficiency of existing RL fine-tuning methods by up to 66.7%, while improving preference optimization quality by up to 29.5% through its dual adaptive regulation mechanism.",
+      "authors": [
+        "Renye Yan",
+        "Jikang Cheng",
+        "You Wu",
+        "Wei Peng",
+        "Zongwei Wang",
+        "Ling Liang",
+        "Yimao Cai"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-07T04:35:26+00:00",
+      "link": "https://arxiv.org/pdf/2608.06794v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Improves diffusion model efficiency with prompt-adaptive termination and intrinsic rewards",
+      "llm_evidence_cn": "通过提示自适应终止与内在奖励提升扩散模型效率",
+      "llm_evidence": "通过提示自适应终止与内在奖励提升扩散模型效率",
+      "canonical_evidence": "通过提示自适应终止与内在奖励提升扩散模型效率",
+      "llm_tldr_en": "PAST adaptively regulates diffusion sampling episode length based on denoising progress and prompt difficulty, using intrinsic rewards to improve RL optimization and sample efficiency.",
+      "llm_tldr_cn": "扩散模型在文本到图像任务中难以直接优化下游目标，强化学习微调存在效率低和奖励稀疏的问题。PAST提出内在奖励机制补偿稀疏外部奖励，并根据去噪进度和提示难度自适应调整训练回合长度，从而引导模型更高效地探索。实验显示该方法在多个文本到图像下游任务上显著提升了优化效率和性能，并提供了相关理论依据，为扩散模型定点优化提供新思路。",
+      "llm_tldr": "扩散模型在文本到图像任务中难以直接优化下游目标，强化学习微调存在效率低和奖励稀疏的问题。PAST提出内在奖励机制补偿稀疏外部奖励，并根据去噪进度和提示难度自适应调整训练回合长度，从而引导模型更高效地探索。实验显示该方法在多个文本到图像下游任务上显著提升了优化效率和性能，并提供了相关理论依据，为扩散模型定点优化提供新思路。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.08555v1",
+      "source": "arxiv",
+      "title": "SC-Diff: Semantically Calibrated Diffusion for Visible-to-Infrared Image Translation",
+      "abstract": "Visible-to-infrared image translation provides a practical way to expand infrared training data using abundant visible images. Diffusion models are promising for this task because of their strong generative performance. However, existing diffusion-based methods typically use semantic priors only as external conditions, without explicitly regulating token interactions within the denoising network. Consequently, they struggle to preserve object locations, shapes, and semantic layouts required for reliable annotation reuse. We propose SC-Diff, a semantically calibrated latent diffusion framework that uses semantic priors for both conditional guidance and internal self-attention calibration. A pretrained SAM3 model with predefined text prompts first extracts category-specific semantic masks from visible images. These masks are merged into a semantic map and fused with the visible image as the input condition. The same map is converted into token-level semantic labels to calibrate self-attention in the denoising network. Based on these labels, we introduce Semantic-Guided Self-Attention Calibration (SGSC), which adaptively applies positive biases to query-key pairs of the same category. The query-wise calibration strength depends on the dispersion of attention across semantic categories and the attention assigned to the query's own category. The original attention scores further modulate the bias, giving greater calibration to same-category keys with stronger responses. This soft calibration reduces cross-category interference while retaining global contextual interactions, thereby improving semantic consistency in generated infrared images. Extensive experiments show that SC-Diff improves perceptual quality and produces more effective synthetic training data for downstream infrared object detection.",
+      "authors": [
+        "Junyin Zhang",
+        "Siyu Huang",
+        "Jianxiong Ye",
+        "Haowei Gong",
+        "Ruicheng Zhang",
+        "Deyu Meng",
+        "Chenqiang Gao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T07:57:40+00:00",
+      "link": "https://arxiv.org/pdf/2608.08555v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Diffusion model for image translation with semantic calibration",
+      "llm_evidence_cn": "语义校准的扩散模型用于图像翻译",
+      "llm_evidence": "语义校准的扩散模型用于图像翻译",
+      "canonical_evidence": "语义校准的扩散模型用于图像翻译",
+      "llm_tldr_en": "SC-Diff is a semantically calibrated latent diffusion framework for visible-to-infrared translation that uses SAM3 semantic priors for both conditional guidance and internal self-attention calibration, preserving object layout.",
+      "llm_tldr_cn": "可见光到红外图像翻译可利用扩散模型的强生成性能，但已有方法仅将语义先验作为外部条件，难以保持目标位置、形状与语义布局。提出SC-Diff语义校准潜在扩散框架，将SAM3文本提示的语义先验同时用于条件引导和内部自注意力校准，显式调节token交互。实验表明，该方法能更可靠地保留目标位置和形状，便于标注复用。这为条件扩散模型中的语义校准提供了一种新设计。",
+      "llm_tldr": "可见光到红外图像翻译可利用扩散模型的强生成性能，但已有方法仅将语义先验作为外部条件，难以保持目标位置、形状与语义布局。提出SC-Diff语义校准潜在扩散框架，将SAM3文本提示的语义先验同时用于条件引导和内部自注意力校准，显式调节token交互。实验表明，该方法能更可靠地保留目标位置和形状，便于标注复用。这为条件扩散模型中的语义校准提供了一种新设计。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.03335v1",
+      "source": "arxiv",
+      "title": "SPADE: An Input-Adaptive Sparse Attention Engine for Fast Video Diffusion Models Inference",
+      "abstract": "Video diffusion transformers (vDiTs) generate high quality but pay quadratic self-attention cost, making inference prohibitive at video-token scales. The challenge is input-adaptive sparsity: selecting critical Q/K/V tokens with negligible overhead and executing them for end-to-end gains. We present SPADE, a training-free sparse-attention engine of three parts: (i) vDiT-SSR, a specification defining 3D blocking candidates and formalizing dynamic masks via Summarizer/Estimator expressions; (ii) runtime scheme generation using SICS and a head-wise policy; and (iii) an executor with low-overhead index search, flash block-sparse attention, and kernel grouping. Across Hunyuan-Video and Wan 2.1/2.2 for text-to-video and image-to-video generation, SPADE raises sparsity and speed while preserving quality, accelerating attention by 2.26x-3.40x and end-to-end inference by 1.49x-1.80x. Our code is open-sourced at https://github.com/6somehow/DAC-SPADE.",
+      "authors": [
+        "Shanghao Liu",
+        "Renze Chen",
+        "Size Zheng",
+        "Yuanqiang Liu",
+        "Yun",
+        "Liang",
+        "Hailong Yang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-04T08:47:57+00:00",
+      "link": "https://arxiv.org/pdf/2608.03335v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Sparse attention engine for fast video diffusion models inference",
+      "llm_evidence_cn": "面向快速视频扩散模型推理的稀疏注意力引擎",
+      "llm_evidence": "面向快速视频扩散模型推理的稀疏注意力引擎",
+      "canonical_evidence": "面向快速视频扩散模型推理的稀疏注意力引擎",
+      "llm_tldr_en": "Presents SPADE, a training-free sparse-attention engine for video diffusion transformers that selects critical tokens and executes block-sparse attention to accelerate text-to-video and image-to-video generation.",
+      "llm_tldr_cn": "视频扩散Transformer的自注意力成本随token数量二次增长，推理开销过大。SPADE提出一种无需训练的稀疏注意力引擎，通过3D分块候选与动态掩码规范选出关键Q/K/V token，并配合低开销索引搜索和分块稀疏注意力执行。在Hunyuan-Video和Wan等模型上，该方法显著加速文本到视频与图像到视频生成，同时保持生成质量，为视频扩散模型高效推理提供了实用方案。",
+      "llm_tldr": "视频扩散Transformer的自注意力成本随token数量二次增长，推理开销过大。SPADE提出一种无需训练的稀疏注意力引擎，通过3D分块候选与动态掩码规范选出关键Q/K/V token，并配合低开销索引搜索和分块稀疏注意力执行。在Hunyuan-Video和Wan等模型上，该方法显著加速文本到视频与图像到视频生成，同时保持生成质量，为视频扩散模型高效推理提供了实用方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.07620v1",
+      "source": "arxiv",
+      "title": "FlowErase-OPD: Multi-Concept Erasure via Anchored On-Policy Distillation in Flow Matching Models",
+      "abstract": "Recent advances in flow matching models have substantially improved the quality of text-to-image generation, but have also raised increasing safety concerns due to their potential to generate harmful or undesirable content. Existing concept erasure methods for flow matching models predominantly focus on removing individual concepts, while effectively erasing multiple concepts simultaneously remains challenging. We propose FlowErase-OPD, a framework for multi-concept erasure based on on-policy distillation (OPD). Our approach first distills multiple single-concept erased models into a unified LoRA module and introduces Anchored Multi-Teacher Distillation (AMTD), which incorporates a retention teacher to mitigate the trade-off between concept erasure and preservation of generative capabilities. To further improve the coordination of multiple erasure objectives, we develop Adaptive Retention Control (ARC), which dynamically adjusts the sampling frequency and loss weight of each erasure teacher, together with the relative contribution of erasure and retention teachers throughout training. Extensive experiments on nudity, object, and artistic-style erasure demonstrate that FlowErase-OPD consistently improves the trade-off between erasure effectiveness, image quality, and semantic alignment, achieving state-of-the-art performance across diverse multi-concept erasure settings. Furthermore, the resulting models exhibit strong robustness against adversarial attacks. These results highlight the potential of on-policy distillation as a principled framework for safe and controllable generation in flow matching models.",
+      "authors": [
+        "Yi Sun",
+        "Yimin Zhou",
+        "Xinhao Zhong",
+        "Zhiqi Zhang",
+        "Junhao Li",
+        "Bin Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-07T08:58:13+00:00",
+      "link": "https://arxiv.org/pdf/2608.07620v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Multi-concept erasure in flow matching models via on-policy distillation",
+      "llm_evidence_cn": "基于在线策略蒸馏的流匹配多概念擦除",
+      "llm_evidence": "基于在线策略蒸馏的流匹配多概念擦除",
+      "canonical_evidence": "基于在线策略蒸馏的流匹配多概念擦除",
+      "llm_tldr_en": "FlowErase-OPD proposes anchored on-policy distillation with multi-teacher LoRA and a retention teacher to erase multiple concepts in flow matching text-to-image models while preserving generation quality.",
+      "llm_tldr_cn": "流匹配模型在文本到图像生成中提升了图像质量，但也带来生成有害内容的担忧，现有多概念擦除方法效果有限。提出FlowErase-OPD，基于在线策略蒸馏统一多个单概念擦除模型，并通过锚定多教师蒸馏（AMTD）加入保留教师，缓解擦除与内容保留之间的权衡。实验表明该方法可同时擦除多个有害概念并保持生成质量。该框架为流匹配生成模型的安全可控提供了可扩展的擦除方案。",
+      "llm_tldr": "流匹配模型在文本到图像生成中提升了图像质量，但也带来生成有害内容的担忧，现有多概念擦除方法效果有限。提出FlowErase-OPD，基于在线策略蒸馏统一多个单概念擦除模型，并通过锚定多教师蒸馏（AMTD）加入保留教师，缓解擦除与内容保留之间的权衡。实验表明该方法可同时擦除多个有害概念并保持生成质量。该框架为流匹配生成模型的安全可控提供了可扩展的擦除方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
