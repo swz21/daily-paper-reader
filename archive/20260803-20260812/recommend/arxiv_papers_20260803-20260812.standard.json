@@ -1,0 +1,956 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-12T02:42:22.332911+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 32,
+    "deep_cap": 6,
+    "deep_selected": 12,
+    "quick_candidates": 32,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2608.06231v1",
+      "source": "arxiv",
+      "title": "EmoWorld: A Decoupled Affective Field for Controllable Emotional Video Generation",
+      "abstract": "Emotion shapes how viewers interpret a scene, yet existing video generators entangle global atmosphere, affect-bearing semantic cues, and temporal progression within a single text condition. We present EmoWorld, a framework that decouples these factors within a frozen flow-matching video diffusion transformer (Video DiT). A one-time preparation stage extracts layer-specific affect directions and a reusable cue library from geometry-preserving neutral and emotion-edited panoramas. At inference, Visual Atmosphere Steering (VAS) injects atmosphere directions into hidden states, Semantic Affective Steering (SAS) isolates a separately scalable prompt residual for semantic cues, and Temporal Affective Steering (TAS) interpolates endpoint residual fields across denoising and video time. On Wan2.2, VAS improves target-emotion alignment by 19% while reducing a temporal-fluctuation proxy by 48%; SAS improves target-emotion alignment by 37% and increases detected affect-bearing cues by 36%; and TAS improves transition monotonicity by 15% over the strongest baseline. EmoWorld is evaluated across 27 emotion categories in text-to-video and image-to-video settings, demonstrates portability across multiple Video-DiT backbones, and supports camera-conditioned composition without updating generator parameters.",
+      "authors": [
+        "Bingyuan Wang",
+        "Baistan Zhyldyzbekov",
+        "Kunyu Feng",
+        "Zeyu Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-06T16:20:23+00:00",
+      "link": "https://arxiv.org/pdf/2608.06231v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "flow-matching video diffusion transformer for controllable emotional video generation",
+      "llm_evidence_cn": "基于流匹配视频扩散Transformer的可控情感视频生成",
+      "llm_evidence": "基于流匹配视频扩散Transformer的可控情感视频生成",
+      "canonical_evidence": "基于流匹配视频扩散Transformer的可控情感视频生成",
+      "llm_tldr_en": "EmoWorld decouples global atmosphere, semantic cues, and temporal progression in a frozen flow-matching video diffusion transformer, enabling controllable emotional video generation via separate steering mechanisms.",
+      "llm_tldr_cn": "现有视频生成器将全局氛围、情感语义线索和时间进展纠缠在单一文本条件下，难以精细控制情感。EmoWorld 在冻结的流匹配视频扩散Transformer中解耦这些因素，利用视觉氛围引导、语义情感引导和时间情感引导分别注入相应残差，实现可控情感视频生成。实验表明该方法在不修改预训练模型的情况下能够生成情感丰富且可精细调节的视频，为情感化视频创作提供了新框架。",
+      "llm_tldr": "现有视频生成器将全局氛围、情感语义线索和时间进展纠缠在单一文本条件下，难以精细控制情感。EmoWorld 在冻结的流匹配视频扩散Transformer中解耦这些因素，利用视觉氛围引导、语义情感引导和时间情感引导分别注入相应残差，实现可控情感视频生成。实验表明该方法在不修改预训练模型的情况下能够生成情感丰富且可精细调节的视频，为情感化视频创作提供了新框架。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching based generative video model",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.01692v1",
+      "source": "arxiv",
+      "title": "Beckmann Transport Models: From Autonomous Flows to One-Step Maps",
+      "abstract": "We propose an instantiation of flow matching that relies on a time-independent velocity field (an \\emph{autonomous flow}) to exactly map between two distributions, so long as the target is singular, i.e.\\ supported on a lower-dimensional data manifold. We also show that the one-step generative map associated with this flow is the unique solution of a simple conservation equation, which can be used to learn the map directly from samples. These autonomous flows and maps give a dynamical meaning to the flux constraint of Beckmann's transportation problem. Their construction provides a unifying framework that recovers, for instance, the closed-form Poisson-flow generative model and equilibrium matching with a quadratic flow-matching regression loss. We illustrate how this theory corrects inconsistencies in existing methods and demonstrate the effectiveness of the autonomous flow and the one-step map on ImageNet 256x256.",
+      "authors": [
+        "Lee Cheuk-Kit",
+        "Florentin Coeurdoux",
+        "Peter Potaptchik",
+        "Yilun Du",
+        "Michael Samuel Albergo",
+        "Eric Vanden-Eijnden"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-03T04:45:52+00:00",
+      "link": "https://arxiv.org/pdf/2608.01692v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "proposes an instantiation of flow matching using autonomous flows and one-step maps",
+      "llm_evidence_cn": "提出一种基于自主流和一步映射的流匹配实例",
+      "llm_evidence": "提出一种基于自主流和一步映射的流匹配实例",
+      "canonical_evidence": "提出一种基于自主流和一步映射的流匹配实例",
+      "llm_tldr_en": "This paper presents Beckmann Transport Models, a flow-matching instantiation using time-independent autonomous flows to exactly map between distributions, yielding one-step generative maps and unifying Poisson-flow and equilibrium matching.",
+      "llm_tldr_cn": "论文提出Beckmann输运模型，将流匹配实例化为时间无关的自主流，在目标分布支撑于低维流形时精确映射两个分布。对应的一步生成映射是简单守恒方程的唯一解，可直接从样本学习。该构造统一了Poisson流生成模型和均衡匹配，并赋予Beckmann输运问题的流约束以动力学意义。这一框架为生成建模提供了新的理论视角。",
+      "llm_tldr": "论文提出Beckmann输运模型，将流匹配实例化为时间无关的自主流，在目标分布支撑于低维流形时精确映射两个分布。对应的一步生成映射是简单守恒方程的唯一解，可直接从样本学习。该构造统一了Poisson流生成模型和均衡匹配，并赋予Beckmann输运问题的流约束以动力学意义。这一框架为生成建模提供了新的理论视角。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.02504v1",
+      "source": "arxiv",
+      "title": "Token Radius Attention for Efficient Video Generation",
+      "abstract": "Video Diffusion Transformers (VDiTs) enable high-fidelity generation but incur quadratic cost from dense 3D self-attention. Existing head- and block-level sparse methods share computation budgets across queries, overlooking token-specific attention demand. We observe that retained density varies across queries yet correlates log-linearly with attention entropy, while dominant interactions form query-centered neighborhoods with token-dependent radii. Based on these findings, we propose Token Radius Attention (TRA), a training-free framework that maps query entropy to an analytic token budget and converts it into a temporally decayed radius without explicit key ranking. Fused entropy extraction, warm-up reuse, and block-sparse mask construction further reduce overhead. Across seven Wan2.1, Wan2.2, and HunyuanVideo T2V/I2V configurations, TRA retains only 9-19% of attention interactions and achieves 1.56x-2.05x speedup with competitive generation quality. Code is available at https://github.com/IF-LAB-PKU/Token-Radius-Attention.",
+      "authors": [
+        "Jiayu Chen",
+        "Zhikun Jiang",
+        "Maoliang Li",
+        "Jiayi Luo",
+        "Jiawei Yang",
+        "Zihao Zheng",
+        "Hengyi Zhang",
+        "Guojie Luo",
+        "Xiang Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-03T17:05:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.02504v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Attention mechanism for video diffusion transformers; directly addresses video generation and diffusion video synthesis.",
+      "llm_evidence_cn": "针对视频扩散Transformer的注意力机制，直接涉及视频生成与扩散视频合成。",
+      "llm_evidence": "针对视频扩散Transformer的注意力机制，直接涉及视频生成与扩散视频合成。",
+      "canonical_evidence": "针对视频扩散Transformer的注意力机制，直接涉及视频生成与扩散视频合成。",
+      "llm_tldr_en": "Proposes a training-free Token Radius Attention (TRA) framework that reduces the quadratic cost of dense 3D self-attention in Video Diffusion Transformers by mapping query entropy to analytic token budgets with temporally decayed radii, enabling efficient high-fidelity video generation.",
+      "llm_tldr_cn": "视频扩散Transformer（VDiT）虽能生成高保真视频，但稠密3D自注意力的平方复杂度代价高昂。该论文提出Token半径注意力（TRA），一种免训练框架，根据查询熵映射到解析令牌预算，并转换为随时间衰减的半径，无需显式键排序。TRA融合熵提取、预热复用与块稀疏掩码，大幅减少视频生成开销，在不牺牲质量的前提下提升效率。",
+      "llm_tldr": "视频扩散Transformer（VDiT）虽能生成高保真视频，但稠密3D自注意力的平方复杂度代价高昂。该论文提出Token半径注意力（TRA），一种免训练框架，根据查询熵映射到解析令牌预算，并转换为随时间衰减的半径，无需显式键排序。TRA融合熵提取、预热复用与块稀疏掩码，大幅减少视频生成开销，在不牺牲质量的前提下提升效率。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.03046v1",
+      "source": "arxiv",
+      "title": "CAPE-T2V: Captioner-Anchored Prompt Enhancement toward Two-Sided Conditioning Alignment in Text-to-Video Generation",
+      "abstract": "Text-to-video (T2V) diffusion transformers (DiTs) are trained with detailed video captions, whereas inference often relies on user prompts rewritten by a prompt enhancer (PE). Prior work has improved generation by optimizing the PE, the DiT, or both; some methods have also sought to narrow the training-inference mismatch through shared schemas. Yet even within a shared schema, inference-time PE outputs and DiT training captions may still differ in detail selection, information organization, descriptive granularity, and phrasing. We refer to this residual mismatch as the PE-Caption gap and introduce CAPE-T2V, a two-step Captioner-Anchored Prompt Enhancement framework toward two-sided conditioning alignment in T2V generation. First, CAPE-T2V constructs three types of PE training examples, pairing captioner-generated targets with concise source captions, detailed source captions, or pseudo user prompts derived from those targets. It then fine-tunes the PE to map each input to its paired target. Second, CAPE-T2V fine-tunes the DiT on video-derived captions rewritten by the Anchored PE; the same PE rewrites user prompts at inference. Relative to a baseline using the same caption schema, CAPE-T2V achieves higher aggregate scores on StoryEval, VBench-2.0, and T2V-CompBench across Wan2.2 and LTX-2.3. Further, CAPE-T2V exhibits a smaller PE-Caption gap than the baseline: its DiT fine-tuning captions are closer in distribution to inference-time PE outputs, as measured by squared maximum mean discrepancy in a fixed embedding space. Overall, these results support CAPE-T2V as an effective approach to mitigating the PE-Caption gap. The project is available at https://github.com/yizzz927/CAPE-T2V.",
+      "authors": [
+        "Yizhuo Jia",
+        "Jingyun Hua",
+        "Yuanxing Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-04T02:55:10+00:00",
+      "link": "https://arxiv.org/pdf/2608.03046v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "text-to-video diffusion transformers and prompt enhancement",
+      "llm_evidence_cn": "文本到视频扩散Transformer与提示增强",
+      "llm_evidence": "文本到视频扩散Transformer与提示增强",
+      "canonical_evidence": "文本到视频扩散Transformer与提示增强",
+      "llm_tldr_en": "CAPE-T2V addresses the PE-Caption gap in text-to-video diffusion by anchoring prompt enhancement to the captioner, aligning inference-time prompts with training captions for better generation.",
+      "llm_tldr_cn": "文本到视频扩散Transformer的训练依赖详细字幕，而推理时用户提示常由提示增强器改写，两者之间仍存在描述粒度与组织方式的残余差异。CAPE-T2V 提出两步字幕锚定提示增强框架，以字幕器为锚点对齐训练字幕与推理提示的双向条件分布。实验证明该框架显著提升生成视频与文本条件的一致性，有效缩小训练-推理差距，为T2V条件对齐提供了新思路。",
+      "llm_tldr": "文本到视频扩散Transformer的训练依赖详细字幕，而推理时用户提示常由提示增强器改写，两者之间仍存在描述粒度与组织方式的残余差异。CAPE-T2V 提出两步字幕锚定提示增强框架，以字幕器为锚点对齐训练字幕与推理提示的双向条件分布。实验证明该框架显著提升生成视频与文本条件的一致性，有效缩小训练-推理差距，为T2V条件对齐提供了新思路。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.03974v1",
+      "source": "arxiv",
+      "title": "JoyAI-Video-Edit: Real-Time Open-Ended Video Editing with Autoregressive Diffusion",
+      "abstract": "Real-time video editing requires low-latency causal generation with bounded computational resources while preserving source fidelity and long-term temporal consistency. We present JoyAI-Video-Edit, a 16B-parameter autoregressive diffusion framework for real-time, open-ended video editing without access to future frames or a predefined video duration. Our method combines chunk-wise autoregressive adaptation, Source-Anchored Distribution Matching Distillation (SA-DMD), and Long-Horizon Autoregressive Distillation to reduce train--inference mismatch, preserve source fidelity during two-step generation, and mitigate accumulated temporal drift. Extensive automatic and human evaluations show that JoyAI-Video-Edit substantially outperforms existing streaming editors and remains competitive with strong offline systems on both short and long videos. The complete system achieves end-to-end 720p video editing at approximately 30 FPS on a single Nvidia B200 GPU. Code is available at https://github.com/jd-opensource/JoyAI-Video-Edit.",
+      "authors": [
+        "Yicheng Xiao",
+        "Wenxun Dai",
+        "Xinran Qin",
+        "Lin Song",
+        "Maoquan Zhang",
+        "Hang Xu",
+        "Yukang Chen",
+        "Yitong Li",
+        "Guohui Zhang",
+        "Yuan Zhang",
+        "Xuying Zhang",
+        "Tommy Zhang",
+        "Jianlong Yuan",
+        "Peihao Li",
+        "Shuai Lu",
+        "Siming Fu",
+        "Chuyang Zhao",
+        "Xin Han",
+        "Jie Huang",
+        "Wenbo Li",
+        "Guoqing Ma",
+        "Wei Huang",
+        "Xiaojuan Qi",
+        "Haoyang Huang",
+        "Nan Duan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-04T17:40:48+00:00",
+      "link": "https://arxiv.org/pdf/2608.03974v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "autoregressive diffusion framework for real-time open-ended video editing and synthesis",
+      "llm_evidence_cn": "面向实时开放式视频编辑与合成的自回归扩散框架",
+      "llm_evidence": "面向实时开放式视频编辑与合成的自回归扩散框架",
+      "canonical_evidence": "面向实时开放式视频编辑与合成的自回归扩散框架",
+      "llm_tldr_en": "Presents JoyAI-Video-Edit, a 16B autoregressive diffusion framework for real-time open-ended video editing, combining chunk-wise adaptation, source-anchored distribution matching distillation, and long-horizon autoregressive distillation.",
+      "llm_tldr_cn": "针对实时视频编辑需要低延迟因果生成并保持源保真度和时序一致性的挑战，提出JoyAI-Video-Edit。这是一个16B参数的自回归扩散框架，可在无法看到未来帧且没有预设时长的情况下进行开放式编辑。方法结合分块自回归适配、源锚定分布匹配蒸馏和长程自回归蒸馏，来降低训练推理不一致、保持源保真并缓解时序漂移。自动与人工评测显示其显著优于现有方法。",
+      "llm_tldr": "针对实时视频编辑需要低延迟因果生成并保持源保真度和时序一致性的挑战，提出JoyAI-Video-Edit。这是一个16B参数的自回归扩散框架，可在无法看到未来帧且没有预设时长的情况下进行开放式编辑。方法结合分块自回归适配、源锚定分布匹配蒸馏和长程自回归蒸馏，来降低训练推理不一致、保持源保真并缓解时序漂移。自动与人工评测显示其显著优于现有方法。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.04531v1",
+      "source": "arxiv",
+      "title": "Discretization and Statistical Consistency of Functional Flow Matching",
+      "abstract": "Functional flow matching is posed on distributions of functions but implemented from finitely many coefficients or point values. Under scattered or adaptive refinement, the resulting conditioning sigma-algebras need not be nested, so martingale convergence does not justify the sensor limit. We prove strong $L^2$ convergence of finite conditional velocity targets for every strongly consistent sequence of finite-rank reconstructions, with quantitative bounds for orthogonal projections and a point-sensor extension through a regularity space. For learned flows, coupling directly to a population superposition path yields an end-to-end Wasserstein bound without assuming uniqueness of the population finite-dimensional ODE. We verify sensor-independent constants for a normalized quadrature neural operator, including globally Lipschitz activations through an explicit magnitude recurrence. A noncommuting trace-class Gaussian example gives boundary multiplier $0$ under projected restriction and $0.72$ under exact conditioning. A spatial regularity--cubature certificate closes the operator-realization term, a Bernstein argument gives a $\\widetilde{O}(n^{-1})$ excess-risk term for fixed model dimension and envelopes, and an exactly realizable clipped Gaussian scaling specialization yields an explicit end-to-end rate.",
+      "authors": [
+        "Lennon J. Shikhman"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "math.PR",
+        "stat.ML"
+      ],
+      "published": "2026-08-05T07:05:47+00:00",
+      "link": "https://arxiv.org/pdf/2608.04531v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "core theoretical analysis of functional flow matching discretization and consistency",
+      "llm_evidence_cn": "对函数流匹配的离散化与统计一致性进行核心理论分析",
+      "llm_evidence": "对函数流匹配的离散化与统计一致性进行核心理论分析",
+      "canonical_evidence": "对函数流匹配的离散化与统计一致性进行核心理论分析",
+      "llm_tldr_en": "Proves strong L2 convergence of finite conditional velocity targets for functional flow matching under scattered or adaptive refinement, with quantitative bounds and Wasserstein end-to-end guarantees for learned flows.",
+      "llm_tldr_cn": "论文研究在函数分布上定义的流匹配（functional flow matching）从有限系数实现时的一致性。针对散乱或自适应细化下条件σ代数不嵌套的问题，证明了有限条件速度目标对强一致有限秩重建的强L2收敛。还给出了正交投影的定量界和点传感器扩展，并为学习流建立了端到端Wasserstein界。这为函数型流匹配的离散化提供了理论保证。",
+      "llm_tldr": "论文研究在函数分布上定义的流匹配（functional flow matching）从有限系数实现时的一致性。针对散乱或自适应细化下条件σ代数不嵌套的问题，证明了有限条件速度目标对强一致有限秩重建的强L2收敛。还给出了正交投影的定量界和点传感器扩展，并为学习流建立了端到端Wasserstein界。这为函数型流匹配的离散化提供了理论保证。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.05237v1",
+      "source": "arxiv",
+      "title": "In-Context Forcing: Uncovering Context Effects in Autoregressive Video Diffusion",
+      "abstract": "Current few-step autoregressive video diffusion models depend on previous fully denoised clean frames as context for all denoising steps of the current frame. However, these clean frames leak excessive local details, which causes the model to take shortcuts, resulting in compromised temporal semantics and dynamics. Inspired by the perspective of diffusion as masking, we explore the impact of noisy contexts on few-step autoregressive generation. Yet, simply applying contexts with the same noise levels provides insufficient guidance, leading to poor temporal consistency. To resolve this dilemma, we introduce In-Context Forcing, a progressive autoregressive paradigm that utilizes contexts with decreasing noise levels. By applying less masking to distant frames and more masking to adjacent ones, this approach provides adaptive guidance, effectively ensuring both robust temporal consistency and high inter-frame dynamics. Furthermore, by decoupling the strict dependence on previous clean frames, our paradigm enables cross-frame parallel denoising, achieving substantial inference acceleration without sacrificing performance. Extensive experiments on VBench demonstrate that our method significantly outperforms state-of-the-art approaches in both visual fidelity and inference speed.",
+      "authors": [
+        "Lingxiao Yang",
+        "Liu Liu",
+        "Moran Li",
+        "Han Feng",
+        "Wenjian Cao",
+        "Jiangning Zhang",
+        "Ye Shi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-05T13:54:31+00:00",
+      "link": "https://arxiv.org/pdf/2608.05237v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Explores context noise levels in autoregressive video diffusion models, directly addressing video generation with diffusion.",
+      "llm_evidence_cn": "研究自回归视频扩散模型中的上下文噪声级别，直接涉及扩散视频生成。",
+      "llm_evidence": "研究自回归视频扩散模型中的上下文噪声级别，直接涉及扩散视频生成。",
+      "canonical_evidence": "研究自回归视频扩散模型中的上下文噪声级别，直接涉及扩散视频生成。",
+      "llm_tldr_en": "In-Context Forcing is a progressive autoregressive paradigm for video diffusion that uses contexts with decreasing noise levels instead of clean frames for conditioning. It prevents shortcut learning and improves temporal consistency in few-step autoregressive video generation.",
+      "llm_tldr_cn": "现有少步自回归视频扩散模型依赖上一帧的干净帧作为上下文，导致模型走捷径，损害时序语义和动态性。该论文提出In-Context Forcing，渐进式地使用噪声不断降低的上下文，在提供足够指导的同时避免信息泄漏。实验表明该方法改善了少步自回归生成的时序一致性，为视频扩散模型的条件设计提供了新视角。",
+      "llm_tldr": "现有少步自回归视频扩散模型依赖上一帧的干净帧作为上下文，导致模型走捷径，损害时序语义和动态性。该论文提出In-Context Forcing，渐进式地使用噪声不断降低的上下文，在提供足够指导的同时避免信息泄漏。实验表明该方法改善了少步自回归生成的时序一致性，为视频扩散模型的条件设计提供了新视角。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "papers on diffusion models applied to video generation",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.05776v1",
+      "source": "arxiv",
+      "title": "Vorch-Director: Interactive World Story Model via Noise-Aware Error Rectification",
+      "abstract": "Autoregressive continuation provides a natural path toward minute-scale audio-visual generation by repeatedly extending a short-window generator conditioned on previously generated video and audio. However, models are trained on clean ground-truth histories, while inference relies on their own generated histories, where accumulated errors cause identity drift, over-smoothing, and audio-visual desynchronization. Recent methods reduce this mismatch by reusing prediction residuals as synthetic corruption, but we observe that the effectiveness of residual correction critically depends on the flow-matching noise level at which residuals are produced. We propose Vorch-Director, a noise-level-aware residual correction strategy that associates each residual with its originating noise level and injects residuals from matched noise regimes during training. By aligning injected errors with the denoising process, Vorch-Director produces more realistic autoregressive histories while retaining efficient teacher-forcing training. Built on the audio-visual LTX-2 diffusion transformer, Vorch-Director further introduces task embeddings to distinguish historical video, reference images, and target video, enabling unified conditioning for long-horizon generation. Together with a clean conditioning sink and mixed-task training, Vorch-Director supports multi-shot, multi-subject, reference-guided audio-visual long-video generation. We evaluate Vorch-Director on ST-Bench and introduce a new long-horizon audio-visual benchmark with metrics for quality drift and long-range consistency. Extensive experiments demonstrate improved stability and audio-visual fidelity over strong baselines.",
+      "authors": [
+        "Lisai Zhang",
+        "Yidi Wu",
+        "Qi Liu",
+        "Xin Ma",
+        "Yang Ding",
+        "Gang Yue",
+        "Siqian Yang",
+        "Jingyuan Chen",
+        "Lin Ma",
+        "Yaohui Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-06T09:09:49+00:00",
+      "link": "https://arxiv.org/pdf/2608.05776v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Uses flow-matching noise levels in residual correction for audio-visual (video) generation.",
+      "llm_evidence_cn": "在音视频生成中利用流匹配噪声级别进行残差修正，直接相关。",
+      "llm_evidence": "在音视频生成中利用流匹配噪声级别进行残差修正，直接相关。",
+      "canonical_evidence": "在音视频生成中利用流匹配噪声级别进行残差修正，直接相关。",
+      "llm_tldr_en": "Vorch-Director addresses accumulated errors in autoregressive audio-visual generation by proposing a noise-level-aware residual correction strategy. It observes that residual correction effectiveness depends on flow-matching noise level, and accordingly rectifies errors to reduce drift and desynchronization, improving minute-scale video generation.",
+      "llm_tldr_cn": "在自回归续写生成分钟级音视频时，模型训练于干净历史而推理依赖自身生成历史，导致误差积累、身份漂移和音画不同步。该论文提出Vorch-Director，一种噪声级感知的残差校正策略，根据流匹配噪声级来调整残差修正的效力。该方法能有效抑制累积误差，改善长视频生成中的一致性与同步性，为交互式世界故事模型提供了实用方案。",
+      "llm_tldr": "在自回归续写生成分钟级音视频时，模型训练于干净历史而推理依赖自身生成历史，导致误差积累、身份漂移和音画不同步。该论文提出Vorch-Director，一种噪声级感知的残差校正策略，根据流匹配噪声级来调整残差修正的效力。该方法能有效抑制累积误差，改善长视频生成中的一致性与同步性，为交互式世界故事模型提供了实用方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching based generative video model",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.05976v1",
+      "source": "arxiv",
+      "title": "Diff-VF: Training-free High-quality Long Video Generation via Diffusion Model",
+      "abstract": "Recently, diffusion models have made great progress in video generation. However, most existing video diffusion models are trained with short videos, and degrade when extrapolated to long videos, struggling to maintain long-range temporal coherence while retaining diverse motions. To generate consistent, high-quality and dynamic long videos, we propose Diff-VF, a training-free, plug-and-play and model-agnostic framework that converts existing short-video diffusion backbones into long-video generators without modifying or fine-tuning the base model. Diff-VF couples three complementary strategies: Hybrid Noise Initialization (HNI) to constrain global semantics, Weighted Window Sampling (WWS) to remove inter-window discontinuities, and Temporal Extended Sampling (TES) to establish long-range dependencies with a timestep-varying fusion. We further extend Diff-VF to long-video enhancement via Skip Residual Guidance that balances fidelity and realism through timestep-dependent guidance. VBench-Long evaluation results show that Diff-VF achieves a more favorable balance between temporal coherence and motion diversity than base models and recent training-free long video generation baselines, including FreeNoise, FreeLong, and RIFLEx, while maintaining competitive frame-wise quality. Experiments on two base models demonstrate the applicability to video diffusion models with different spatial-temporal modeling strategies. Extensive ablations validate the contribution of each component and hyperparameters.",
+      "authors": [
+        "Haoning Yang",
+        "Xinyuan Chen",
+        "Yaohui Wang",
+        "Guo Lu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-06T12:53:46+00:00",
+      "link": "https://arxiv.org/pdf/2608.05976v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "training-free framework converting short-video diffusion backbones into long-video generators",
+      "llm_evidence_cn": "将短视频扩散模型转化为长视频生成器的无训练框架",
+      "llm_evidence": "将短视频扩散模型转化为长视频生成器的无训练框架",
+      "canonical_evidence": "将短视频扩散模型转化为长视频生成器的无训练框架",
+      "llm_tldr_en": "Diff-VF is a training-free, plug-and-play framework that converts short-video diffusion backbones into long-video generators, coupling hybrid noise initialization, weighted window sampling, and temporal extension.",
+      "llm_tldr_cn": "现有视频扩散模型多在短视频上训练，直接生成长时间视频会产生时间一致性差、运动受限等问题。Diff-VF提出一个无需训练、即插即用的通用框架，通过混合噪声初始化约束全局语义、加权窗口采样消除窗口间不连续、时间扩展保留多样化运动，将现有短视频扩散模型转换为长视频生成器。无需修改或微调基础模型即可获得高质量长视频，为长视频生成提供了高效的解决方案。",
+      "llm_tldr": "现有视频扩散模型多在短视频上训练，直接生成长时间视频会产生时间一致性差、运动受限等问题。Diff-VF提出一个无需训练、即插即用的通用框架，通过混合噪声初始化约束全局语义、加权窗口采样消除窗口间不连续、时间扩展保留多样化运动，将现有短视频扩散模型转换为长视频生成器。无需修改或微调基础模型即可获得高质量长视频，为长视频生成提供了高效的解决方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.07463v1",
+      "source": "arxiv",
+      "title": "MirrorWorld: Taming Video Diffusion Models for Mirror Reflection Generation",
+      "abstract": "Recent advances in video diffusion models (VDMs) have enabled high-fidelity video synthesis. However, generating mirror reflections remains challenging because the content within a mirror must remain consistent with the surrounding scene. Existing VDMs are not specifically designed to model scene-to-mirror relationships, which can lead to reflections with incorrect content or inconsistent spatial arrangements. We observe that mirror reflection generation involves two complementary challenges: determining what scene content should be reflected and how the reflected content should be spatially arranged within the mirror region. Motivated by this observation, we propose MirrorWorld, a reflection-aware video inpainting framework that models scene-to-mirror relationships during generation. Specifically, we introduce Semantic Relation Distillation (SRD), which transfers relational information from a frozen visual foundation model to encourage semantic associations between visible scene content and mirror regions. We further propose Geometric Transformation Alignment (GTA), which learns a transformation that guides the spatial arrangement of reflected content. The two components play complementary roles, with SRD modeling what should be reflected and GTA modeling how it should be arranged. To facilitate research on this problem, we construct a benchmark for video mirror reflection generation by repurposing four existing video mirror datasets into a unified reflection reconstruction task. Experimental results show that MirrorWorld achieves improved reflection reconstruction quality over representative image-based reflection generation methods and strong video inpainting baselines.",
+      "authors": [
+        "Youjun Zhao",
+        "Alex Warren",
+        "Gary K. L. Tam",
+        "Rynson W. H. Lau"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-08-07T17:58:10+00:00",
+      "link": "https://arxiv.org/pdf/2608.07463v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Video diffusion models for mirror reflection generation",
+      "llm_evidence_cn": "面向镜像反射生成的视频扩散模型",
+      "llm_evidence": "面向镜像反射生成的视频扩散模型",
+      "canonical_evidence": "面向镜像反射生成的视频扩散模型",
+      "llm_tldr_en": "MirrorWorld uses video diffusion models for reflection-aware video inpainting, addressing scene-to-mirror consistency for high-fidelity mirror reflection generation in videos.",
+      "llm_tldr_cn": "现有视频扩散模型难以生成与周围场景一致的镜像反射内容。为此，论文提出 MirrorWorld，一种反射感知的视频修复框架，显式建模场景到镜面内容的对应关系与空间布局。实验表明该方法能显著提升反射内容的正确性和空间一致性，为视频扩散模型在物理特效生成中的进一步应用提供了新思路。",
+      "llm_tldr": "现有视频扩散模型难以生成与周围场景一致的镜像反射内容。为此，论文提出 MirrorWorld，一种反射感知的视频修复框架，显式建模场景到镜面内容的对应关系与空间布局。实验表明该方法能显著提升反射内容的正确性和空间一致性，为视频扩散模型在物理特效生成中的进一步应用提供了新思路。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.08820v1",
+      "source": "arxiv",
+      "title": "LogiShot: Logically Coherent Cross-Shot Video Generation",
+      "abstract": "Generating cross-shot videos that are logically connected is essential for content creation. Currently, most cross-shot video-generation workflows, such as short-drama production, still rely on isolated textual scripts or explicit reference images to specify the generated content. Consequently, when user instructions are underspecified or ambiguous, a generated clip may appear visually plausible on its own but fail to align with the overall narrative, leading to disjointed content. We argue that achieving cross-shot logical coherence in video generation requires establishing logical connections across shots and maintaining visual consistency. To this end, we propose LogiShot, which incorporates information through two complementary paths: 1) LogiShot jointly encodes the context video and other conditioning signals, yielding dense multimodal cues that provide visual-semantic evidence for cross-shot generation; 2) the model maintains a visual memory of the context video throughout generation to preserve visual consistency across shots. Additionally, we construct a dataset with 110K samples and a dedicated benchmark for evaluating cross-shot logical coherence. Experiments demonstrate that LogiShot consistently outperforms existing baselines in terms of logical coherence across multiple shots. Model and data will be made publicly available.",
+      "authors": [
+        "Shuai Guo",
+        "Yuhang Yang",
+        "Zeyu Zhang",
+        "Pengfei Yu",
+        "Wei Zhai",
+        "Yang Cao",
+        "Zheng-Jun Zha"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T17:11:57+00:00",
+      "link": "https://arxiv.org/pdf/2608.08820v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "cross-shot video generation that is logically connected",
+      "llm_evidence_cn": "跨镜头视频生成，保证镜头间的逻辑连贯",
+      "llm_evidence": "跨镜头视频生成，保证镜头间的逻辑连贯",
+      "canonical_evidence": "跨镜头视频生成，保证镜头间的逻辑连贯",
+      "llm_tldr_en": "LogiShot targets logically coherent cross-shot video generation, jointly encoding information through two complementary paths to establish logical connections and visual consistency across shots.",
+      "llm_tldr_cn": "跨镜头视频生成对内容创作至关重要，但现有工作常依赖孤立文本或参考图，导致指令不明确时镜头间内容割裂。LogiShot提出在生成中通过两条互补路径联合编码跨镜头信息，同时建立镜头逻辑连接与视觉一致性，从而解决逻辑不连贯问题。该方法为短剧等跨镜头叙事场景的视频生成提供了有效的解决方案。",
+      "llm_tldr": "跨镜头视频生成对内容创作至关重要，但现有工作常依赖孤立文本或参考图，导致指令不明确时镜头间内容割裂。LogiShot提出在生成中通过两条互补路径联合编码跨镜头信息，同时建立镜头逻辑连接与视觉一致性，从而解决逻辑不连贯问题。该方法为短剧等跨镜头叙事场景的视频生成提供了有效的解决方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "video generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.09637v1",
+      "source": "arxiv",
+      "title": "DUET: A Diversity-Quality Duet of Distillation Experts for Two-Step Video Generation",
+      "abstract": "Diffusion models have enabled high-quality video generation in recent years, but the high cost of iterative sampling hinders their practical deployment. Few-step distillation alleviates this cost, yet exposes a quality--diversity trade-off between its two dominant paradigms: trajectory-level distillation (e.g., sCM) favors diversity, whereas distribution-level distillation (e.g., DMD) favors quality. Targeting extreme two-step video generation, we introduce DUET, which reconciles the two paradigms through a noise-level duet of experts: an sCM expert takes the high-noise step to lay out diverse structure, and a DMD expert takes the low-noise step to refine appearance detail. Since the two experts are trained independently with their native objectives, DUET sidesteps the optimization difficulties of loss-level combinations and delivers quality and diversity jointly rather than trading one for the other. We further identify the relay interface and the high-noise stage as the remaining bottlenecks, and address them with RL-guided expert adaptation, yielding DUET+. With the Wan2.1-T2V-1.3B backbone, DUET lifts the two-step quality of sCM close to the level of DMD while retaining nearly all of its structural diversity---about twice that of DMD---and DUET+ further improves overall quality while preserving this diversity advantage. Together, these results establish noise-level expert specialization as a simple, effective paradigm for reconciling diversity and quality in two-step video generation.",
+      "authors": [
+        "Zian Li",
+        "Litong Gong",
+        "Borui Liao",
+        "Pengfei Liu",
+        "Xinyu Wang",
+        "Xinyuan Wei",
+        "Yifan Gao",
+        "Tiezheng Ge",
+        "Muhan Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-10T14:17:52+00:00",
+      "link": "https://arxiv.org/pdf/2608.09637v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "diffusion distillation experts for two-step video generation",
+      "llm_evidence_cn": "面向两步视频生成的扩散蒸馏专家组合",
+      "llm_evidence": "面向两步视频生成的扩散蒸馏专家组合",
+      "canonical_evidence": "面向两步视频生成的扩散蒸馏专家组合",
+      "llm_tldr_en": "DUET combines trajectory-level and distribution-level distillation experts for extreme two-step video generation, balancing diversity and quality by assigning high-noise steps to an sCM expert and low-noise steps to a DMD expert.",
+      "llm_tldr_cn": "针对扩散视频生成迭代采样成本高的问题，提出DUET，将两类蒸馏范式（轨迹级sCM与分布级DMD）按噪声级分工：高噪声步由sCM专家负责以保持结构多样性，低噪声步由DMD专家负责以细化外观质量。由于两个专家独立训练且各自保持原生优势，DUET在极少数步数下实现了多样性-质量的双重提升，为视频生成的实际部署提供了高效蒸馏方案。",
+      "llm_tldr": "针对扩散视频生成迭代采样成本高的问题，提出DUET，将两类蒸馏范式（轨迹级sCM与分布级DMD）按噪声级分工：高噪声步由sCM专家负责以保持结构多样性，低噪声步由DMD专家负责以细化外观质量。由于两个专家独立训练且各自保持原生优势，DUET在极少数步数下实现了多样性-质量的双重提升，为视频生成的实际部署提供了高效蒸馏方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.01771v1",
+      "source": "arxiv",
+      "title": "LiveLight: Real-time Streaming Video Relighting with Interactive Control",
+      "abstract": "We present LiveLight, the first diffusion-based framework for real-time streaming video relighting with interactive 3D lighting control. Achieving this is non-trivial, as it requires overcoming three critical challenges: effectively injecting dynamic 3D lighting into a diffusion model, maintaining high-fidelity generation under an extremely low NFE (Number of Function Evaluations) budget for real-time speed, and facilitating continuous streaming for interactive control. To address these pain points, we propose three key designs. First, for accurate lighting injection, we propose a lightweight adapter that feeds Multi-Plane Light Irradiance (MPLI) conditions-depth-aware irradiance maps encoding 3D lighting geometry-directly into the diffusion backbone. Second, to prevent rendering quality degradation at low NFEs towards real-time distillation, we introduce a geometry-guided feedback branch. This training-time constraint leverages a frozen geometry estimator to enforce depth- and normal-consistent relighting, ensuring geometrically plausible shading without adding inference overhead. Finally, to enable streaming interaction, we develop a progressive rolling-window strategy that maintains a denoising ladder of latent chunks at varying noise levels. By propagating intermediate states, this strategy guarantees temporal coherence and supports arbitrarily long video relighting with per-frame reference refresh. Extensive experiments on real-world and synthetic benchmarks demonstrate that LiveLight achieves state-of-the-art relighting quality while running at real-time speed, significantly outperforming offline baselines in temporal stability, lighting controllability, and user preference. To foster real-time interactive relighting research, we will publicly release our models, training data, and synthetic data generator.",
+      "authors": [
+        "Yue Ma",
+        "Jiangming Wang",
+        "Yucheng Wang",
+        "Xilai Wang",
+        "Zhiyuan Li",
+        "Xinyu Wang",
+        "Hongyu Liu",
+        "Ruofan Liang",
+        "Songchun Zhang",
+        "Yuxuan Xue",
+        "Qifeng Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-03T06:45:00+00:00",
+      "link": "https://arxiv.org/pdf/2608.01771v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "diffusion-based real-time streaming video relighting with interactive 3D lighting control",
+      "llm_evidence_cn": "基于扩散的实时视频重打光，支持交互式三维光照控制",
+      "llm_evidence": "基于扩散的实时视频重打光，支持交互式三维光照控制",
+      "canonical_evidence": "基于扩散的实时视频重打光，支持交互式三维光照控制",
+      "llm_tldr_en": "LiveLight is a diffusion-based framework for real-time streaming video relighting with interactive 3D light control, using MPLI lighting injection and low-NFE generation for high-fidelity continuous relighting.",
+      "llm_tldr_cn": "面向实时流式视频重打光任务，LiveLight结合扩散模型实现交互式三维光照控制。它通过轻量适配器将多平面光辐照度（MPLI）条件注入扩散主干，在极低函数评估次数下保持高保真生成，并支持连续流式处理。三个关键设计针对光照注入、低NFE约束和流式交互挑战。实验表明该方法能够在实时速度下生成高质量重打光视频。",
+      "llm_tldr": "面向实时流式视频重打光任务，LiveLight结合扩散模型实现交互式三维光照控制。它通过轻量适配器将多平面光辐照度（MPLI）条件注入扩散主干，在极低函数评估次数下保持高保真生成，并支持连续流式处理。三个关键设计针对光照注入、低NFE约束和流式交互挑战。实验表明该方法能够在实时速度下生成高质量重打光视频。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "papers on diffusion models applied to video generation",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.03422v1",
+      "source": "arxiv",
+      "title": "HyperbolicDiffusion: Sharp & Scalable Tiled Generation on the Hyperbolic Plane",
+      "abstract": "Planar tiled diffusion denoises overlapping windows of one rectangular canvas. The hyperbolic plane has no such canvas, and its area grows exponentially with radius. We introduce HyperbolicDiffusion, a training-free method for generating finite visual fields directly on the hyperbolic plane H2. Our Hyperbolic Blooming Cover reduces window placement to a compact dynamic program that runs in seconds while providing strong theoretical guarantees. Permanent surface IDs form a shared latent canvas: a standard diffusion model denoises local windows, whose predictions are fused back onto H2. Because curvature causes residual disagreement and blur at multi-window junctions, a geometry-derived second stage re-noises and repairs precisely those regions. The resulting fields are sharp, reprojectable, and consistent across viewpoints, providing a prompt-driven generative counterpart to Escher's Circle Limit series.",
+      "authors": [
+        "Hugo Caselles-Dupré"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-04T10:13:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.03422v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "training-free diffusion method for generating finite visual fields on the hyperbolic plane",
+      "llm_evidence_cn": "提出无需训练的双曲平面扩散生成方法，扩展扩散模型生成域",
+      "llm_evidence": "提出无需训练的双曲平面扩散生成方法，扩展扩散模型生成域",
+      "canonical_evidence": "提出无需训练的双曲平面扩散生成方法，扩展扩散模型生成域",
+      "llm_tldr_en": "Introduces HyperbolicDiffusion, a training-free method for tiled diffusion generation on the hyperbolic plane, with a Blooming Cover dynamic program and geometry-based repair stage for multi-window consistency.",
+      "llm_tldr_cn": "针对双曲平面面积随半径指数增长且无矩形画布的问题，提出HyperbolicDiffusion，一种无需训练的扩散生成方法。通过双曲Blooming Cover把窗口放置转化为动态规划，并用永久表面ID构成共享潜画布，融合局部去噪结果。几何推导的第二阶段会对多窗口接缝处重新加噪修复，从而获得清晰可扩展的生成结果。",
+      "llm_tldr": "针对双曲平面面积随半径指数增长且无矩形画布的问题，提出HyperbolicDiffusion，一种无需训练的扩散生成方法。通过双曲Blooming Cover把窗口放置转化为动态规划，并用永久表面ID构成共享潜画布，融合局部去噪结果。几何推导的第二阶段会对多窗口接缝处重新加噪修复，从而获得清晰可扩展的生成结果。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.06008v1",
+      "source": "arxiv",
+      "title": "Adaptive-WAM: Quality-Guided Early-Exit Planning from Intermediate Video-Diffusion Features",
+      "abstract": "Large video diffusion models provide rich spatiotemporal priors for autonomous driving, but existing world-action models often inherit the cost of iterative future-video generation even though deployment only requires an ego trajectory. We ask a more basic question: how much of a video diffusion model must be executed to make a reliable driving decision? Through a controlled study of video denoising timesteps and Diffusion Transformer (DiT) depth, we find that planning performance is largely insensitive to the tested video-noise levels, whereas strong trajectories can already be decoded from intermediate layers. Based on this observation, we introduce Adaptive-WAM, a quality-aware multi-exit planner built on a Wan2.2-5B backbone. Trajectory diffusion heads are attached to selected DiT blocks, and a lightweight trajectory-quality scorer terminates inference once the best trajectory decoded so far satisfies a quality threshold; otherwise, computation continues from the cached hidden state to a deeper exit. The deployed planner therefore avoids the iterative classifier-free denoising loop and VAE decoding required for future-video synthesis, while dynamically allocating backbone depth according to trajectory quality. On NAVSIM, the adaptive single-trajectory planner achieves 90.8 PDMS; a separate fixed-exit variant reaches 92.6 PDMS with 64 proposals. It further obtains 89.9 EPDMS on NAVSIM v2, yielding the best reported results among the compared front-view video world-model planners. Without target-domain fine-tuning, Adaptive-WAM transfers to nuScenes with 0.88 m average L2 error and a 0.08\\% collision rate. On an A100, adaptive routing improves PDMS from 90.62 to 90.79 while averaging 170 ms end-to-end planning latency, approximately 10\\% below the 190 ms fixed block-15 planner and 47\\% below the 320 ms fixed full-depth planner. Code will be released.",
+      "authors": [
+        "Sining Ang",
+        "Yuguang Yang",
+        "Yan Wang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-06T13:13:07+00:00",
+      "link": "https://arxiv.org/pdf/2608.06008v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "video diffusion model used for early-exit planning in autonomous driving",
+      "llm_evidence_cn": "视频扩散模型用于自动驾驶的早退规划",
+      "llm_evidence": "视频扩散模型用于自动驾驶的早退规划",
+      "canonical_evidence": "视频扩散模型用于自动驾驶的早退规划",
+      "llm_tldr_en": "Adaptive-WAM studies how much of a video diffusion model is needed for driving planning, finding intermediate DiT layers already support strong trajectories, and proposes a quality-aware multi-exit planner.",
+      "llm_tldr_cn": "自动驾驶世界模型常继承视频扩散模型的生成开销，但部署时只需轨迹。本文通过控制去噪时间步和DiT深度发现规划性能对视频噪声水平不敏感，且从中间层即可解码可靠轨迹。基于此提出Adaptive-WAM，一种质量感知的多出口规划器，构建在Wan2.2-5B骨干上。它按需提前退出视频扩散模型，降低计算成本的同时保持驾驶决策质量。",
+      "llm_tldr": "自动驾驶世界模型常继承视频扩散模型的生成开销，但部署时只需轨迹。本文通过控制去噪时间步和DiT深度发现规划性能对视频噪声水平不敏感，且从中间层即可解码可靠轨迹。基于此提出Adaptive-WAM，一种质量感知的多出口规划器，构建在Wan2.2-5B骨干上。它按需提前退出视频扩散模型，降低计算成本的同时保持驾驶决策质量。",
+      "llm_tags": [
+        "query:diff-video:composite"
+      ],
+      "matched_query_tag": "query:diff-video:composite",
+      "matched_query_text": "Papers central to 请帮我查找扩散模型（或者flow matching）和视频生成相关的论文, especially work that connects or combines: diffusion models as generative models; video generation; diffusion models for video generation and synthesis; flow matching; papers on diffusion models applied to video generation; flow matching based generative video model.",
+      "matched_requirement_id": "req-composite-diff-video",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.01845v1",
+      "source": "arxiv",
+      "title": "WorldDynCache: Risk-Controlled Latent Dynamics Approximation for Diffusion World Model",
+      "abstract": "Diffusion world models generate high-quality futures, but re- peated transformer evaluations make inference prohibitively slow. Existing caches reuse intermediate features, selectively update tokens, or reuse and extrapolate denoising outputs ac- cording to local drift or short native-space histories. These criteria can miss both approximation-induced latent transition defects that accumulate across skipped steps and phase- or condition-dependent changes in the direction of latent evo- lution. We propose WorldDynCache, a risk-controlled latent dynamics approximation framework with two core compo- nents. First, a lightweight latent-transition risk estimator tracks the accumulated future impact of approximation defects and calibrates its predictions against counterfactual defects ob- served at exact anchors. Second, a condition- and phase- aware lifted latent surrogate approximates latent evolution without extra transformer evaluations. On HunyuanVoyager- 13B and Aether-5B, WorldDynCache achieves 4.92 times and 2.15 times speedups, respectively, while attaining the best gen- eration quality among the compared caching methods across WorldScore, PSNR, SSIM, and LPIPS.",
+      "authors": [
+        "Leyang Chen",
+        "Junyi Wu",
+        "Shaoqiu Zhang",
+        "Yulun Zhang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-08-03T07:52:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.01845v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "addresses inference speed of diffusion world models that generate high-quality video futures",
+      "llm_evidence_cn": "针对生成高质量未来视频的扩散世界模型推理慢，提出风险受控缓存方法",
+      "llm_evidence": "针对生成高质量未来视频的扩散世界模型推理慢，提出风险受控缓存方法",
+      "canonical_evidence": "针对生成高质量未来视频的扩散世界模型推理慢，提出风险受控缓存方法",
+      "llm_tldr_en": "Proposes WorldDynCache, a risk-controlled latent dynamics approximation framework that estimates latent-transition risk to cache and approximate evaluations in diffusion world models, accelerating future video generation.",
+      "llm_tldr_cn": "扩散世界模型能生成高质量未来视频，但重复Transformer评估导致推理过慢。论文提出WorldDynCache，一个风险受控的潜动力学近似框架。它用轻量潜转移风险估计器追踪近似缺陷的累积未来影响，并据此校准缓存策略，避免跳步导致的潜状态缺陷和方向漂移。该方法有望在保持生成质量的同时显著加速扩散世界模型推理。",
+      "llm_tldr": "扩散世界模型能生成高质量未来视频，但重复Transformer评估导致推理过慢。论文提出WorldDynCache，一个风险受控的潜动力学近似框架。它用轻量潜转移风险估计器追踪近似缺陷的累积未来影响，并据此校准缓存策略，避免跳步导致的潜状态缺陷和方向漂移。该方法有望在保持生成质量的同时显著加速扩散世界模型推理。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.04655v1",
+      "source": "arxiv",
+      "title": "CSGen: A Multi-Domain Curvilinear Structure Generation Model via Hierarchical Multimodal Diffusion",
+      "abstract": "Curvilinear structure analysis is an important and fundamental task in multimedia. However, the controllable generation of images with precise curvilinear structure objects remains an open challenge. To address this, we propose CSGen, a hierarchical multimodal diffusion model that synthesizes high-fidelity images precisely aligned with multiple control conditions. The CSGen is built upon three key innovations: 1) We construct a multi-domain and multimodal dataset, including over 24K samples from 5 domains and 7 different types of annotations, to train the unified generation model. 2) We propose a novel hierarchical progressive control strategy that decouples topology clues from visual context by a phased signal injection, mitigating semantic drift while ensuring the topological integrity of sparse structures. 3) We design a sparsity-aware loss re-weighting mechanism to address the extreme sparsity of curvilinear structures, significantly enhancing the attention on thin and fragile structures during optimization. Extensive experiments demonstrate that CSGen generates images with superior structure accuracy and visual realism, significantly improving downstream segmentation performance while maintaining robustness across diverse prompts. Our results confirm CSGen as a scalable, data-centric paradigm for the analysis of complex curvilinear structures in diverse multimedia applications. Code and dataset are available at https://github.com/ShanZard/CSGen.",
+      "authors": [
+        "Zhe Shan",
+        "Ziming Yang",
+        "Lei Zhou",
+        "Wenwen Zhang",
+        "Cong Lin",
+        "Xia Xie"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-05T10:12:19+00:00",
+      "link": "https://arxiv.org/pdf/2608.04655v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "hierarchical multimodal diffusion model for image generation",
+      "llm_evidence_cn": "用于图像生成的层次化多模态扩散模型",
+      "llm_evidence": "用于图像生成的层次化多模态扩散模型",
+      "canonical_evidence": "用于图像生成的层次化多模态扩散模型",
+      "llm_tldr_en": "CSGen is a hierarchical multimodal diffusion model that generates high-fidelity images with precise curvilinear structures, using progressive control and a multi-domain dataset to decouple topology from visual context.",
+      "llm_tldr_cn": "生成具有精确曲线结构的图像在多媒体领域重要但难度较高，多条件可控生成更是挑战。CSGen 构建了包含5个领域、24K样本的多域多模态数据集，并提出层次化渐进控制策略，将拓扑线索与视觉上下文解耦，在多模态扩散模型中分阶段注入信号。实验表明该模型能在多个领域生成高保真且结构精确的图像，为曲线结构生成提供了统一的可控方案。",
+      "llm_tldr": "生成具有精确曲线结构的图像在多媒体领域重要但难度较高，多条件可控生成更是挑战。CSGen 构建了包含5个领域、24K样本的多域多模态数据集，并提出层次化渐进控制策略，将拓扑线索与视觉上下文解耦，在多模态扩散模型中分阶段注入信号。实验表明该模型能在多个领域生成高保真且结构精确的图像，为曲线结构生成提供了统一的可控方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.07468v1",
+      "source": "arxiv",
+      "title": "SimWAM: A Simple World Action Model for End-to-End Autonomous Driving",
+      "abstract": "World-Action Models (WAMs) improve end-to-end autonomous driving by transferring video dynamics priors to action prediction, but existing methods require costly future generation at inference. We present SimWAM, a simple yet effective WAM that uses video generation purely as a training signal. It co-trains a pretrained video expert and a lightweight action expert with joint flow matching. An isolated attention mask keeps action prediction independent of future frames, allowing the video branch to be discarded after training and leaving a self-contained planner that directly predicts trajectories. Since the two experts share no parameters and interact only through a unified attention interface, the video backbone could be replaced and the action expert scaled independently without modifying the learning objective or inference pipeline. We further apply reinforcement learning to optimize a compositional driving reward beyond trajectory imitation. Our SimWAM achieves $91.5$ PDMS on NAVSIM, surpasses state-of-the-art WAM-based planners with substantially lower latency, and transfers zero-shot to nuScenes. These results position SimWAM as a simple yet solid baseline that could readily benefit from advances in video generation for efficient autonomous driving. The code and model weights are available at https://github.com/H-EmbodVis/SimWAM/",
+      "authors": [
+        "Zongchuang Zhao",
+        "Xin Zhou",
+        "Tianyang Xu",
+        "Zhengyang Sun",
+        "Kaixuan Zhou",
+        "Honglin Li",
+        "Dingkang Liang",
+        "Xiang Bai"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-07T17:59:09+00:00",
+      "link": "https://arxiv.org/pdf/2608.07468v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Flow matching based generative video model used as training signal for action prediction",
+      "llm_evidence_cn": "基于流匹配的视频生成模型用于动作预测训练",
+      "llm_evidence": "基于流匹配的视频生成模型用于动作预测训练",
+      "canonical_evidence": "基于流匹配的视频生成模型用于动作预测训练",
+      "llm_tldr_en": "SimWAM co-trains a video expert and an action expert with joint flow matching, using video generation purely as a training signal, then discards the video branch to retain a self-contained planner.",
+      "llm_tldr_cn": "世界-动作模型需要昂贵的未来视频生成推理，SimWAM提出将视频生成仅作为训练信号。它用联合流匹配协同训练预训练视频专家和轻量级动作专家，并通过隔离注意力掩码使动作预测独立于未来帧。训练后丢弃视频分支，得到直接预测轨迹的自包含规划器，从而在保持视频动态先验的同时降低推理成本。",
+      "llm_tldr": "世界-动作模型需要昂贵的未来视频生成推理，SimWAM提出将视频生成仅作为训练信号。它用联合流匹配协同训练预训练视频专家和轻量级动作专家，并通过隔离注意力掩码使动作预测独立于未来帧。训练后丢弃视频分支，得到直接预测轨迹的自包含规划器，从而在保持视频动态先验的同时降低推理成本。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching based generative video model",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.01944v1",
+      "source": "arxiv",
+      "title": "UniMoCa: Unifying Motion and Camera Controls as Visual Proxies for Faithful Human Video Generation",
+      "abstract": "Controlling human motion and camera movement is essential for faithful human-oriented video generation, yet remains challenging in multi-person scenes with large body motions, occlusions, and dynamic cameras. Existing pipelines typically rely on visual motion sequences, such as skeleton maps, pose maps, or rendered body representations, for motion control, while using camera embeddings for camera control. Such heterogeneous control interfaces force video generation models to reconcile pixel-aligned visual cues with non-visual geometric embeddings, making motion-camera attribution difficult and sensitive to camera estimation errors. We propose \\textbf{UniMoCa}, a representation-driven framework that unifies motion and camera controls in visual space. At the core of UniMoCa is \\textbf{Motion-Camera Visual Proxy} (\\textbf{MCVP}), a mutually-sharable novel representation that converts 3D human motion and camera trajectories extracted from driving videos into an identity-neutral visual proxy. MCVP renders temporally aligned human geometry under the recovered camera trajectory and augments it with explicit camera trajectory markers, replacing heterogeneous visual-parametric controls with distinguishable visual cues. As both control factors are represented in the same visual space, they become mutually compatible rather than heterogeneous, enabling consistent joint reasoning and editing during video generation. We further curate a \\textbf{MCVP-Video} dataset covering complex actions, multi-person interactions, and diverse camera trajectories. Experiments based on the Wan2.2 I2V show that UniMoCa achieves substantial gains in human motion control, camera control, temporal consistency, and camera-aware robustness with minimal additional complexity. More details are shown in our Project page: https://tanliming-daniel.github.io/UniMoCa/.",
+      "authors": [
+        "Liming Tan",
+        "Ye Chen",
+        "Hao Zhang",
+        "Lirong Qian",
+        "Feifei Li",
+        "Bingbing Ni"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-03T09:18:13+00:00",
+      "link": "https://arxiv.org/pdf/2608.01944v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Unified motion and camera control for human video generation",
+      "llm_evidence_cn": "面向人体视频生成的运动与相机统一控制",
+      "llm_evidence": "面向人体视频生成的运动与相机统一控制",
+      "canonical_evidence": "面向人体视频生成的运动与相机统一控制",
+      "llm_tldr_en": "UniMoCa introduces a representation-driven framework that unifies motion and camera controls as visual proxies for faithful human video generation, overcoming heterogeneous control interfaces.",
+      "llm_tldr_cn": "人体视频生成需要控制运动与相机，但现有方法将骨骼图等视觉序列与相机嵌入等非视觉几何嵌入混合使用，导致控制归因困难且对相机估计误差敏感。UniMoCa提出表示驱动的框架，将运动与相机控制统一为视觉代理表达，从而简化控制接口并增强鲁棒性。实验表明该方法在多人、大运动及动态相机场景下能生成更忠实的人体视频。",
+      "llm_tldr": "人体视频生成需要控制运动与相机，但现有方法将骨骼图等视觉序列与相机嵌入等非视觉几何嵌入混合使用，导致控制归因困难且对相机估计误差敏感。UniMoCa提出表示驱动的框架，将运动与相机控制统一为视觉代理表达，从而简化控制接口并增强鲁棒性。实验表明该方法在多人、大运动及动态相机场景下能生成更忠实的人体视频。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "papers on diffusion models applied to video generation",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.04818v1",
+      "source": "arxiv",
+      "title": "Rethinking Pixel Mean Flows via Interval Denoiser",
+      "abstract": "Modern diffusion and flow-based models are increasingly moving toward few-step, latent-free generation to bypass the computational overhead of multi-step sampling and the reconstruction bottlenecks of external autoencoders. We propose the Interval Denoiser, a theoretically rigorous framework for latent-free generation. Derived directly from the flow matching ODE, it establishes an exact analytical mapping for intermediate trajectory states. Unlike prior formulations, our prediction is shown to reside on a low-dimensional manifold across any time interval, making the regression tractable for a network operating directly on pixels. Furthermore, by avoiding empirical algebraic substitutions, our formulation correctly isolates the pure time derivative to prevent biased gradient evaluations and ensure exact first-order optimization. By analyzing this objective, we equip our framework with residual clipping and a time-sampling curriculum, enabling effective long-interval training and improving few-step performance. Trained from scratch on ImageNet 256x256, our model achieves an FID of 4.55 in one step (1-NFE) and 3.98 in two steps (2-NFE) without perceptual losses.",
+      "authors": [
+        "Alexander Zaytsev",
+        "Dmitry Baranchuk",
+        "Alexander Korotin",
+        "Aibek Alanov"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-05T13:22:43+00:00",
+      "link": "https://arxiv.org/pdf/2608.04818v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "derived directly from the flow matching ODE, establishes exact analytical mapping for latent-free generation",
+      "llm_evidence_cn": "直接从流匹配ODE推导，为无潜在生成建立精确解析映射",
+      "llm_evidence": "直接从流匹配ODE推导，为无潜在生成建立精确解析映射",
+      "canonical_evidence": "直接从流匹配ODE推导，为无潜在生成建立精确解析映射",
+      "llm_tldr_en": "The Interval Denoiser derives an exact analytical mapping for intermediate trajectory states from the flow matching ODE, enabling latent-free generation on a low-dimensional manifold and avoiding biased gradients.",
+      "llm_tldr_cn": "扩散与流模型逐渐转向少步、无潜在生成以绕过采样开销和自编码器瓶颈，但缺乏严格理论支撑。论文提出区间去噪器，直接从流匹配ODE推导中间轨迹状态的精确解析映射，并证明预测落在低维流形上，使像素空间回归在任意时间区间内可求解。该公式避免经验代数替换，正确分离纯时间导数以防止梯度偏差，为无潜在生成提供了理论严谨且可操作的新框架。",
+      "llm_tldr": "扩散与流模型逐渐转向少步、无潜在生成以绕过采样开销和自编码器瓶颈，但缺乏严格理论支撑。论文提出区间去噪器，直接从流匹配ODE推导中间轨迹状态的精确解析映射，并证明预测落在低维流形上，使像素空间回归在任意时间区间内可求解。该公式避免经验代数替换，正确分离纯时间导数以防止梯度偏差，为无潜在生成提供了理论严谨且可操作的新框架。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.08553v1",
+      "source": "arxiv",
+      "title": "MotionCraft: Latent World Modeling with Sparse Attention for Visual Upscaling",
+      "abstract": "Video super-resolution (VSR) aims to recover high-fidelity high-resolution videos from low-resolution inputs and is central to applications ranging from mobile capture to streaming and archival restoration. Existing approaches trade off among local-detail fidelity, long-range spatio-temporal modeling, perceptual realism, and efficiency: convolutional alignment techniques preserve local structure but suffer when motion is large or degradations are complex; transformer-based methods capture long-range dependencies yet require architectural or algorithmic adaptations to remain computationally feasible; and recent latent or diffusion-based generators synthesize rich texture but require specialized temporal constraints to maintain coherence. We present MotionCraft, a controllable VSR framework that formulates restoration as motion-aware latent state prediction inspired by world models and integrates adaptive sparse attention with an explicit user-accessible control interface. MotionCraft combines robust motion fusion, a Latent World Transformer that balances locality and targeted non-local interactions, and a compact conditional decoder to deliver temporally consistent, high-quality reconstructions under streaming constraints. Empirical evaluations show that MotionCraft achieves strong reconstruction and perceptual performance while enabling predictable trade-offs between temporal smoothness and reconstruction fidelity.",
+      "authors": [
+        "Rong Fu",
+        "Chunlei Meng",
+        "Yangchen Zeng",
+        "Xiaowen Ma",
+        "Yongtai Liu",
+        "Wangyu Wu",
+        "Shuo Yin",
+        "Zijian Zhang",
+        "Sicheng Li",
+        "Yingrui Ji",
+        "Chenhao Wang",
+        "Simon Fong"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG",
+        "cs.MM"
+      ],
+      "published": "2026-08-09T07:54:43+00:00",
+      "link": "https://arxiv.org/pdf/2608.08553v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "video super-resolution with diffusion-based generators",
+      "llm_evidence_cn": "基于扩散生成器的视频超分辨率",
+      "llm_evidence": "基于扩散生成器的视频超分辨率",
+      "canonical_evidence": "基于扩散生成器的视频超分辨率",
+      "llm_tldr_en": "MotionCraft applies latent world modeling with sparse attention to video super-resolution, balancing local fidelity, long-range coherence, and efficiency; it uses diffusion-based generation to synthesize rich texture.",
+      "llm_tldr_cn": "视频超分辨率需兼顾局部细节、长程时空建模与效率，现有方法难以同时满足。MotionCraft 提出结合稀疏注意力的潜在世界模型，对低分辨率输入学习时空潜在表示，并利用扩散式生成合成丰富纹理，平衡保真度与计算消耗。实验结果显示该方法在多个超分基准上取得良好效果，为视频增强提供了一种结合世界模型与生成模型的新途径。",
+      "llm_tldr": "视频超分辨率需兼顾局部细节、长程时空建模与效率，现有方法难以同时满足。MotionCraft 提出结合稀疏注意力的潜在世界模型，对低分辨率输入学习时空潜在表示，并利用扩散式生成合成丰富纹理，平衡保真度与计算消耗。实验结果显示该方法在多个超分基准上取得良好效果，为视频增强提供了一种结合世界模型与生成模型的新途径。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "video generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.01990v1",
+      "source": "arxiv",
+      "title": "SPARE: Structural Parameter-Free Affinity Regularization for Flow Matching",
+      "abstract": "Denoising diffusion transformers achieve strong generation quality but converge slowly during training. Regularizing their internal representations has emerged as an effective accelerator, yet existing methods split into two families with complementary costs. Target-based methods strengthen representations by aligning them to external features, which requires an external encoder and a learnable projection head to bridge feature spaces. Target-free methods hold no reference at all, and can only repel the model's own features across samples or layers, discarding whatever structure the data contains. Prior work suggests that spatial structure, rather than global semantics, drives the gains of alignment. We therefore ask whether such structure can serve as a target directly, and whether it exists not only within an image but across images. Our key insight is that the clean data latent already carries this structure in the relations among its tokens, where a relation is the similarity between two tokens, a single scalar comparable across feature spaces without a projection head. We propose Structural Parameter-free Affinity Regularization (SPARE), a regularizer that matches the pairwise affinities of intermediate tokens to those of the clean latents. To exploit this structure fully, SPARE extends the matching to token pairs across images, precisely the pairs that prior target-free methods repel by default, and calibrates both relation types with a single learning objective. On ImageNet $256 \\times 256$ with SiT backbones under matched 400K-iteration budgets, SPARE adds no encoder, head, or parameters and only 0.08 GB of training memory, yet attains the lowest FID among parameter-free regularizers in every tested setting, recovers 37 to 54\\% of REPA's FID reduction, and improves over REPA when combined with it, reaching FID 1.90 under classifier-free guidance at 1M iterations.",
+      "authors": [
+        "Zong-Wei Hong",
+        "Jinglun Li",
+        "Shen Zhang",
+        "Yuhan Liu",
+        "Linze Li",
+        "Yao Tang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-03T09:50:51+00:00",
+      "link": "https://arxiv.org/pdf/2608.01990v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "structural regularization to accelerate flow matching training",
+      "llm_evidence_cn": "通过结构化亲和力正则化加速流匹配训练",
+      "llm_evidence": "通过结构化亲和力正则化加速流匹配训练",
+      "canonical_evidence": "通过结构化亲和力正则化加速流匹配训练",
+      "llm_tldr_en": "SPARE proposes a target-free, parameter-free structural affinity regularization for flow matching that leverages spatial structure to speed up training of generative transformers, avoiding external encoders or projection heads.",
+      "llm_tldr_cn": "针对扩散Transformer训练收敛慢的问题，SPARE提出一种无目标、无参数的结构化亲和力正则化方法，利用数据本身的空间结构来约束模型内部表示，从而加速流匹配训练。与基于目标的方法不同，它无需外部编码器和投影头，也无需样本科惩罚，能利用数据内蕴结构提升对齐效果，为高效生成模型训练提供了新的正则化手段。",
+      "llm_tldr": "针对扩散Transformer训练收敛慢的问题，SPARE提出一种无目标、无参数的结构化亲和力正则化方法，利用数据本身的空间结构来约束模型内部表示，从而加速流匹配训练。与基于目标的方法不同，它无需外部编码器和投影头，也无需样本科惩罚，能利用数据内蕴结构提升对齐效果，为高效生成模型训练提供了新的正则化手段。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.04887v1",
+      "source": "arxiv",
+      "title": "STEP-OPD: Rethinking Output Targets and Internal Dynamics in On-Policy Distillation for Diffusion Models",
+      "abstract": "On-policy distillation (OPD) has become an effective approach for consolidating multiple task-specialized image generation models into a single student. However, existing OPD methods optimize the student mainly to match the teacher's output velocity, making the teacher the upper limit of the optimization objective. While output-level supervision alone leaves the student's blockwise representation evolution underconstrained, which weakens the transfer of capabilities that must be progressively developed across layers. We propose STEP-OPD, an on-policy distillation framework for image generation that extends the student's learning target beyond the teacher and introduces explicit constraints on its internal representation evolution. Instead of treating the teacher as the final target, we use the velocity difference between each task-specific teacher and the shared base model as a direction for further learning and add a scaled version of this difference to the teacher velocity. In addition, we align the direction and magnitude of representation changes between the student and teacher, enabling the student to learn how representations are progressively transformed across network blocks. Experiments on compositional alignment, text rendering, and human preference show that our method consistently improves Standard OPD methods. In particular, it increases the GenEval score of DiffusionOPD from 0.927 to 0.961, while also improving OCR and all preference-based metrics. The resulting unified student surpasses the corresponding single-task teachers across all three capability groups, showing that output extrapolation enables beyond-teacher learning. And representation change alignment provides complementary guidance for the student's internal transformations.",
+      "authors": [
+        "Qingyan Wei",
+        "Guangzhao Li",
+        "Xiaobing Tu",
+        "Yinggui Wang",
+        "Xiantao Zhang",
+        "Jinkui Ren",
+        "Xiaohong Liu",
+        "Linfeng Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-05T14:11:27+00:00",
+      "link": "https://arxiv.org/pdf/2608.04887v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "distillation of diffusion models for image generation",
+      "llm_evidence_cn": "面向图像生成的扩散模型蒸馏",
+      "llm_evidence": "面向图像生成的扩散模型蒸馏",
+      "canonical_evidence": "面向图像生成的扩散模型蒸馏",
+      "llm_tldr_en": "STEP-OPD improves on-policy distillation for diffusion models by constraining blockwise representation evolution and extending the student target beyond the teacher's output velocity, enabling better capability transfer.",
+      "llm_tldr_cn": "现有扩散模型在策略蒸馏主要匹配教师输出速度，导致学生内部表征演化缺乏约束，能力迁移受限。STEP-OPD 提出将学习目标扩展到教师输出之外，并显式约束学生逐块表征动态，从而增强跨层技能迁移。实验表明该方法在合并多任务图像生成模型时，性能优于既有蒸馏方法，为扩散模型的高效部署提供新思路。",
+      "llm_tldr": "现有扩散模型在策略蒸馏主要匹配教师输出速度，导致学生内部表征演化缺乏约束，能力迁移受限。STEP-OPD 提出将学习目标扩展到教师输出之外，并显式约束学生逐块表征动态，从而增强跨层技能迁移。实验表明该方法在合并多任务图像生成模型时，性能优于既有蒸馏方法，为扩散模型的高效部署提供新思路。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
