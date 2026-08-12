@@ -25,3 +25,49 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: diff-video
+      description: 请帮我查找扩散模型（或者flow matching）和视频生成相关的论文
+      enabled: true
+      paper_sources:
+        - arxiv
+      keywords:
+        - keyword: diffusion models
+          keyword_cn: 扩散模型
+          query: diffusion models as generative models
+        - keyword: video generation
+          keyword_cn: 视频生成
+          query: video generation
+        - keyword: video diffusion models
+          keyword_cn: 视频扩散模型
+          query: diffusion models for video generation and synthesis
+        - keyword: flow matching
+          keyword_cn: 流匹配
+          query: flow matching
+      intent_queries:
+        - query: papers on diffusion models applied to video generation
+          query_cn: 关于扩散模型应用于视频生成的论文
+          enabled: true
+          source: manual
+          note: ''
+        - query: flow matching based generative video model
+          query_cn: 基于流匹配的生成式视频模型
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-08-12T02:37:03.016Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
