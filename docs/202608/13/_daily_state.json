@@ -1,0 +1,281 @@
+{
+  "date": "20260813",
+  "date_label": "",
+  "generated_at": "2026-08-13 20:43:25 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.04701v1",
+      "route": "202608/13/2608.04701v1-uniworld-view-large-baseline-view-synthesis-via-video-diffusion-models",
+      "title": "UniWorld-View: Large-Baseline View Synthesis via Video Diffusion Models",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "利用视频扩散模型从稀疏单目视频中进行大基线新视角合成",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.11745v1",
+      "route": "202608/13/2608.11745v1-liveanimate-stable-long-form-streaming-human-animation-in-real-time",
+      "title": "LiveAnimate: Stable Long-Form Streaming Human Animation in Real-Time",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "基于扩散的视频生成，用于实时人体动画",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.12032v1",
+      "route": "202608/13/2608.12032v1-losa-near-lossless-sparse-attention-for-training-free-video-diffusion-acceleration",
+      "title": "LoSA: Near-Lossless Sparse Attention for Training-Free Video Diffusion Acceleration",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "无训练的视频扩散transformer加速采样",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.12203v1",
+      "route": "202608/13/2608.12203v1-geoflow-efficient-driving-video-generation-via-geometry-aligned-priors",
+      "title": "GeoFlow: Efficient Driving Video Generation via Geometry-Aligned Priors",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "基于扩散与流匹配的高效驾驶视频生成",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.05600v1",
+      "route": "202608/13/2608.05600v1-lc-grpo-bridging-train-inference-gap-for-flow-based-grpo-with-langevin-correction",
+      "title": "LC-GRPO: Bridging Train-Inference Gap for Flow-Based GRPO with Langevin Correction",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "基于朗之万校正弥合流模型强化学习训练与推断差距",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.05803v1",
+      "route": "202608/13/2608.05803v1-vorch-omni-multi-task-orchestration-of-sight-and-sound",
+      "title": "Vorch-Omni: Multi-Task Orchestration of Sight and Sound",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向音视频合成与生成式视频建模的统一多任务框架",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.07572v1",
+      "route": "202608/13/2608.07572v1-brace-taming-sharp-irregularities-via-barycentric-rational-forecasting-for-fast-diffusion-transformers-inference",
+      "title": "BRACE: Taming Sharp Irregularities via Barycentric Rational Forecasting for Fast Diffusion Transformers Inference",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向图像与视频生成的扩散Transformer快速推理",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.08460v1",
+      "route": "202608/13/2608.08460v1-instructioncrafter-generating-consistent-and-high-fidelity-visual-instructions",
+      "title": "InstructionCrafter: Generating Consistent and High-Fidelity Visual Instructions",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "基于扩散的框架，生成一致的逐步视觉指令图像序列",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.09438v1",
+      "route": "202608/13/2608.09438v1-unveiling-the-secret-of-adaln-zero-in-diffusion-transformer",
+      "title": "Unveiling the Secret of AdaLN-Zero in Diffusion Transformer",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "分析扩散Transformer中adaLN-Zero条件机制，这是扩散生成模型的关键架构组件",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.10519v1",
+      "route": "202608/13/2608.10519v1-sparstar-sparse-attention-for-spacetime-autoregressive-video-synthesis",
+      "title": "SparSTAR: Sparse Attention for SpaceTime AutoRegressive Video Synthesis",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "聚焦自回归视频生成中的稀疏注意力",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.06125v1",
+      "route": "202608/13/2608.06125v1-sample-adaptive-latent-rewards-for-uncertainty-guided-diffusion-post-training",
+      "title": "Sample-Adaptive Latent Rewards for Uncertainty-Guided Diffusion Post-Training",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "图像与视频扩散模型的潜在奖励后训练",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.07003v1",
+      "route": "202608/13/2608.07003v1-hrdit-training-free-high-resolution-image-generation-with-off-the-shelf-diffusion-transformer-models",
+      "title": "HRDiT: Training-Free High-Resolution Image Generation with Off-the-Shelf Diffusion Transformer Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "扩散Transformer用于高分辨率图像生成",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.08594v2",
+      "route": "202608/13/2608.08594v2-sddbms-soft-denoising-diffusion-bridge-models",
+      "title": "SDDBMs: Soft Denoising Diffusion Bridge Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "提出软去噪扩散桥模型，属于通用扩散生成框架，但未应用于视频",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.08787v1",
+      "route": "202608/13/2608.08787v1-beyond-reconstruction-full-context-generative-dit-for-music-generation",
+      "title": "Beyond Reconstruction: Full-Context Generative DiT for Music Generation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "使用扩散/流式渲染器与DiT进行生成式音乐合成",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.09373v1",
+      "route": "202608/13/2608.09373v1-preserve-more-details-mitigating-content-drift-in-real-world-image-super-resolution",
+      "title": "Preserve More Details: Mitigating Content Drift in Real-World Image Super-Resolution",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "一步扩散模型用于图像复原",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.11747v1",
+      "route": "202608/13/2608.11747v1-making-every-step-count-spatio-temporal-information-allocation-for-imaging-inverse-problems",
+      "title": "Making Every Step Count: Spatio-Temporal Information Allocation for Imaging Inverse Problems",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "面向成像逆问题的基于流的生成模型，与flow matching和采样轨迹分配相关",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    },
+    {
+      "paper_id": "2608.12314v1",
+      "route": "202608/13/2608.12314v1-stateflow-building-evolving-and-accessing-3d-world-states-for-previsualization",
+      "title": "StateFlow: Building, Evolving, and Accessing 3D World States for Previsualization",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "面向预可视化的可控视频合成，强调显式世界状态而非扩散/流匹配",
+      "first_seen_at": "2026-08-13 20:43:25 UTC",
+      "updated_at": "2026-08-13 20:43:25 UTC"
+    }
+  ]
+}

@@ -1,44 +1,84 @@
 {
-  "generated_at": "2026-08-12T20:32:56.851959+00:00",
-  "updated_date": "20260812",
+  "generated_at": "2026-08-13T20:31:18.330483+00:00",
+  "updated_date": "20260813",
   "carryover_days": 9,
   "tag_states": {
     "diff-video": {
-      "updated_date": "20260812",
+      "updated_date": "20260813",
       "carryover_days": 9,
       "items": [
         {
-          "id": "2608.06125v1",
+          "id": "2608.10615v1",
           "source": "arxiv",
-          "title": "Sample-Adaptive Latent Rewards for Uncertainty-Guided Diffusion Post-Training",
-          "abstract": "Latent reward models can supervise visual diffusion models without decoding intermediate states into pixel space. This makes alignment with human preferences more efficient. However, existing latent reward models output only scalar scores. They do not estimate the uncertainty of each prediction. The generator therefore cannot determine which feedback is reliable. This can drive optimization in the wrong direction and lead to reward hacking. We propose \\textsc{SURE}, a unified latent-space framework for image and video diffusion models. It learns reward distributions and directly uses their reliability to guide dense post-training. First, we propose sample-adaptive latent reward model (\\textsc{SURE-LRM}). It predicts a Gaussian utility for each noisy latent. Its mean predicts the reward score. Its variance reflect the uncertainty of prediction without human annotation. The learned distribution then guides post-training through uncertainty-guided reward feedback learning (\\textsc{SURE-REFL}). This method provides uncertainty-guided dense feedback along the denoising trajectory. At selected transitions, \\textsc{SURE-REFL} queries the frozen \\textsc{SURE-LRM}. It converts detached variance into reliability weights for samples at the same transition. Each weighted reward is backpropagated only through its local transition. The entire process remains in latent space and requires neither pixel-space decoding nor the full denoising graph. Experiments show that \\textsc{SURE-LRM} improves preference prediction over strong baselines. \\textsc{SURE-REFL} achieves the sota performance among various metrics and further improves optimization stability. It also achieves the highest VBench quality, semantic, and total scores among the evaluated methods.",
+          "title": "Simplex Relaxation for Discrete Diffusion",
+          "abstract": "Discrete diffusion models for categorical generation are defined by a corruption kernel, which determines the intermediate state space and the associated reverse prediction problem. We study uniform discrete diffusion and ask whether its training objective and reverse transitions can be enriched without changing the underlying categorical corruption process. We introduce Simplax, an exact Dirichlet--categorical augmentation that couples each corrupted categorical state with an auxiliary simplex-valued variable while preserving the original uniform diffusion process as its categorical marginal. This augmentation yields a tractable Rao--Blackwellized reverse-bridge objective and a corresponding stochastic reverse sampler, while retaining the corrupted categorical state as the denoiser input. Empirically, Simplax improves the generative perplexity--entropy tradeoff on unconditional OpenWebText generation. On Sudoku, a model trained exclusively on $30$-clue puzzles achieves the highest accuracy among the compared methods across all evaluated clue densities, including the minimum uniquely solvable $17$-clue regime, and also achieves the highest validity in unconditional generation.",
           "authors": [
-            "Rui Li",
-            "Yuanzhi Liang",
-            "Ke Hao",
-            "Ziqiao Weng",
-            "Haibin Huang",
-            "Chi Zhang",
-            "XueLong Li"
+            "Jinya Sakurai",
+            "Patrick Pynadath",
+            "Satoshi Hayakawa",
+            "Jaehong Yoon",
+            "Xulei Yang",
+            "Nancy F. Chen",
+            "Xun Xu"
           ],
-          "primary_category": "cs.CV",
+          "primary_category": "cs.CL",
           "categories": [
-            "cs.CV"
+            "cs.CL"
           ],
-          "published": "2026-08-06T14:55:42+00:00",
-          "link": "https://arxiv.org/pdf/2608.06125v1",
+          "published": "2026-08-11T07:58:17+00:00",
+          "link": "https://arxiv.org/pdf/2608.10615v1",
           "tags": [
             "keyword:diff-video",
             "query:diff-video"
           ],
           "llm_score": 8.0,
-          "llm_evidence_en": "Unified latent reward framework for image and video diffusion models, directly usable in video diffusion post-training",
-          "llm_evidence_cn": "面向图像和视频扩散模型的统一潜在奖励框架，可直接用于视频扩散后训练",
-          "llm_evidence": "面向图像和视频扩散模型的统一潜在奖励框架，可直接用于视频扩散后训练",
-          "canonical_evidence": "面向图像和视频扩散模型的统一潜在奖励框架，可直接用于视频扩散后训练",
-          "llm_tldr_en": "Proposes SURE, a latent-space framework with sample-adaptive latent reward models and uncertainty estimation to guide dense post-training for image and video diffusion models.",
-          "llm_tldr_cn": "现有潜在奖励模型只给出标量分数，无法估计预测不确定性，导致奖励黑客和错误优化。SURE提出统一潜在空间框架，为图像和视频扩散模型学习奖励分布，并使用预测可靠性引导密集的后训练。其样本自适应潜在奖励模型为每个令牌预测高斯效用，显著提升对齐效果。该方法直接服务于视频扩散模型的偏好对齐，是扩散视频生成实用化的重要组件。",
-          "llm_tldr": "现有潜在奖励模型只给出标量分数，无法估计预测不确定性，导致奖励黑客和错误优化。SURE提出统一潜在空间框架，为图像和视频扩散模型学习奖励分布，并使用预测可靠性引导密集的后训练。其样本自适应潜在奖励模型为每个令牌预测高斯效用，显著提升对齐效果。该方法直接服务于视频扩散模型的偏好对齐，是扩散视频生成实用化的重要组件。",
+          "llm_evidence_en": "Introduces an exact Dirichlet-categorical augmentation for uniform discrete diffusion, enriching training and reverse sampling",
+          "llm_evidence_cn": "为均匀离散扩散引入精确的Dirichlet-分类增广，丰富训练与逆向采样",
+          "llm_evidence": "为均匀离散扩散引入精确的Dirichlet-分类增广，丰富训练与逆向采样",
+          "canonical_evidence": "为均匀离散扩散引入精确的Dirichlet-分类增广，丰富训练与逆向采样",
+          "llm_tldr_en": "Simplax augments uniform discrete diffusion with an auxiliary simplex-valued variable without altering the categorical marginal, yielding a tractable Rao-Blackwellized reverse-bridge objective and stochastic sampler.",
+          "llm_tldr_cn": "均匀离散扩散模型依赖损坏核定义类别生成的中间状态与逆向预测。Simplax在保持原分类边缘分布不变的前提下，引入与损坏类别耦合的单纯形值辅助变量，形成精确的Dirichlet-分类增广。该增广导出了可处理的Rao-Blackwellized逆向桥目标与随机逆向采样器，在扩展训练目标的同时不改变底层类别损坏过程。这项工作为离散扩散生成提供了新的理论增强工具，可应用于各类类别生成任务。",
+          "llm_tldr": "均匀离散扩散模型依赖损坏核定义类别生成的中间状态与逆向预测。Simplax在保持原分类边缘分布不变的前提下，引入与损坏类别耦合的单纯形值辅助变量，形成精确的Dirichlet-分类增广。该增广导出了可处理的Rao-Blackwellized逆向桥目标与随机逆向采样器，在扩展训练目标的同时不改变底层类别损坏过程。这项工作为离散扩散生成提供了新的理论增强工具，可应用于各类类别生成任务。",
+          "llm_tags": [
+            "query:diff-video"
+          ],
+          "matched_query_tag": "query:diff-video",
+          "matched_query_text": "diffusion models as generative models",
+          "matched_requirement_id": "req-1",
+          "selection_source": "carryover_cache",
+          "paper_id": "2608.10615v1",
+          "carry_days": 1
+        },
+        {
+          "id": "2608.11618v1",
+          "source": "arxiv",
+          "title": "Generative Video Compression Based on Hierarchical Referencing",
+          "abstract": "Diffusion-based generative video compression has emerged as a promising paradigm to improve perceptual quality, where latent frames are required to be encoded efficiently while serving as denoising conditions. However, existing methods neither carefully design reference and quality structures during latent coding nor account for the impact of frame-level quality variation on denoising procedure, which limits coding efficiency and aggravates artifact propagation during generative reconstruction. In this paper, we propose GVCHR, Generative Video Compression based on Hierarchical Referencing. The key idea is to organize latent frames hierarchically, where the selected high-quality references benefit both latent coding and generative reconstruction. In latent coding, GVCHR couples a hierarchical reference structure with a hierarchical quality structure, assigning more bits to lower-layer frames that are reused more frequently as references. Built on this design, we introduce Hierarchical Temporal Context Mining to exploits complementary short- and long-term temporal context for effective latent coding. In generative reconstruction, the coding-side hierarchy is incorporated into a Hierarchical Attentive Adapter which is attached to a video diffusion transformer. This adapter uses hierarchical attention to restrict each latent frame to attend only to the same- or lower-layer references, thereby reducing artifact propagation during denoising. Experiments validate GVCHR on multiple benchmarks. Compared with the previous state-of-the-art method, GVCHR achieves 50.5% and 54.0% BD-rate gains in terms of LPIPS and DISTS, respectively, while also delivering clearly improved visual quality.",
+          "authors": [
+            "Daowen Li",
+            "Ding Ding",
+            "Zifu Zhang",
+            "Kai Li",
+            "Ying Chen"
+          ],
+          "primary_category": "cs.CV",
+          "categories": [
+            "cs.CV"
+          ],
+          "published": "2026-08-12T03:55:20+00:00",
+          "link": "https://arxiv.org/pdf/2608.11618v1",
+          "tags": [
+            "keyword:diff-video",
+            "query:diff-video"
+          ],
+          "llm_score": 8.0,
+          "llm_evidence_en": "diffusion-based generative video compression with hierarchical referencing",
+          "llm_evidence_cn": "基于层次化引用的扩散生成式视频压缩",
+          "llm_evidence": "基于层次化引用的扩散生成式视频压缩",
+          "canonical_evidence": "基于层次化引用的扩散生成式视频压缩",
+          "llm_tldr_en": "GVCHR applies diffusion-based generative video compression by organizing latent frames hierarchically, letting high-quality references improve both latent coding and generative reconstruction, reducing artifacts.",
+          "llm_tldr_cn": "扩散式生成视频压缩利用潜伏帧作为去噪条件，但现有方法未精心设计参考与质量结构，且忽略帧级质量变化对去噪的影响。GVCHR提出层次化组织潜伏帧，使所选高质量参考同时优化潜伏编码和生成重建，从而提升编码效率并减少伪影传播，改善视频感知质量。实验表明该方法在压缩效率与重建质量上均优于现有方案。",
+          "llm_tldr": "扩散式生成视频压缩利用潜伏帧作为去噪条件，但现有方法未精心设计参考与质量结构，且忽略帧级质量变化对去噪的影响。GVCHR提出层次化组织潜伏帧，使所选高质量参考同时优化潜伏编码和生成重建，从而提升编码效率并减少伪影传播，改善视频感知质量。实验表明该方法在压缩效率与重建质量上均优于现有方案。",
           "llm_tags": [
             "query:diff-video"
           ],
@@ -46,425 +86,42 @@
           "matched_query_text": "papers on diffusion models applied to video generation",
           "matched_requirement_id": "req-5",
           "selection_source": "carryover_cache",
-          "paper_id": "2608.06125v1",
+          "paper_id": "2608.11618v1",
           "carry_days": 1
         },
         {
-          "id": "2608.04701v1",
+          "id": "2608.10544v1",
           "source": "arxiv",
-          "title": "UniWorld-View: Large-Baseline View Synthesis via Video Diffusion Models",
-          "abstract": "The abundance of casually captured monocular videos and images on social media provides a valuable source for immersive content creation, where generating novel views from such sparse observations can greatly enhance user experiences. However, producing photorealistic and geometrically consistent views with precise camera control remains challenging when input coverage is extremely limited. Reconstruction-based approaches such as NeRF and 3D Gaussian Splatting (3DGS) deteriorate severely under sparse inputs and fail to explicitly handle occlusions. Generative methods ease data requirements but still struggle with large-baseline view synthesis due to inaccurate or implicit geometric guidance. To overcome these limitations, we introduce UniWorld-View, a unified framework for controllable large-baseline novel view synthesis from monocular inputs. UniWorld-View integrates explicit 3D guidance with generative diffusion modeling to enable precise camera control and geometrically consistent view generation. The geometric guidance is obtained through an occlusion-aware point cloud rendering strategy that resolves visibility ambiguities and provides accurate priors for diffusion-based synthesis. By coupling this rendering strategy with powerful video diffusion backbones, UniWorld-View achieves high-fidelity novel view generation even under extreme camera motions and wide-baseline changes, and can further provide multi-view videos for downstream dynamic 3DGS reconstruction. Experiments on the WorldScore benchmark and zero-shot NVS benchmarks demonstrate the effectiveness of UniWorld-View in controllability, geometric consistency, and visual fidelity.",
+          "title": "Flow Straight to Reality: Perceptually Consistent Flow Matching for Efficient Image Restoration",
+          "abstract": "Image restoration is fundamentally constrained by the tradeoff between distortion and perception: minimizing pixel-wise error yields over-smoothed results, whereas optimizing for perceptual realism often introduces structural deviations. Recent approaches attempt to balance this tradeoff via posterior sampling or multi-stage generative pipelines, yet remain computationally expensive and architecturally complex. To overcome these limitations, we propose PCFlow (Perceptually Consistent Flow Matching), a unified framework that directly parameterizes a continuous transport from degraded observations to clean targets, jointly optimizing distortion and perceptual quality. While its latent consistency flow objective drives stable and efficient few-step inference, a Latent Consistency Perceptual Loss (LCPL) imposes semantic constraints directly on the guiding velocity field, steering the dynamics toward visually sharp data manifolds. Furthermore, recognizing the inherent conflict between structural and perceptual consistencies, we integrate a conflict-free gradient projection strategy to stabilize the multi-objective optimization landscape. Combined with lightweight, convolution-only backbone, PCFlow achieves competitive performance across diverse restoration tasks at a fraction of traditional computational costs.",
           "authors": [
-            "Haiyang Zhou",
-            "Wangbo Yu",
-            "Chaoran Feng",
-            "Xunyu Zhou",
-            "Yonghong Tian",
-            "Li Yuan"
-          ],
-          "primary_category": "cs.CV",
-          "categories": [
-            "cs.CV"
-          ],
-          "published": "2026-08-05T11:10:52+00:00",
-          "link": "https://arxiv.org/pdf/2608.04701v1",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Uses video diffusion models for large-baseline view synthesis",
-          "llm_evidence_cn": "使用视频扩散模型进行大基线视图合成",
-          "llm_evidence": "使用视频扩散模型进行大基线视图合成",
-          "canonical_evidence": "使用视频扩散模型进行大基线视图合成",
-          "llm_tldr_en": "Introduces UniWorld-View, a video diffusion based framework that synthesizes photorealistic novel views from sparse monocular inputs under large baselines, overcoming issues of reconstruction-based methods with generative priors.",
-          "llm_tldr_cn": "稀疏输入下基于重建的新视角合成方法（如NeRF和3DGS）性能显著退化，生成方法也因几何引导不准确而难以处理大基线。为此提出UniWorld-View，利用视频扩散模型生成新视角，通过生成先验和几何一致性约束处理遮挡与相机控制。在极端稀疏输入上，该方法实现了逼真且几何一致的视图合成，优于重建基线和现有生成方法。该研究表明视频扩散模型可有效支撑沉浸式内容创作中的大基线新视角合成。",
-          "llm_tldr": "稀疏输入下基于重建的新视角合成方法（如NeRF和3DGS）性能显著退化，生成方法也因几何引导不准确而难以处理大基线。为此提出UniWorld-View，利用视频扩散模型生成新视角，通过生成先验和几何一致性约束处理遮挡与相机控制。在极端稀疏输入上，该方法实现了逼真且几何一致的视图合成，优于重建基线和现有生成方法。该研究表明视频扩散模型可有效支撑沉浸式内容创作中的大基线新视角合成。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "diffusion models for video generation and synthesis",
-          "matched_requirement_id": "req-3",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.04701v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.05600v1",
-          "source": "arxiv",
-          "title": "LC-GRPO: Bridging Train-Inference Gap for Flow-Based GRPO with Langevin Correction",
-          "abstract": "Flow-based generative models are typically sampled by solving a deterministic ordinary differential equation (ODE), whereas online reinforcement learning requires stochastic rollouts for policy exploration and optimization. Existing GRPO methods for flow models therefore replace the inference-time ODE with a stochastic differential equation (SDE) during training. Although the ODE and SDE share the same marginal distributions in continuous time, their finite-step discretizations can differ substantially. In particular, SDE rollouts often become blurry as the exploration noise increases, creating a mismatch between the samples used for reinforcement learning and those generated by the test-time ODE sampler. We introduce LC-GRPO, a flow-based GRPO framework with Langevin correction. Each rollout transition first takes an inference-aligned ODE Euler step and then applies a stochastic Langevin correction targeting the marginal distribution at the resulting timestep. The required score is recovered directly from the flow velocity, requiring no additional score model, while the resulting transition remains an isotropic Gaussian with a tractable likelihood for policy optimization. We theoretically show that, under suitable conditions, one Langevin correction step reduces the Wasserstein error of an imperfect ODE Euler step. At a matched randomness level, we further show that the proposed transition can be more accurate than the standard Euler--Maruyama discretization of the reverse SDE. Experiments on SD3.5-Medium, FLUX.1-Dev, and HunyuanVideo demonstrate that LC-GRPO consistently improves reward optimization across text-to-image and text-to-video tasks, preserves generation quality, and substantially narrows the gap between stochastic training rollouts and deterministic test-time ODE inference.",
-          "authors": [
-            "Yingqing Guo",
-            "Hui Yuan",
-            "Zijian He",
-            "Mengdi Wang",
-            "Zheng Ding"
-          ],
-          "primary_category": "cs.LG",
-          "categories": [
-            "cs.LG",
-            "cs.AI",
-            "cs.CV"
-          ],
-          "published": "2026-08-06T04:47:57+00:00",
-          "link": "https://arxiv.org/pdf/2608.05600v1",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Langevin correction for flow-based generative model reinforcement learning",
-          "llm_evidence_cn": "基于朗之万校正弥合流模型强化学习训练与推断差距",
-          "llm_evidence": "基于朗之万校正弥合流模型强化学习训练与推断差距",
-          "canonical_evidence": "基于朗之万校正弥合流模型强化学习训练与推断差距",
-          "llm_tldr_en": "LC-GRPO bridges the train-inference gap in flow-based GRPO by using Langevin correction to make stochastic training rollouts align with deterministic test-time ODE sampling, improving reinforcement learning for flow generative models.",
-          "llm_tldr_cn": "针对流生成模型在在线强化学习中使用SDE训练与测试时ODE采样不一致、随机轨迹模糊的问题，提出LC-GRPO，通过朗之万校正将训练时的随机探索与测试时的确定性ODE采样对齐，避免有限步离散化带来的分布偏移。该方法提高了流模型强化学习样本的清晰度和一致性，改善了基于流模型的策略优化效果。",
-          "llm_tldr": "针对流生成模型在在线强化学习中使用SDE训练与测试时ODE采样不一致、随机轨迹模糊的问题，提出LC-GRPO，通过朗之万校正将训练时的随机探索与测试时的确定性ODE采样对齐，避免有限步离散化带来的分布偏移。该方法提高了流模型强化学习样本的清晰度和一致性，改善了基于流模型的策略优化效果。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "flow matching",
-          "matched_requirement_id": "req-4",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.05600v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.05557v1",
-          "source": "arxiv",
-          "title": "Hierarchical Flow Matching for 3D Point Cloud Generation",
-          "abstract": "Generating high-quality 3D point clouds requires capturing both global shape topology and local geometric details. Existing flow-based methods rely on continuous normalizing flows (CNFs) that demand expensive ODE solving and trace estimation during training, while diffusion models require hundreds of iterative denoising steps. Moreover, most approaches adopt single-level generation directly in point space, disregarding the hierarchical structure natural to 3D shapes. We propose Hierarchical Flow Matching (HFM) that extends flow matching to bilevel structure for unconditional 3D point cloud generation. HFM decomposes the task into two levels via optimal-transport flow matching: a \\textit{Latent Flow Matching} models the global shape manifold in a compact latent space, and a \\textit{Conditional Point Flow Matching} reconstructs detailed point clouds conditioned on the latent code. Both flows are trained with simple MSE regression losses. The resulting straight OT paths enable efficient sampling with as few as 15 Euler steps per flow, while the structured latent space supports downstream tasks including classification. Extensive experiments on ShapeNet and ModelNet benchmarks demonstrate that HFM achieves competitive or even best performance compared with prior state-of-the-art methods.",
-          "authors": [
-            "Linhao Wang",
-            "Qichang Zhang",
-            "Ye Su",
-            "Hao Wang"
-          ],
-          "primary_category": "cs.CV",
-          "categories": [
-            "cs.CV"
-          ],
-          "published": "2026-08-06T03:23:49+00:00",
-          "link": "https://arxiv.org/pdf/2608.05557v1",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Extends flow matching to hierarchical bilevel 3D point cloud generation",
-          "llm_evidence_cn": "将流匹配扩展到分层双层次的3D点云生成",
-          "llm_evidence": "将流匹配扩展到分层双层次的3D点云生成",
-          "canonical_evidence": "将流匹配扩展到分层双层次的3D点云生成",
-          "llm_tldr_en": "Hierarchical Flow Matching decomposes 3D point cloud generation into latent and point-level flow matching, avoiding expensive CNFs and hundreds of denoising steps while capturing global and local structure.",
-          "llm_tldr_cn": "三维点云生成需同时捕捉全局拓扑和局部细节，现有流方法依赖连续归一化流导致训练昂贵，扩散模型又需要大量迭代。本文提出分层流匹配，将无条件点云生成分解为潜在空间的全局形状建模和点空间的局部细节建模，基于最优输运流匹配进行双层次生成。实验表明该方法生成质量高且效率优于现有方法，为三维生成提供了更简洁高效的流匹配方案。",
-          "llm_tldr": "三维点云生成需同时捕捉全局拓扑和局部细节，现有流方法依赖连续归一化流导致训练昂贵，扩散模型又需要大量迭代。本文提出分层流匹配，将无条件点云生成分解为潜在空间的全局形状建模和点空间的局部细节建模，基于最优输运流匹配进行双层次生成。实验表明该方法生成质量高且效率优于现有方法，为三维生成提供了更简洁高效的流匹配方案。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "flow matching",
-          "matched_requirement_id": "req-4",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.05557v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.05803v1",
-          "source": "arxiv",
-          "title": "Vorch-Omni: Multi-Task Orchestration of Sight and Sound",
-          "abstract": "Recent advances in generative video modeling have enabled diverse generation, reference-based synthesis, extension, and editing, but existing approaches often rely on fragmented task-specific models. A general model must distinguish heterogeneous target, source, and reference signals to determine what to generate, preserve, or use as guidance, while reducing interference among tasks. Joint audio-visual generation further increases this challenge by introducing diverse conditioning and output configurations across modalities. We present Vorch-Omni, a unified multi-task framework for audio-visual synthesis based on an arbitrary-condition-to-arbitrary-output formulation. It flexibly treats video and audio signals as either conditioning inputs or generation targets. Token-level conditioning masks and task identifiers distinguish targets, source content, and references, while position types separate temporal context from independent conditions. To capture semantic and structural information, Vorch-Omni employs complementary visual conditioning pathways: a vision-language model interprets sampled frames with text instructions, and a video VAE encodes conditions into latent tokens for direct guidance. We further build a distributed data pipeline to curate diverse temporally aligned audio-visual clips, generate structured captions and metadata, and balance heterogeneous task distributions. Built on a single flow-matching diffusion transformer without task-specific architectural changes, Vorch-Omni supports over 10 tasks, including text-to-video, text-to-audio-video, image- and reference-conditioned generation, temporal extension, audio-driven generation, video transformation, and audio-visual editing. This unified framework provides a scalable foundation for general-purpose audio-visual generation and manipulation.",
-          "authors": [
-            "Vorch Team",
-            "Xiaoyu Chen",
-            "Yang Ding",
-            "Cong Han",
-            "Menglin Han",
-            "Yuxin Hong",
-            "Jiebo Hou",
-            "Zequn Jie",
-            "Xiang Li",
-            "Jing Liu",
-            "Qi Liu",
-            "Yulei Lu",
-            "Siyuan Luo",
-            "Lin Ma",
-            "Xin Ma",
-            "Yinlong Qian",
-            "Peng Shi",
-            "Fang Wan",
-            "Siqi Wang",
-            "Yaohui Wang",
-            "Yaole Wang",
-            "Yidi Wu",
-            "Siqian Yang",
-            "Mingyu Yin",
-            "Haoran Yu",
-            "Gang Yue",
-            "Lisai Zhang",
-            "Yuting Zhang"
-          ],
-          "primary_category": "cs.CV",
-          "categories": [
-            "cs.CV"
-          ],
-          "published": "2026-08-06T09:38:30+00:00",
-          "link": "https://arxiv.org/pdf/2608.05803v1",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Unified multi-task framework for audio-visual/video generation",
-          "llm_evidence_cn": "面向视听/视频生成的统一多任务框架",
-          "llm_evidence": "面向视听/视频生成的统一多任务框架",
-          "canonical_evidence": "面向视听/视频生成的统一多任务框架",
-          "llm_tldr_en": "Vorch-Omni unifies diverse audio-visual synthesis tasks into an arbitrary-condition-to-arbitrary-output formulation, supporting generation, reference-based synthesis, extension, and editing.",
-          "llm_tldr_cn": "视频生成领域存在任务碎片化问题，生成、参考合成、扩展和编辑通常由不同模型完成。Vorch-Omni提出统一多任务框架，采用任意条件到任意输出的形式，将视频和音频信号灵活地作为条件或生成目标。通过有效区分目标、源与参考信号，减少了任务间干扰。在多项音频-视频任务上展示了良好的通用性和生成质量，为多模态视频生成模型提供了统一范式。",
-          "llm_tldr": "视频生成领域存在任务碎片化问题，生成、参考合成、扩展和编辑通常由不同模型完成。Vorch-Omni提出统一多任务框架，采用任意条件到任意输出的形式，将视频和音频信号灵活地作为条件或生成目标。通过有效区分目标、源与参考信号，减少了任务间干扰。在多项音频-视频任务上展示了良好的通用性和生成质量，为多模态视频生成模型提供了统一范式。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "video generation",
-          "matched_requirement_id": "req-2",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.05803v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.10519v1",
-          "source": "arxiv",
-          "title": "SparSTAR: Sparse Attention for SpaceTime AutoRegressive Video Synthesis",
-          "abstract": "InfinityStar extends visual autoregressive generation to video through a sequence of image and clip pyramids. Its changing scale and cross-clip context, however, leave late-scale attention costly and make sparse patterns reused from diffusion or image VAR models unreliable. We introduce SparSTAR, a training-free block-sparse attention method tailored to this setting. At each expensive scale and attention head, SparSTAR scores contiguous key blocks from the current query and key activations, retains required conditioning context, and executes the selected blocks through a forward-only sparse path. We analyze cross-scale consistency within a clip, pattern persistence across clip boundaries, and quality degradation as reuse spans increasingly distant scales. Across these analyses, important key blocks shift, showing that recomputing block selection at each target scale is more reliable than reusing a transferred mask. On 720p text-to-video and image-to-video generation, SparSTAR preserves every token and refinement scale while providing about a 1.6x end-to-end speedup and maintaining VBench and paired-output reconstruction fidelity close to dense InfinityStar.",
-          "authors": [
-            "Jongbeom Lee",
-            "Hyunwoo Yu",
-            "Jincheol Yang",
-            "Jaemin Choi",
-            "Suk-Ju Kang"
-          ],
-          "primary_category": "cs.CV",
-          "categories": [
-            "cs.CV"
-          ],
-          "published": "2026-08-11T05:46:18+00:00",
-          "link": "https://arxiv.org/pdf/2608.10519v1",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Autoregressive video synthesis with sparse attention",
-          "llm_evidence_cn": "自回归视频合成与稀疏注意力",
-          "llm_evidence": "自回归视频合成与稀疏注意力",
-          "canonical_evidence": "自回归视频合成与稀疏注意力",
-          "llm_tldr_en": "SparSTAR presents a training-free block-sparse attention method for InfinityStar video autoregressive generation, reducing late-scale attention cost while retaining cross-scale consistency and generation quality.",
-          "llm_tldr_cn": "视频自回归生成通过图像和剪辑金字塔扩展，但晚期尺度注意力代价高，且简单复用扩散或图像VAR的稀疏模式并不可靠。提出SparSTAR，一种免训练块稀疏注意力方法，在每个昂贵尺度与注意力头上按当前查询和键激活打分，选择连续关键块，保留所需条件上下文并执行前向稀疏路径。通过对跨尺度一致性、跨剪辑模式持续性和长程复用质量的分析，验证了该方法在保持生成质量的同时显著降低注意力开销。该工作为视频自回归模型提供高效稀疏注意力方案。",
-          "llm_tldr": "视频自回归生成通过图像和剪辑金字塔扩展，但晚期尺度注意力代价高，且简单复用扩散或图像VAR的稀疏模式并不可靠。提出SparSTAR，一种免训练块稀疏注意力方法，在每个昂贵尺度与注意力头上按当前查询和键激活打分，选择连续关键块，保留所需条件上下文并执行前向稀疏路径。通过对跨尺度一致性、跨剪辑模式持续性和长程复用质量的分析，验证了该方法在保持生成质量的同时显著降低注意力开销。该工作为视频自回归模型提供高效稀疏注意力方案。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "video generation",
-          "matched_requirement_id": "req-2",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.10519v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.09438v1",
-          "source": "arxiv",
-          "title": "Unveiling the Secret of AdaLN-Zero in Diffusion Transformer",
-          "abstract": "Diffusion transformer (DiT), a rapidly emerging architecture for image generation, has gained much attention. However, despite ongoing efforts to improve its performance, the understanding of DiT remains superficial. In this work, we delve into and investigate a critical conditioning mechanism within DiT, adaLN-Zero, which achieves superior performance compared to adaLN. Our work studies three potential elements driving this performance, including an SE-like structure, zero-initialization, and a \"gradual\" update order, among which zero-initialization is proved to be the most influential. Building on this understanding, we propose an analysis-guided initialization strategy, termed adaLN-Gaussian, which serves both as an empirical validation of our analysis and as a practical initialization method that consistently improves optimization efficiency. On the other hand, inspired by the SE-like structure, we introduce an improved conditioning mechanism called SE-adaLN-Zero. Extensive experiments following DiT on four datasets, especially on ImageNet1K demonstrate the effectiveness and generalization of adaLN-Gaussian and SE-adaLN-Zero. Beyond class-to-image generation, we also evaluate the generalization of the two improved methods on text-to-image generation.",
-          "authors": [
-            "Jie Zhu",
-            "Mingyu Ding",
-            "Boqiang Duan",
-            "Leye Wang",
-            "Jingdong Wang"
-          ],
-          "primary_category": "cs.CV",
-          "categories": [
-            "cs.CV"
-          ],
-          "published": "2026-08-10T11:12:17+00:00",
-          "link": "https://arxiv.org/pdf/2608.09438v1",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Analyzes the adaLN-Zero conditioning mechanism in Diffusion Transformer, a key architecture for diffusion generative models",
-          "llm_evidence_cn": "分析扩散Transformer中adaLN-Zero条件机制，这是扩散生成模型的关键架构组件",
-          "llm_evidence": "分析扩散Transformer中adaLN-Zero条件机制，这是扩散生成模型的关键架构组件",
-          "canonical_evidence": "分析扩散Transformer中adaLN-Zero条件机制，这是扩散生成模型的关键架构组件",
-          "llm_tldr_en": "Studies why adaLN-Zero outperforms adaLN in Diffusion Transformers, identifies zero-initialization as the key factor, and proposes adaLN-Gaussian initialization for better image generation.",
-          "llm_tldr_cn": "扩散Transformer（DiT）是图像生成中的新兴架构，但其内部机制（尤其是adaLN-Zero条件机制）尚未被充分理解。该文系统分解SE-like结构、零初始化和渐进更新顺序三种要素，证明零初始化是性能提升的关键，并提出分析引导的adaLN-Gaussian初始化策略。该策略既是理论分析的实证，也能进一步提升DiT的图像生成能力，为后续扩散模型架构设计提供了可解释的指导。",
-          "llm_tldr": "扩散Transformer（DiT）是图像生成中的新兴架构，但其内部机制（尤其是adaLN-Zero条件机制）尚未被充分理解。该文系统分解SE-like结构、零初始化和渐进更新顺序三种要素，证明零初始化是性能提升的关键，并提出分析引导的adaLN-Gaussian初始化策略。该策略既是理论分析的实证，也能进一步提升DiT的图像生成能力，为后续扩散模型架构设计提供了可解释的指导。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "diffusion models as generative models",
-          "matched_requirement_id": "req-1",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.09438v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.08594v2",
-          "source": "arxiv",
-          "title": "SDDBMs: Soft Denoising Diffusion Bridge Models",
-          "abstract": "Diffusion bridge models leverage Doob's \\(h\\)-transform to construct stochastic transports between arbitrary endpoint distributions, and have shown strong potential in image-to-image translation and restoration. However, most existing bridge models rely on hard endpoint conditioning, which forces the terminal state to match a prescribed target exactly. This hard constraint induces terminal-boundary singularities: the terminal law collapses to a Dirac measure, and the resulting drift coefficients become ill-conditioned near the endpoint. In this paper, we propose Soft Denoising Diffusion Bridge Models (SDDBMs), a generalized framework that regularizes diffusion bridges directly at the level of their terminal constraints. Instead of imposing an exact endpoint, SDDBMs prescribe a non-degenerate Gaussian terminal marginal under the transformed path measure, with a flexible terminal center and variance. Starting from this prescribed marginal, we develop a complete closed-form construction of the soft bridge, including the Gaussian terminal reweighting and soft \\(h\\)-function, the induced Gaussian forward marginals and \\(\\mathbf{x}_0\\)-free dynamics. Theoretically, SDDBMs provide a unified probabilistic perspective that encompasses existing diffusion bridge models, including DDBMs, GOUB, and UniDB, as special cases under specific parameter choices. Extensive experiments on image restoration tasks demonstrate that SDDBMs achieve improved numerical stability and superior generation quality over existing bridge-based methods.",
-          "authors": [
-            "Shiyi Qi",
-            "Kun He",
-            "Mingmou Liu"
-          ],
-          "primary_category": "cs.AI",
-          "categories": [
-            "cs.AI"
-          ],
-          "published": "2026-08-09T09:19:46+00:00",
-          "link": "https://arxiv.org/pdf/2608.08594v2",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Generalizes diffusion bridge models with soft terminal constraints",
-          "llm_evidence_cn": "通过软端约束推广扩散桥模型",
-          "llm_evidence": "通过软端约束推广扩散桥模型",
-          "canonical_evidence": "通过软端约束推广扩散桥模型",
-          "llm_tldr_en": "SDDBMs introduces a generalized diffusion bridge framework with soft terminal constraints, avoiding terminal singularities and improving image translation and restoration stability.",
-          "llm_tldr_cn": "扩散桥模型借助Doob h变换实现端点分布间的随机输运，但硬端点约束会使终态塌缩为Dirac测度并导致漂移系数病态。本文提出软去噪扩散桥模型，在端约束层面进行正则化，避免终端边界奇异。该方法在图像翻译和复原任务上表现优于现有桥模型，并提供了更稳定的训练与采样过程，推广了扩散桥的适用范围。",
-          "llm_tldr": "扩散桥模型借助Doob h变换实现端点分布间的随机输运，但硬端点约束会使终态塌缩为Dirac测度并导致漂移系数病态。本文提出软去噪扩散桥模型，在端约束层面进行正则化，避免终端边界奇异。该方法在图像翻译和复原任务上表现优于现有桥模型，并提供了更稳定的训练与采样过程，推广了扩散桥的适用范围。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "diffusion models as generative models",
-          "matched_requirement_id": "req-1",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.08594v2",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.07003v1",
-          "source": "arxiv",
-          "title": "HRDiT: Training-Free High-Resolution Image Generation with Off-the-Shelf Diffusion Transformer Models",
-          "abstract": "Training-free text-to-high-resolution image generation has recently attracted growing research attention. However, existing studies on this task primarily focus on adapting off-the-shelf U-Net-based diffusion models to high resolutions, with limited progress on adapting off-the-shelf Diffusion Transformer (DiT) models despite their strong text-to-image generation capabilities at limited resolutions. In this work, we find two key challenges particularly hindering the application of off-the-shelf DiT models for high-resolution image synthesis in a training-free manner, namely, spatial disorder and long generation time. To address these challenges, we propose a novel method tailored to adapt off-the-shelf DiT models for high-resolution image synthesis. Extensive experiments show the efficacy of our method. Our code is available at: https://github.com/zylwithxy/HRDiT.",
-          "authors": [
-            "Yu Xue",
-            "Haoxuan Qu",
-            "Zhuoling Li",
-            "Hongbin Xu",
-            "Jianxiong Yin",
-            "Simon See",
-            "Hossein Rahmani",
-            "Jun Liu"
-          ],
-          "primary_category": "cs.CV",
-          "categories": [
-            "cs.CV"
-          ],
-          "published": "2026-08-07T09:19:16+00:00",
-          "link": "https://arxiv.org/pdf/2608.07003v1",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Training-free high-resolution image generation with off-the-shelf Diffusion Transformer models",
-          "llm_evidence_cn": "使用现成扩散Transformer模型进行无训练高分辨率图像生成",
-          "llm_evidence": "使用现成扩散Transformer模型进行无训练高分辨率图像生成",
-          "canonical_evidence": "使用现成扩散Transformer模型进行无训练高分辨率图像生成",
-          "llm_tldr_en": "HRDiT adapts off-the-shelf Diffusion Transformer models to training-free high-resolution text-to-image generation, addressing spatial disorder and long generation time.",
-          "llm_tldr_cn": "现有训练免费高分辨率生成主要适配U-Net扩散模型，对扩散Transformer的研究有限。HRDiT针对现成DiT模型在高分辨率下的空间混乱和生成时间长两大挑战，提出新的训练免费适配方法。实验证明该方法能够生成细节丰富的高分辨率图像，同时显著减少生成时间，扩展了DiT在高质量图像合成中的实用性，为高分辨率扩散生成提供了新路径。",
-          "llm_tldr": "现有训练免费高分辨率生成主要适配U-Net扩散模型，对扩散Transformer的研究有限。HRDiT针对现成DiT模型在高分辨率下的空间混乱和生成时间长两大挑战，提出新的训练免费适配方法。实验证明该方法能够生成细节丰富的高分辨率图像，同时显著减少生成时间，扩展了DiT在高质量图像合成中的实用性，为高分辨率扩散生成提供了新路径。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "diffusion models as generative models",
-          "matched_requirement_id": "req-1",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.07003v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.07572v1",
-          "source": "arxiv",
-          "title": "BRACE: Taming Sharp Irregularities via Barycentric Rational Forecasting for Fast Diffusion Transformers Inference",
-          "abstract": "Diffusion Transformers (DiTs) have demonstrated exceptional performance in high-fidelity image and video generation. To alleviate their massive computational overhead, temporal feature caching has been proposed to bypass redundant computations. However, existing cache-then-forecast methods driven by derivative-based polynomials often cause severe quality degradation under high acceleration due to unstable long-step predictions. To address this bottleneck, we propose Barycentric Rational Forecasting with Chebyshev Enhancement (BRACE). Motivated by the observation that DiT feature trajectories are globally smooth yet frequently exhibit sharp irregularities and local non-smoothness, BRACE shifts the paradigm from derivative-driven polynomial extrapolation to feature-driven rational forecasting. Specifically, it maintains a local sliding window to cache sparse historical features and leverages adapted Chebyshev weights to formulate a barycentric rational function, directly aggregating these raw features to ensure numerical stability. Extensive experiments demonstrate that BRACE achieves state-of-the-art quality-efficiency trade-offs across various DiT architectures with negligible computational overhead.",
-          "authors": [
-            "Jinlong Yang",
-            "Jinke Wu",
-            "Lizilin",
-            "Yao Zhou"
+            "Sangwoo Jo",
+            "Donggeun Ko",
+            "Jayeon Kang",
+            "Youngsang Kwak",
+            "Jaehwa Kwak",
+            "Sungjoon Choi"
           ],
           "primary_category": "cs.CV",
           "categories": [
             "cs.CV",
-            "cs.AI"
+            "cs.AI",
+            "cs.LG"
           ],
-          "published": "2026-08-04T11:24:53+00:00",
-          "link": "https://arxiv.org/pdf/2608.07572v1",
+          "published": "2026-08-11T06:37:10+00:00",
+          "link": "https://arxiv.org/pdf/2608.10544v1",
           "tags": [
             "keyword:diff-video",
             "query:diff-video"
           ],
           "llm_score": 8.0,
-          "llm_evidence_en": "Fast inference for diffusion transformers in image and video generation",
-          "llm_evidence_cn": "面向图像与视频生成的扩散Transformer快速推理",
-          "llm_evidence": "面向图像与视频生成的扩散Transformer快速推理",
-          "canonical_evidence": "面向图像与视频生成的扩散Transformer快速推理",
-          "llm_tldr_en": "Proposes BRACE, a barycentric rational forecasting method with Chebyshev enhancement for temporal feature caching, enabling fast inference of diffusion transformers without quality degradation.",
-          "llm_tldr_cn": "扩散Transformer在图像和视频生成中效果优异但计算量巨大，现有缓存-预测方法在高加速比下质量下降。BRACE观察到DiT特征轨迹全局平滑但局部存在尖锐不规则，因而采用带Chebyshev增强的重心有理预测来稳定长步预测。与导数多项式方法相比，BRACE在高加速比下保持更好的生成保真度，为图像与视频生成模型的低成本推理提供了新思路。",
-          "llm_tldr": "扩散Transformer在图像和视频生成中效果优异但计算量巨大，现有缓存-预测方法在高加速比下质量下降。BRACE观察到DiT特征轨迹全局平滑但局部存在尖锐不规则，因而采用带Chebyshev增强的重心有理预测来稳定长步预测。与导数多项式方法相比，BRACE在高加速比下保持更好的生成保真度，为图像与视频生成模型的低成本推理提供了新思路。",
-          "llm_tags": [
-            "query:diff-video"
-          ],
-          "matched_query_tag": "query:diff-video",
-          "matched_query_text": "diffusion models for video generation and synthesis",
-          "matched_requirement_id": "req-3",
-          "selection_source": "carryover_cache",
-          "paper_id": "2608.07572v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2608.11205v1",
-          "source": "arxiv",
-          "title": "AdvFD: Boosting Visual Generation via Adversarial Fr'echet Distance Loss",
-          "abstract": "Fréchet distance has recently emerged as an effective distribution-level objective for generator post-training, complementing the conventional sample-level diffusion and flow-matching losses. However, directly optimizing Fréchet objectives can cause Fréchet hacking. The target metrics keep improving, but visual quality and Fréchet alignment in other feature spaces may stagnate or deteriorate. We attribute this failure to the static pretrained feature spaces used by existing Fréchet losses. These feature spaces provide incomplete and fixed views of the differences between real and generated distributions. To address this limitation, we propose Adversarial Fréchet Distance (AdvFD), which complements the static representation targets in FD-Loss with a calibrated adversarially learned representation. AdvFD augments the original static Fréchet objective with a learnable representation that adversarially maximizes the Fréchet discrepancy between real and generated samples, while the generator minimizes the same discrepancy in the resulting adaptive feature space. To prevent the adversarial representation from trivially increasing the objective through feature amplification, we further introduce real-feature whitening, which normalizes its scale and covariance geometry and stabilizes the min--max optimization. Extensive experiments show that AdvFD consistently improves one-step generator post-training across both JiT and pMF backbones and across different model scales.",
-          "authors": [
-            "Mingju Gao",
-            "Jingkai Zhou",
-            "Kun Gai",
-            "Changqian Yu",
-            "Hao Tang"
-          ],
-          "primary_category": "cs.CV",
-          "categories": [
-            "cs.CV"
-          ],
-          "published": "2026-08-11T17:59:56+00:00",
-          "link": "https://arxiv.org/pdf/2608.11205v1",
-          "tags": [
-            "keyword:diff-video",
-            "query:diff-video"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "adversarial Fréchet distance loss for improving diffusion and flow-matching based visual generation",
-          "llm_evidence_cn": "用于改进基于扩散和流匹配的视觉生成模型的对抗式Fréchet距离损失",
-          "llm_evidence": "用于改进基于扩散和流匹配的视觉生成模型的对抗式Fréchet距离损失",
-          "canonical_evidence": "用于改进基于扩散和流匹配的视觉生成模型的对抗式Fréchet距离损失",
-          "llm_tldr_en": "AdvFD complements static Fréchet losses with adversarial feature spaces, preventing Fréchet hacking and improving visual quality in diffusion and flow-matching generators.",
-          "llm_tldr_cn": "Fréchet距离作为分布级目标可对生成器进行后训练，但静态特征空间常导致Fréchet hacking，即指标改善而视觉质量下降。本文提出对抗式Fréchet距离损失，通过在对抗过程中动态补充静态表示目标，防止生成器对固定特征的过度优化。在扩散和流匹配生成器上应用该损失可提升视觉质量并保持分布对齐。其意义在于为生成模型后训练提供更鲁棒的分布级目标。",
-          "llm_tldr": "Fréchet距离作为分布级目标可对生成器进行后训练，但静态特征空间常导致Fréchet hacking，即指标改善而视觉质量下降。本文提出对抗式Fréchet距离损失，通过在对抗过程中动态补充静态表示目标，防止生成器对固定特征的过度优化。在扩散和流匹配生成器上应用该损失可提升视觉质量并保持分布对齐。其意义在于为生成模型后训练提供更鲁棒的分布级目标。",
+          "llm_evidence_en": "flow matching method for image restoration with perceptual consistency",
+          "llm_evidence_cn": "用于图像恢复的流匹配方法，强调感知一致性",
+          "llm_evidence": "用于图像恢复的流匹配方法，强调感知一致性",
+          "canonical_evidence": "用于图像恢复的流匹配方法，强调感知一致性",
+          "llm_tldr_en": "PCFlow parameterizes a continuous transport from degraded observations to clean targets with a latent consistency flow objective, jointly optimizing distortion and perceptual quality for efficient and perceptually consistent image restoration.",
+          "llm_tldr_cn": "图像恢复常在失真与感知质量之间权衡，现有后验采样或多阶段生成方法计算昂贵、结构复杂。本文提出PCFlow，直接参数化从退化观测到干净目标的连续传输，联合优化失真与感知质量，并使用潜在一致性流目标保持稳定。实验表明，PCFlow在图像恢复上实现了高效且感知一致的结果，为恢复任务提供了统一、简洁的流匹配框架。",
+          "llm_tldr": "图像恢复常在失真与感知质量之间权衡，现有后验采样或多阶段生成方法计算昂贵、结构复杂。本文提出PCFlow，直接参数化从退化观测到干净目标的连续传输，联合优化失真与感知质量，并使用潜在一致性流目标保持稳定。实验表明，PCFlow在图像恢复上实现了高效且感知一致的结果，为恢复任务提供了统一、简洁的流匹配框架。",
           "llm_tags": [
             "query:diff-video"
           ],
@@ -472,7 +129,47 @@
           "matched_query_text": "flow matching",
           "matched_requirement_id": "req-4",
           "selection_source": "carryover_cache",
-          "paper_id": "2608.11205v1",
+          "paper_id": "2608.10544v1",
+          "carry_days": 1
+        },
+        {
+          "id": "2608.12276v1",
+          "source": "arxiv",
+          "title": "XYZFlow:Scaling Multi dimensional Shortcut Flows for Efficient Generative Modeling",
+          "abstract": "High-fidelity image generation faces a trade-off between speed and quality. Diffusion models produce strong visuals but require costly iterative sampling. Existing efficient methods mainly distill pretrained models into few-step samplers, a challenging process that depends heavily on teacher-model quality. In this paper, we introduce XYZFlow, a framework that rethinks efficient generation through multidimensional scaling of flow matching. Unlike single-step mappings, XYZFlow enhances expressivity by making probability paths more identifiable and learnable through structured multidimensional conditioning. We view autoregressive modeling as implicit flow straightening, where richer context reduces trajectory ambiguity. XYZFlow realizes this idea through two orthogonal dimensions: temporal scaling, which uses non-Markovian conditioning on the full denoising history; and spatial scaling, enabled by Next Shortcut Prediction, which sequentially generates patches using preceding patches' denoising trajectories as priors. Experiments show that XYZFlow achieves state-of-the-art performance, with 7.2-8.5X teacher speedups and competitive FID, while Next Shortcut Prediction delivers superior quality-latency trade-offs over model scaling or step reduction.",
+          "authors": [
+            "Jinxiu Liu",
+            "Xuanming Liu",
+            "Kangfu Mei",
+            "Yandong Wen",
+            "Weiyang Liu"
+          ],
+          "primary_category": "cs.CV",
+          "categories": [
+            "cs.CV"
+          ],
+          "published": "2026-08-12T17:15:42+00:00",
+          "link": "https://arxiv.org/pdf/2608.12276v1",
+          "tags": [
+            "keyword:diff-video",
+            "query:diff-video"
+          ],
+          "llm_score": 8.0,
+          "llm_evidence_en": "flow matching framework for efficient generative modeling",
+          "llm_evidence_cn": "用于高效生成建模的流匹配框架",
+          "llm_evidence": "用于高效生成建模的流匹配框架",
+          "canonical_evidence": "用于高效生成建模的流匹配框架",
+          "llm_tldr_en": "XYZFlow rethinks efficient generative modeling by multidimensional scaling of flow matching, making probability paths more identifiable through structured conditioning and implicit flow straightening for few-step sampling.",
+          "llm_tldr_cn": "高保真生成面临速度与质量权衡，扩散模型采样昂贵，现有蒸馏方法依赖教师模型。XYZFlow通过多维缩放流匹配，使概率路径更易识别和学习，并把自回归视为隐式流拉直，减少轨迹歧义。在图像生成任务上，XYZFlow实现了高效且高质量的少步采样，为流匹配生成建模提供了新的扩展方向。",
+          "llm_tldr": "高保真生成面临速度与质量权衡，扩散模型采样昂贵，现有蒸馏方法依赖教师模型。XYZFlow通过多维缩放流匹配，使概率路径更易识别和学习，并把自回归视为隐式流拉直，减少轨迹歧义。在图像生成任务上，XYZFlow实现了高效且高质量的少步采样，为流匹配生成建模提供了新的扩展方向。",
+          "llm_tags": [
+            "query:diff-video"
+          ],
+          "matched_query_tag": "query:diff-video",
+          "matched_query_text": "flow matching",
+          "matched_requirement_id": "req-4",
+          "selection_source": "carryover_cache",
+          "paper_id": "2608.12276v1",
           "carry_days": 1
         }
       ]

@@ -41,7 +41,7 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-08-12</span>
+      <span class="dpr-home-dashboard-kicker">2026-08-13</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
     <strong class="dpr-home-dashboard-count">共 17 篇</strong>
@@ -51,7 +51,7 @@
     <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>6</dd></div>
     <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>11</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-08-12 20:45:38 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-08-13 20:43:25 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -62,7 +62,7 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日精读17篇论文，聚焦视频生成新突破；《Stream Forcing》满分领跑，构建统一训练轨迹实现鲁棒流式视频生成。重点看视频生成轨迹统一化与多镜次稀疏上下文路由（ContextMaster）两个方向，前者提升长视频稳定性，后者节省算力。下一步可先试读满分论文的代码与视频demo，再结合速读中的音频驱动缓存方案验证实战效果。</p>
+<p>今日共读17篇论文，精读6篇、速读11篇，聚焦视频生成与扩散模型加速。最值得关注的是基于视频扩散的大基线视图合成（UniWorld-View，9.0分）与实时流式人体动画（LiveAnimate，9.0分）。建议优先精读这两篇，并留意扩散模型推理优化的实用技巧。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -74,7 +74,7 @@
     <strong class="dpr-home-dashboard-count">6 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Stream Forcing: Constructing Unified Training Trajectory for Robust Streaming Video Generation">Stream Forcing: Constructing Unified Training Trajectory for Robust Streaming Video Generation</span></li><li><span class="dpr-home-dashboard-paper-title" title="ContextMaster: Interactive Multi-Shot Video Creation via Fixed-Budget Sparse Context Routing">ContextMaster: Interactive Multi-Shot Video Creation via Fixed-Budget Sparse Context Routing</span></li><li><span class="dpr-home-dashboard-paper-title" title="Energy-Guided Flow Matching">Energy-Guided Flow Matching</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="UniWorld-View: Large-Baseline View Synthesis via Video Diffusion Models">UniWorld-View: Large-Baseline View Synthesis via Video Diffusion Models</span></li><li><span class="dpr-home-dashboard-paper-title" title="LiveAnimate: Stable Long-Form Streaming Human Animation in Real-Time">LiveAnimate: Stable Long-Form Streaming Human Animation in Real-Time</span></li><li><span class="dpr-home-dashboard-paper-title" title="LoSA: Near-Lossless Sparse Attention for Training-Free Video Diffusion Acceleration">LoSA: Near-Lossless Sparse Attention for Training-Free Video Diffusion Acceleration</span></li></ul>
   </div>
   <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>6</strong></span></div>
 </section>
@@ -87,7 +87,7 @@
     <strong class="dpr-home-dashboard-count">11 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation">EchoCache: Energy-Guided Cross-Modal Caching for Efficient Audio-Driven Video Generation</span></li><li><span class="dpr-home-dashboard-paper-title" title="Computational and Statistical Guarantees of the \textit{c}-Rectified flow">Computational and Statistical Guarantees of the \textit{c}-Rectified flow</span></li><li><span class="dpr-home-dashboard-paper-title" title="Rectify Then Diffuse: Disentangling Concepts Before Denoising Trajectory Unfolds">Rectify Then Diffuse: Disentangling Concepts Before Denoising Trajectory Unfolds</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="BRACE: Taming Sharp Irregularities via Barycentric Rational Forecasting for Fast Diffusion Transformers Inference">BRACE: Taming Sharp Irregularities via Barycentric Rational Forecasting for Fast Diffusion Transformers Inference</span></li><li><span class="dpr-home-dashboard-paper-title" title="InstructionCrafter: Generating Consistent and High-Fidelity Visual Instructions">InstructionCrafter: Generating Consistent and High-Fidelity Visual Instructions</span></li><li><span class="dpr-home-dashboard-paper-title" title="Unveiling the Secret of AdaLN-Zero in Diffusion Transformer">Unveiling the Secret of AdaLN-Zero in Diffusion Transformer</span></li></ul>
   </div>
   <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>11</strong></span></div>
 </section>
