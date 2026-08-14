@@ -41,17 +41,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-08-13</span>
+      <span class="dpr-home-dashboard-kicker">2026-08-14</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 17 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 15 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
     <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
     <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>6</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>11</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>9</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-08-13 20:43:25 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-08-14 21:07:05 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -62,7 +62,9 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日共读17篇论文，精读6篇、速读11篇，聚焦视频生成与扩散模型加速。最值得关注的是基于视频扩散的大基线视图合成（UniWorld-View，9.0分）与实时流式人体动画（LiveAnimate，9.0分）。建议优先精读这两篇，并留意扩散模型推理优化的实用技巧。</p>
+<p>今日精读6篇、速读9篇，聚焦视频生成与高效生成建模，重点覆盖空间接地文本到视频、多维快捷流扩展等前沿方向。</p>
+<p>最值得关注的是《Spatially-Grounded Text-to-Video Generation via Inference-Time Gradient-Free Optimization》（10/10）与《XYZFlow: Scaling Multi dimensional Shortcut Flows for Efficient Generative Modeling》（9/10），分别指向可控视频生成和无梯度优化的新路径。</p>
+<p>建议普通读者优先看视频生成的可控性与效率提升相关成果，留意生成模型在空间细节与推理成本上的平衡。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -74,7 +76,7 @@
     <strong class="dpr-home-dashboard-count">6 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="UniWorld-View: Large-Baseline View Synthesis via Video Diffusion Models">UniWorld-View: Large-Baseline View Synthesis via Video Diffusion Models</span></li><li><span class="dpr-home-dashboard-paper-title" title="LiveAnimate: Stable Long-Form Streaming Human Animation in Real-Time">LiveAnimate: Stable Long-Form Streaming Human Animation in Real-Time</span></li><li><span class="dpr-home-dashboard-paper-title" title="LoSA: Near-Lossless Sparse Attention for Training-Free Video Diffusion Acceleration">LoSA: Near-Lossless Sparse Attention for Training-Free Video Diffusion Acceleration</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Spatially-Grounded Text-to-Video Generation via Inference-Time Gradient-Free Optimization">Spatially-Grounded Text-to-Video Generation via Inference-Time Gradient-Free Optimization</span></li><li><span class="dpr-home-dashboard-paper-title" title="XYZFlow:Scaling Multi dimensional Shortcut Flows for Efficient Generative Modeling">XYZFlow:Scaling Multi dimensional Shortcut Flows for Efficient Generative Modeling</span></li><li><span class="dpr-home-dashboard-paper-title" title="Beyond Trial-and-Error: Agentic Optimization for Image-to-Video Adherence">Beyond Trial-and-Error: Agentic Optimization for Image-to-Video Adherence</span></li></ul>
   </div>
   <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>6</strong></span></div>
 </section>
@@ -84,12 +86,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">11 篇</strong>
+    <strong class="dpr-home-dashboard-count">9 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="BRACE: Taming Sharp Irregularities via Barycentric Rational Forecasting for Fast Diffusion Transformers Inference">BRACE: Taming Sharp Irregularities via Barycentric Rational Forecasting for Fast Diffusion Transformers Inference</span></li><li><span class="dpr-home-dashboard-paper-title" title="InstructionCrafter: Generating Consistent and High-Fidelity Visual Instructions">InstructionCrafter: Generating Consistent and High-Fidelity Visual Instructions</span></li><li><span class="dpr-home-dashboard-paper-title" title="Unveiling the Secret of AdaLN-Zero in Diffusion Transformer">Unveiling the Secret of AdaLN-Zero in Diffusion Transformer</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="In-Loop Model Adaptation with Coupled Latent-Noise Guidance for High-Fidelity Subject-Driven Text-to-Image Generation">In-Loop Model Adaptation with Coupled Latent-Noise Guidance for High-Fidelity Subject-Driven Text-to-Image Generation</span></li><li><span class="dpr-home-dashboard-paper-title" title="Beyond Pixels: From Video Priors to 4D Worlds">Beyond Pixels: From Video Priors to 4D Worlds</span></li><li><span class="dpr-home-dashboard-paper-title" title="V-RAE: Rethinking Video Latent Spaces for Generation">V-RAE: Rethinking Video Latent Spaces for Generation</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>11</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>9</strong></span></div>
 </section>
 </div>
 
