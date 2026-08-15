@@ -1,0 +1,1982 @@
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+1
+Generative Video Compression Based on Hierarchical Referencing
+Daowen Li
+†, Ding Ding
+†, Zifu Zhang , Student Member, IEEE, Kai Li, and Ying Chen , Senior Member,
+IEEE
+Abstract—Diffusion-based generative video compression has
+emerged as a promising paradigm to improve perceptual quality,
+where latent frames are required to be encoded efficiently
+while serving as denoising conditions. However, existing methods
+neither carefully design reference and quality structures during
+latent coding nor account for the impact of frame-level quality
+variation on denoising procedure, which limits coding efficiency
+and aggravates artifact propagation during generative recon-
+struction. In this paper, we propose GVCHR, Generative Video
+Compression based on Hierarchical Referencing. The key idea
+is to organize latent frames hierarchically, where the selected
+high-quality references benefit both latent coding and generative
+reconstruction. In latent coding, GVCHR couples a hierarchical
+reference structure with a hierarchical quality structure, as-
+signing more bits to lower-layer frames that are reused more
+frequently as references. Built on this design, we introduce
+Hierarchical Temporal Context Mining to exploits complemen-
+tary short- and long-term temporal context for effective latent
+coding. In generative reconstruction, the coding-side hierarchy
+is incorporated into a Hierarchical Attentive Adapter which is
+attached to a video diffusion transformer. This adapter uses
+hierarchical attention to restrict each latent frame to attend only
+to the same- or lower-layer references, thereby reducing artifact
+propagation during denoising. Experiments validate GVCHR on
+multiple benchmarks. Compared with the previous state-of-the-
+art method, GVCHR achieves 50.5% and 54.0% BD-rate gains
+in terms of LPIPS and DISTS, respectively, while also delivering
+clearly improved visual quality.
+Index Terms—Generative video compression, Diffusion model,
+Hierarchical reference structure, Perceptual quality
+I. INTRODUCTION
+V
+IDEO traffic dominates today’s Internet, highlighting
+the importance of efficient video compression methods
+for saving storage and transmission costs. Existing traditional
+codecs [1], [2], [3] and most neural video compression (NVC)
+methods [4], [5], [6], [7], [8] are primarily optimized for
+fidelity-oriented objectives, such as PSNR or mean squared
+error, which often lead to blurry structures and visually un-
+satisfactory artifacts at low bitrates. This mismatch between
+distortion minimization and human perception has motivated
+increasing interest in generative video compression (GVC),
+where generative priors are exploited to reconstruct more
+realistic and perceptually pleasing videos. Recent advances in
+diffusion models [9], [10], [11] have further strengthened this
+direction, owing to their superior ability to synthesize photo-
+realistic spatial and temporal details. As a result, diffusion-
+based GVC has emerged as a promising paradigm [12], [13],
+Date of current version August 13, 2026.
+† Equal contribution. (Corresponding author: Ying Chen.)
+Daowen Li, Ding Ding, Zifu Zhang, Kai Li, and Ying Chen are with
+Alibaba Group, Hangzhou 311121, China (e-mail: {lidaowen.ldw, liangjie.dd,
+zhangzifu.zzf, kaishi.lk, YingChen}@alibaba-inc.com).
+in which compressed latent representations are transmitted and
+then used to guide generative reconstruction at the decoder.
+A typical diffusion-based GVC pipeline first encodes a
+source video into latent representations using a variational
+autoencoder (VAE) [14], and then compresses them with a
+learned latent codec. During reconstruction, the decoded latent
+frames are fed to a diffusion model as conditions for denoising,
+and the denoised latent frames are finally mapped back to the
+pixel domain by the VAE decoder. In latent coding, the clean
+latent frames should be compressed efficiently, which depends
+on how previously decoded frames are organized and exploited
+as temporal context, as well as how coding quality is allocated
+across frames. In particular, frames that play more important
+reference roles in providing context should be preserved with
+higher quality. In generative reconstruction, the decoded latent
+frames become lossy conditions for denoising, where the
+key issue is to organize their reference dependencies so as
+to reduce the propagation of coding artifacts across frames.
+Therefore, how to organize latent frames for both efficient
+coding and effective generative reconstruction becomes a
+central issue in diffusion-based GVC.
+However, existing diffusion-based GVC methods do not or-
+ganize latent frames in a way that fully serves both stages [13],
+[12]. In latent coding, they often rely on simple frame-by-
+frame referencing, or introduce frame-level quality variation
+without explicitly coupling it to frame’s reference role. As a
+result, reference frames that are important to enrich temporal
+context, might not be preserved with higher quality. In gen-
+erative reconstruction, decoded latent frames are typically in-
+jected into image or video diffusion models through preceding-
+frame conditioning or full attention across frames. Due to these
+lossy conditioning signals, unrestricted cross-frame interaction
+can spread artifacts from less reliable frames and further am-
+plify them during denoising. These limitations suggest that hi-
+erarchical organization of latent frames may benefit diffusion-
+based GVC. Hierarchical reference structures and hierarchical
+quality structures have been extensively studied in traditional
+video coding [15], [16] and fidelity-oriented NVC [17], [7],
+where they improve temporal prediction, reduce error prop-
+agation, and enhance rate-distortion (RD) performance. This
+motivates hierarchical design in diffusion-based GVC, so that
+important references can be better preserved during coding and
+more reliably reused during generative reconstruction.
+To address these limitations, we propose a Generative Video
+Compression framework based on Hierarchical Referencing,
+named GVCHR. The key idea is to organize latent frames
+according to their reference importance, so that a small set
+of more reliable frames can better support both latent coding
+and generative reconstruction. To this end, GVCHR couples
+a hierarchical reference structure with a hierarchical quality
+arXiv:2608.11618v1  [cs.CV]  12 Aug 2026
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+2
+Ground Truth
+BPP↓/ LPIPS↓
+DCVC-FM
+0.0133 / 0.1268
+PLVC
+0.0195 / 0.0687
+GLC-Video
+0.0129 / 0.0768
+GVCHR
+0.0120 / 0.0508
+GVCHR (Ours)
+Ground Truth
+Fig. 1. Visual comparisons with open-source baselines on the videoSRC24 sequence from MCL-JCV.
+structure in latent coding, and carries this hierarchical struc-
+ture over to generative reconstruction through hierarchy-aware
+conditioning.
+In latent coding, GVCHR organizes latent frames into
+multiple layers. Lower-layer latent frames are allocated more
+bits and reused more often as references, whereas higher-layer
+latent frames are coded more compactly and cannot serve
+as references for lower-layer ones. Built on this design, we
+introduce Hierarchical Temporal Context Mining (HTCM) to
+exploit complementary cues from short- and long-term refer-
+ences. The short-term reference preserves local details from
+the nearest decoded latent frame at the same or lower layers,
+while the long-term reference summarizes global temporal
+semantics from previously decoded lowest-layer latent frames.
+HTCM then aligns and fuses these two forms of context to
+improve conditional coding under hierarchical referencing.
+In generative reconstruction, GVCHR injects decoded latent
+frames into a video diffusion transformer (DiT) through a
+Hierarchical Attentive Adapter (HA-Adapter) to guide de-
+noising [10]. Instead of using full attention across all frames,
+the HA-Adapter preserves the coding-side hierarchy through
+hierarchical attention, so that each latent frame attends only
+to the same- or lower-layer references. This prevents less
+reliable higher-layer latent frames, coded with fewer bits, from
+contaminating more important lower-layer references during
+denoising, thereby reducing artifact propagation in generative
+reconstruction.
+To the best of our knowledge, this work is the first unified
+framework in diffusion-based GVC that extends hierarchical
+design from latent coding to generative reconstruction. This
+design offers two advantages: 1) it allocates more bits to latent
+frames with more important reference roles during coding,
+thereby reducing the overall bitrate; and 2) it enables the
+diffusion model to rely on these higher-quality references
+to reconstruct the remaining frames more effectively, thus
+improving perceptual quality under aggressive compression.
+Experiments demonstrate that GVCHR achieves state-of-the-
+art compression performance across multiple metrics. Com-
+pared with the latest GVC method [13], GVCHR achieves
+50.5% and 54.0% BD-rate reductions in terms of LPIPS and
+DISTS, respectively, while also producing better visual results,
+as shown in Fig. 1.
+Our contributions are summarized as follows:
+• We propose GVCHR, a generative video compression
+framework based on hierarchical referencing, which is
+the first to explore hierarchical reference structures for
+both latent coding and generative reconstruction.
+• We introduce hierarchical temporal context mining for
+latent coding, which exploits complementary short- and
+long-term temporal context from high-quality lower-layer
+references.
+• We design a hierarchical attentive adapter to inject de-
+coded latent frames into a video DiT through hierarchical
+attention, thereby reducing coding artifact propagation
+during denoising.
+• GVCHR achieves state-of-the-art compression perfor-
+mance in diffusion-based GVC, achieving 50.5% and
+54.0% BD-rate reductions in terms of LPIPS and DISTS,
+respectively, compared with the latest method [13].
+The rest of this paper is organized as follows. Section II
+reviews GVC and hierarchical reference structures. Section III
+presents GVCHR. Experimental results are given in Sec-
+tion IV, and Section V concludes the paper.
+II. RELATED WORK
+A. Generative Video Compression
+Generative video compression (GVC) exploits generative
+models to improve reconstruction and restore realistic details,
+thereby improving perceptual quality beyond the pixel fidelity
+targeted by traditional video coding and fidelity-oriented NVC.
+Early studies [18], [19], [20], [21] mainly incorporated gener-
+ative adversarial networks (GANs) and perceptual losses into
+existing neural codecs. For example, PLVC [20] adopted a
+recurrent autoencoder together with a recurrent discriminator
+under GAN training. However, such methods often suffer from
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+3
+𝐱! !"#
+$%&/(
+Q
+AE
+AD
+Entropy Model
+Recon. Net
+Hierarchical Latent Coding
+Latent 
+Encoder
+Latent
+Decoder
+𝛍, 𝛔
+Generative Reconstruction
+𝐜!
+)
+𝐟'!
+𝐜!
+𝐜!
+Hierarchical Temporal Context Mining
+Long-term Memory
+Long-term Memory Updating
+Long-term Ref. Feature
+Attention-based Updating
+Dual Context Fusion
+Short-term Ref. Feature
+Cross-Attention
+Context Refinement
+[Short-term  
+Metadata]
+Meta Embedder
+[Long-term  
+Metadata]
+Meta Embedder
+Hierarchical Attentive 
+Adapter
+𝐕)
+𝐳!～𝒩(0, 𝐈)
+DiT block 
+DiT block 
+DiT block
+Video DiT
+…
+DiT block 
+…
+Hierarchical Attentive 
+Transformer block
+HAT block
+HAT block
+Control Signal Embedder
+𝐱*!
+*
+!"#
+$%&/(
+𝐕
+Keyframe Sampling
+𝐱*!
+𝐱!
+𝐳"
+𝐟'!, 𝐱*! !"#
+$%&/(
+…
+…
+…
+…
+…
+…
+3D VAE
+Decoder
+Fig. 2. Overview of the proposed GVCHR framework for generative video compression.
+training instability and visually unpleasant artifacts caused by
+mode collapse.
+Subsequent studies explored latent-space generation for
+video reconstruction. GLC-Video [22] performed transform
+coding in the latent space of a vector-quantized variational
+autoencoder (VQ-VAE) [23], but its reconstruction quality
+was limited by the representational capacity of VQ-VAE.
+More recently, diffusion models have become popular due to
+their strong ability to synthesize realistic spatial and temporal
+details. I2VC [24] utilized frame-level latent diffusion to align
+reference features and generate target frames by denoising
+motion-related regions. DiffVC [12] compressed videos in the
+latent domain and then used an image diffusion model to en-
+hance decoded latent frames. Other approaches [25], [26], [27]
+improved compression efficiency by transmitting keyframes
+and limited side information, while using a video diffusion
+model to generate the remaining frames at the decoder.
+Despite their promising perceptual quality, these methods
+still exhibit limitations. Methods based on image diffusion
+priors may suffer from temporal flickering, while those re-
+lying on sparse reconstruction cues, such as keyframes and
+lightweight side information, often compromise content fi-
+delity. To alleviate these issues, GNVC-VD [13] employed
+a neural video codec to encode latent frames and used a video
+DiT to jointly enhance decoded latents within a group of
+pictures (GOP). Nevertheless, existing diffusion-based GVC
+methods have not explicitly explored hierarchical organization
+of latent frames with respect to their reference roles and
+coding quality, nor have they preserved coding-side reference
+structures in generative reconstruction.
+B. Hierarchical Reference Structure
+Hierarchical reference structures organize frames in a GOP
+into multiple layers, where lower-layer frames are reused more
+often as references for higher-layer ones. In traditional video
+coding, such structures are typically combined with hierarchi-
+cal quality structures, where lower-layer frames are encoded
+with finer quantization and higher fidelity [28]. Compared
+with simple sequential reference chains, hierarchical reference
+structures reduce error propagation, improve RD performance,
+and support temporal scalability [16], [15].
+Hierarchical designs have been widely studied in NVC.
+Under low-delay settings, early work explored hierarchical
+quality structures for frame-level bit allocation in end-to-
+end RD optimization. DCVC-DC [6] scaled the distortion
+term using hierarchy-dependent frame weights, and DCVC-
+FM [7] periodically refreshed reference features to suppress
+error propagation over long prediction chains. Beyond quality
+variation alone, DVCH [29] aligned hierarchical reference
+and quality structures under the low-delay B setting, while
+EHVC [17] introduced a hierarchical multi-reference scheme
+with learnable layer-wise quantization scales. Under random-
+access settings, HLVC [30] organized a GOP into quality lay-
+ers and recurrently enhanced higher-layer frames using bidi-
+rectional references from lower layers. Later approaches [31],
+[32], [33], [34], [35], [36] further explored bidirectional ref-
+erences or context to improve temporal prediction.
+Yet, hierarchical design has been explored only partially in
+diffusion-based GVC. DiffVC [12] adopted a simple frame-
+by-frame reference chain together with a hierarchical quality
+structure inherited from [6], while GNVC-VD [13] also relied
+on frame-by-frame referencing and allocated bits uniformly
+across latent frames. Existing methods do not jointly organize
+reference structures and quality allocation in latent coding,
+nor do they carry coding-side hierarchical structure over to
+generative reconstruction. As a result, a unified hierarchical
+design across coding and generation remains unexplored in
+diffusion-based GVC.
+III. METHODOLOGY
+A. Overview
+In this work, we aim to improve perceptual video recon-
+struction in diffusion-based GVC through a unified hierarchi-
+cal design across coding and generation. To this end, GVCHR
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+4
+ 𝐱!
+ 𝐱"
+ 𝐱#
+ 𝐱$
+ 𝐱%
+ 𝐱&
+ 𝐱'
+ 𝐱(
+ 𝐱)
+Frame-by-frame referencing
+(a) Previous frame-by-frame referencing
+ 𝐱!
+ 𝐱"
+ 𝐱#
+ 𝐱$
+ 𝐱%
+ 𝐱&
+ 𝐱'
+ 𝐱(
+ 𝐱)
+Layer 0 (𝑤! = 1.2, 
+except for 𝑤" = 8)
+Layer 1
+(𝑤! = 0.9)
+Short-term referencing
+Long-term referencing
+Long-term 
+memory
+Update
+(b) Our hierarchical referencing with two layers.
+ 𝐱!
+ 𝐱"
+ 𝐱#
+ 𝐱$
+ 𝐱%
+ 𝐱&
+ 𝐱'
+ 𝐱(
+ 𝐱)
+Layer 0 (𝑤! = 1.2, 
+except for 𝑤" = 8)
+Layer 2
+(𝑤! = 0.5)
+Layer 1
+(𝑤! = 0.9)
+Long-term 
+memory
+Update
+Short-term referencing
+Long-term referencing
+(c) Our hierarchical referencing with three layers.
+ 𝐱!
+ 𝐱"
+ 𝐱#
+ 𝐱$
+ 𝐱%
+ 𝐱&
+ 𝐱'
+ 𝐱(
+ 𝐱)
+Layer 0 (𝑤! = 1.2, 
+except for 𝑤" = 8)
+Layer 2
+(𝑤! = 0.5)
+Layer 1
+(𝑤! = 0.9)
+Layer 3
+(𝑤! = 0.2)
+Update
+Long-term 
+memory
+Short-term referencing
+Long-term referencing
+(d) Our hierarchical referencing with four layers.
+Fig. 3. Different settings of hierarchical reference structures. Wherein, wt determines the frame-level coding quality and is employed in the RD loss.
+organizes latent frames with coupled hierarchical reference and
+quality structures in latent coding, and preserves the resulting
+hierarchy during generative reconstruction. As illustrated in
+Fig. 2, GVCHR consists of hierarchical latent coding and
+diffusion-based generative reconstruction. The remainder of
+this section first introduces the overall framework, followed
+by Hierarchical Temporal Context Mining for latent coding
+in Section III-B, the Hierarchical Attentive Adapter for gen-
+erative reconstruction in Section III-C, and the multi-stage
+training scheme in Section III-D.
+1) Hierarchical
+Latent
+Coding:
+Source
+video
+V
+∈
+R(1+T )×H×W ×3
+is
+first
+separated
+into
+keyframes
+and
+grayscale intermediate frames. The discarded color informa-
+tion of intermediate frames is later recovered during gener-
+ation, which introduces little degradation in reconstruction
+quality while reducing the bitrate required for transmission.
+The resulting visual signals are then encoded to latent frames
+{xt}1+T/4
+t=0
+by a 3D VAE encoder [10].
+To remove redundancy within {xt}1+T/4
+t=0
+, each latent frame
+xt is compressed by a latent codec built upon the conditional
+coding framework in [8]. The codec is enhanced with the
+proposed Hierarchical Temporal Context Mining (HTCM),
+which exploits a hierarchical reference structure to extract
+temporal context from previously decoded features:
+yt = ga(xt | ct),
+(1)
+ˆyt = ⌊yt⌉,
+(2)
+ˆxt,ˆft = gs(ˆyt | ct),
+(3)
+µ, σ = gep(yt | ce
+t),
+(4)
+ct, ce
+t = HTCM(ˆf<t),
+(5)
+where ga and gs denote the latent encoder and decoder, re-
+spectively, and ⌊·⌉denotes rounding quantization. The decoded
+latent frame ˆxt and its feature ˆft are reconstructed from ˆyt.
+The entropy model gep estimates the parameters µ and σ of a
+Gaussian probability model for entropy coding. HTCM takes
+the previously decoded features ˆf<t as input and produces
+two temporal context representations, where ct is used for
+conditional latent encoding and decoding, and ce
+t for entropy
+parameter estimation. By organizing latent frames hierarchi-
+cally, HTCM allocates more bits to lower-layer frames reused
+more frequently as references, and mines temporal context
+from their decoded features for more effective conditional
+coding. Details of HTCM are presented in Section III-B.
+2) Diffusion-based Generative Reconstruction: For genera-
+tive reconstruction, the decoded latent frames {ˆxt}1+T/4
+t=0
+and
+their features {ˆft}1+T/4
+t=0
+are fed into a controllable video
+generation model composed of a video DiT and the proposed
+Hierarchical Attentive Adapter (HA-Adapter). We adopt a
+flow-matching formulation that learns a continuous velocity
+field ϵτ transporting Gaussian noise zN ∼N(0, I) toward the
+data manifold z0 [37]. To guide denoising, HA-Adapter fuses
+{ˆxt}1+T/4
+t=0
+and {ˆft}1+T/4
+t=0
+into frame-wise representations
+{ˆx′
+t}1+T/4
+t=0
+as control signals, which are injected into the
+video DiT through hierarchical attentive transformer blocks.
+Here, hierarchical attention restricts each frame to attend
+only to the same- or lower-layer references, preventing less
+reliable higher-layer frames from propagating artifacts during
+denoising. Details of HA-Adapter are given in Section III-C.
+The denoising process is formulated as:
+zτ−1 = zτ + (στ−1 −στ) · ˆϵ(zτ, τ, u),
+(6)
+u = HA-Adapter({ˆxt}1+T/4
+t=0
+, {ˆft}1+T/4
+t=0
+),
+(7)
+where zτ
+∈R(1+T/4)×(H/8)×(W/8)×16 denotes the latent
+variable along the denoising trajectory, and 16 is the chan-
+nel dimension of the 3D VAE bottleneck. The index τ =
+0, 1, ..., N −1 enumerates the flow steps and στ is the noise
+scale specified by a predefined schedule [9]. The video DiT
+predicts the velocity field ˆϵ(zτ, τ, u), and HA-Adapter projects
+the decoded latents and their features into the conditioning
+signal u aligned with the intermediate feature space of the
+transformer. After N denoising steps, the generated latent z0
+is decoded by a 3D VAE decoder into the final pixel-space
+reconstruction ˆV.
+B. Hierarchical Temporal Context Mining
+Informative temporal context is crucial for reducing tempo-
+ral redundancy in latent coding [5]. To this end, we propose
+HTCM, which exploits the hierarchical reference structure
+over {xt}1+T/4
+t=0
+to provide more informative temporal condi-
+tions for conditional coding. We first describe the hierarchical
+reference structure used in coding and then present short- and
+long-term context mining from selected references.
+1) Hierarchical Reference Structure for Coding: Under the
+hierarchical reference structure, {xt}1+T/4
+t=0
+are organized into
+multiple layers such that higher-layer latent frames cannot
+serve as references for lower-layer ones. The associated hi-
+erarchical quality structure allocates more bits to lower-layer
+frames, which are reused more often as references. Although
+higher-layer latent frames are coded more compactly and con-
+tain more distortion, their limited use as references mitigates
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+5
+ 𝐱#!
+"
+ 𝐱##
+"
+ 𝐱#$
+"
+ 𝐱#%
+"
+ 𝐱#&
+"
+…
+Referencing between each pair of frames
+…
+(a) Previous all-to-all referencing in attention.
+𝑡=0
+𝑡=7
+𝑡=2
+𝑡=8
+𝑡=3
+𝑡=4
+𝑡=5
+𝑡=6
+𝑡=1
+(b) Full-attention mask
+ 𝐱#!
+"
+Layer 2
+Layer 1
+ 𝐱##
+"
+ 𝐱#$
+"
+Layer 0
+ 𝐱#%
+"
+ 𝐱#&
+"
+…
+…
+(c) Our hierarchical referencing in attention.
+𝑡=0, layer 0
+𝑡=7, layer 2
+𝑡=2, layer 1
+𝑡=8, layer 0
+𝑡=3, layer 2
+𝑡=4, layer 0
+𝑡=5, layer 2
+𝑡=6, layer 1
+𝑡=1, layer 2
+(d) Block-attention mask.
+Fig. 4. Comparison between the previous all-to-all reference structure [13] and our hierarchical reference structure performed by attention in the adapter. For
+clarity, ˆx′
+3, ˆx′
+5, ˆx′
+6, and ˆx′
+7 are omitted in Fig. 4a and Fig. 4c. Each yellow block in Fig. 4d corresponds to Mi,j = 0 in Equation 20, indicating that ˆx′
+j,
+selected from {ˆx′
+t}1+T/4
+t=0
+, serves as a reference for ˆx′
+i.
+error accumulation and propagation. Such bit allocation is also
+compatible with keyframe sampling, where lowest-layer latent
+frames retain keyframe-related information and receive more
+bits to preserve color fidelity, while higher-layer frames retain
+only grayscale information.
+We investigate two-, three-, and four-layer settings under a
+GOP size of 32, corresponding to a latent GOP size of 8. The
+latent mini-GOP refers to a periodically repeated reference and
+quality pattern of size 4, as shown in Fig. 3. The coding quality
+of xt is controlled by wt, a hierarchical temporal weight in the
+RD training loss, where latent frames at the same layer share
+the same weight. We denote Lt as the layer ID of xt. As
+shown in Section IV-C2, the three-layer setting gives the best
+compression performance. Specifically, for the 4-frame latent
+mini-GOP starting from the first inter-frame x1, the weights
+for x1 to x4 are 0.5, 0.9, 0.5, and 1.2, with corresponding
+layer IDs {Lt}4
+t=1 = {2, 1, 2, 0}.
+2) Short- and Long-term Context Mining: Based on the hi-
+erarchical reference structure, HTCM extracts complementary
+temporal context from short- and long-term references, captur-
+ing local details and global semantics, respectively. For each
+latent frame xt, the short-term reference is the feature of the
+nearest previously decoded latent frame in the same or lower
+layers, denoted by ˆfs, where s = max{i | i < t, Li ≤Lt}. As
+a carrier of local details, ˆfs is used as the short-term context:
+cS
+t := ˆfs.
+(8)
+In contrast, the long-term references consist of all previously
+decoded lowest-layer frames, represented by their correspond-
+ing features {ˆfl | l < t, Ll = 0}. After each feature ˆfl is
+decoded, we use gated slot attention (GSA) [38] to recurrently
+update a fixed-size memory and obtain the corresponding
+retrieved long-term representation ml:
+ml = GSA(ql, kl, vl, αl),
+(9)
+ql, kl, vl = WG
+q (ˆfl + el), WG
+k (ˆfl + el), WG
+v (ˆfl + el), (10)
+αl = WG
+α(ˆfl + el),
+(11)
+el = Linear(SiLU(Linear([Ll, l, qpl]))),
+(12)
+where WG
+q , WG
+k , WG
+v , and WG
+α are learnable projection
+matrices. ql, kl, and vl denote the query, key, and value,
+respectively, and αl is a data-dependent gating vector. The
+meta embedding el encodes the layer ID Ll, latent frame index
+l, and quantization parameter qpl. The GSA update and long-
+term representation retrieval are formulated as:
+ml = (hv
+cur)⊤softmax
+ (hk
+cur)⊤ql
+
+,
+(13)
+hk
+cur = Diag (αl) · hk
+pre + (1 −αl) ⊗kl,
+(14)
+hv
+cur = Diag (αl) · hv
+pre + (1 −αl) ⊗vl,
+(15)
+where hk
+cur and hv
+cur denote the memory states at the current
+step, updated by the long-term reference ˆfl. hk
+pre and hv
+pre
+denote the states from the previous update step. ⊗denotes the
+outer product.
+For the current frame xt, we use the latest available long-
+term representation to connect global semantics with local
+details. Specifically, ml is aligned with the short-term context
+cS
+t
+through cross-attention [39] to produce the long-term
+context cL
+t :
+cL
+t = Attention(WC
+q (cS
+t + es), WC
+k ml, WC
+v ml),
+(16)
+es = Linear(SiLU(Linear([Ls, s, qps]))),
+(17)
+where WC
+q , WC
+k , and WC
+v are learnable projection matrices,
+and es is the meta embedding of ˆfs. Finally, cS
+t and cL
+t are
+fused by a context refinement network, which follows the
+same architecture as the context extractor in [8] except that
+the input channel dimension is doubled, to produce ct and ce
+t
+for conditional coding.
+C. Hierarchical Attentive Adapter
+Once {ˆxt}1+T/4
+t=0
+and {ˆft}1+T/4
+t=0
+are decoded, the proposed
+HA-Adapter injects them into a video DiT as control signals
+for generative reconstruction. HA-Adapter is based on the
+adapter in VACE [10] with the original attention replaced
+by hierarchical attention. In this section, we first describe the
+hierarchical reference structure for generation, and then detail
+its implementation in hierarchical attentive transformer (HAT)
+blocks.
+1) Hierarchical Reference Structure for Generation: As
+illustrated in Fig. 2, we first employ a control signal embedder,
+where {ˆxt}1+T/4
+t=0
+and {ˆft}1+T/4
+t=0
+are concatenated and patchi-
+fied into frame-wise tokens {ˆx′
+t}1+T/4
+t=0
+. Patchification is imple-
+mented using a convolutional layer with spatial downsampling
+factor of 2, such that ˆx′
+t ∈R(H/16·W/16)×d, where d is the
+token dimension. To project {ˆx′
+t}1+T/4
+t=0
+into the feature space
+of the video DiT, GNVC-VD [13] uses full attention within
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+6
+TABLE I
+DETAILED CONFIGURATIONS OF THE MULTI-STAGE TRAINING STRATEGIES.
+Stage Iterations Batch Size Patch Size Frames Learning Rate
+Trainable Models
+λ
+Distortion Term D in the RD loss LRD
+1
+30K
+8
+256 × 256
+5
+10−4
+Latent Codec
+3072
+LCodec
+2
+20K
+8
+256 × 256
+17
+10−4
+Latent Codec
+3072
+LCodec
+3
+20K
+8
+256 × 256
+33
+10−4
+Latent Codec
+3072
+LCodec
+4
+30K
+8
+256 × 256
+33
+10−4
+Latent Codec, HA-Adapter
+3072
+LCodec + LCFM
+5
+40K
+8
+256 × 256
+33
+5 × 10−5
+Latent Codec, HA-Adapter 160, 289, 635, 1397, 3072 0.1LCodec + 0.1LCFM + LRec + 0.1LLPIPS
+6
+60K
+4
+448 × 448
+33
+2 × 10−5
+Latent Codec, HA-Adapter 160, 289, 635, 1397, 3072
+0.025LCodec + LRec + 0.1LLPIPS
+transformer blocks to learn spatiotemporal correlations among
+all frame-wise tokens. In contrast, we use hierarchical attention
+to construct hierarchical reference structure for generation,
+as shown in Fig. 4. Specifically, each frame’s tokens attend
+only to other frames’ tokens from the same or lower layers
+according to the coding hierarchy. Since quality variation
+across {ˆx′
+t}1+T/4
+t=0
+is inherited from the hierarchical quality
+structure in coding, this design prevents the propagation of
+coding artifacts from low-quality frames to high-quality ones.
+At the same time, each frame can draw cleaner guidance
+from higher-quality references, thereby reducing artifact prop-
+agation. Therefore, the hierarchical structures in coding and
+generation are intrinsically coupled.
+2) Hierarchical Attentive Transformer: To enable hierar-
+chical referencing within the adapter, we feed {ˆx′
+t}1+T/4
+t=0
+into
+HAT blocks instead of the original transformer blocks. The key
+distinction lies in the incorporation of a block-wise attention
+mask M ∈R(H/16·W/16·(1+T/4))×(H/16·W/16·(1+T/4)):
+o = softmax
+qk⊤
+√
+d
++ M
+
+v,
+(18)
+M =
+
+
+M0,0
+M0,1
+· · ·
+M0,1+T/4
+M1,0
+M1,1
+· · ·
+M1,1+T/4
+...
+...
+...
+...
+M1+T/4,0
+M1+T/4,1
+· · ·
+M1+T/4,1+T/4
+
+,
+(19)
+Mi,j =
+(
+−∞
+if Li < Lj
+0
+if Li ≥Lj
+, 0 ≤i, j ≤1 + T/4,
+(20)
+where q, k, v ∈R(H/16·W/16·(1+T/4))×d denote the projected
+embeddings of {ˆx′
+t}1+T/4
+t=0
+for hierarchical attention in each
+HAT block. Each block Mi,j ∈R(H/16·W/16)×(H/16·W/16)
+controls the attention weights between ˆx′
+i and ˆx′
+j, whose layer
+IDs are Li and Lj, respectively. When Mi,j = 0, ˆx′
+i is allowed
+to attend to ˆx′
+j under the condition Li ≥Lj. Otherwise,
+Mi,j = −∞mask out the corresponding attention weights.
+We retain Mi,j = 0 when i = j, allowing the model to balance
+the referenced information and self-information. Fig. 4d shows
+the mask under the three-layer setting.
+Additionally, owing to the block-wise mask, the hierarchical
+attention in HAT can be accelerated via block attention [40],
+which further reduces the runtime of generative reconstruction.
+D. Multi-stage Training Strategies
+To optimize GVCHR, we adopt a multi-stage training
+scheme that progressively bridges the gap between the genera-
+tive prior and codec-induced distortion. Generally, the training
+objective is a RD loss LRD, defined as:
+LRD = R + λD,
+(21)
+where R denotes the bitrate estimated by the latent codec.
+The parameter λ controls the RD trade-off, and D denotes
+the distortion term whose form varies across training stages.
+Specifically, we consider the following distortion terms:
+1) Latent fidelity loss LCodec:
+LCodec =
+1
+1 + T/4
+1+T/4
+X
+t=0
+wt · dMSE(xt, ˆxt),
+(22)
+where dMSE denotes mean square error (MSE), and wt is
+the hierarchical temporal weight used in the hierarchical
+quality structure.
+2) Conditional flow-matching loss LCFM:
+LCFM = Eτ∼U(0,N) ∥ˆϵ(zτ, τ, u) −(zN −z0)∥2
+2
+(1 + T/4) × (H/8) × (W/8) × 16
+, (23)
+where (zN −z0) serves as the training target of velocity
+field, and ˆϵ(zτ, τ, u) is its corresponding estimation.
+3) Pixel-domain reconstruction loss LRec:
+LRec =
+1
+1 + T
+T
+X
+i=0
+wF
+i · dMSE(Fi, ˆFi),
+(24)
+where Fi denotes the i-th frame in the source video V,
+and ˆFi is its reconstructed counterpart. We set wF
+i = wt
+if Fi is encoded into xt.
+4) Pixel-domain perceptual loss LLPIPS:
+LLPIPS =
+1
+1 + T
+T
+X
+i=0
+wF
+i LPIPS(Fi, ˆFi),
+(25)
+where LPIPS measures perceptual quality [41].
+The detailed configurations of different training stages are
+summarized in Table I. In the first three stages, we train
+only the latent codec and progressively increase the number
+of training frames from 5 to 33. During these stages, we
+resize the shorter side of each training video to 256 pixels
+and randomly crop 256 × 256 patches. In the fourth stage,
+the latent codec and HA-Adapter are jointly optimized using
+LCodec and LCFM to adapt the diffusion model to codec-
+distorted latents. In the fifth stage, we select five values of λ to
+train distinct models corresponding to five quality levels, and
+further incorporate LRec and LLPIPS to improve reconstruction
+fidelity and perceptual quality. In the sixth stage, we finetune
+all models at a higher resolution, remove LCFM, and reduce
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+7
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+LPIPS ↓
+HEVC_B
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.04
+0.06
+0.08
+0.10
+0.12
+0.14
+0.16
+DISTS ↓
+HEVC_B
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+20
+40
+60
+80
+FID ↓
+HEVC_B
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+FloLPIPS ↓
+HEVC_B
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.050
+0.075
+0.100
+0.125
+0.150
+0.175
+0.200
+0.225
+LPIPS ↓
+UVG
+VTM-17.0
+DCVC-FM
+PLVC
+DiffVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.04
+0.06
+0.08
+0.10
+0.12
+0.14
+0.16
+DISTS ↓
+UVG
+VTM-17.0
+DCVC-FM
+PLVC
+DiffVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+10
+20
+30
+40
+50
+FID ↓
+UVG
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+FloLPIPS ↓
+UVG
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+LPIPS ↓
+MCL-JCV
+VTM-17.0
+DCVC-FM
+PLVC
+DiffVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.050
+0.075
+0.100
+0.125
+0.150
+0.175
+0.200
+0.225
+DISTS ↓
+MCL-JCV
+VTM-17.0
+DCVC-FM
+PLVC
+DiffVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+20
+40
+60
+80
+100
+FID ↓
+MCL-JCV
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+FloLPIPS ↓
+MCL-JCV
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GVCHR
+Fig. 5. Rate-perception curves on HEVC B, UVG, and MCL-JCV.
+TABLE II
+BD-RATE (%) ↓/ BD-METRIC ↑ON HEVC B, UVG, AND MCL-JCV.
+HEVC B
+UVG
+MCL-JCV
+Method
+LPIPS
+DISTS
+FID
+FloLPIPS
+LPIPS
+DISTS
+FID
+FloLPIPS
+LPIPS
+DISTS
+FID
+FloLPIPS
+VTM-17.0
+N/A / -0.1412 N/A / -0.0571 25.6 / -3.4 N/A / -0.1739 N/A / -0.1216 N/A / -0.0667 37.4 / -3.4 N/A / -0.1618 N/A / -0.1433 N/A / -0.0847 89.9 / -15.0 N/A / -0.1576
+DCVC-FM N/A / -0.1465 N/A / -0.0722 71.0 / -13.2 N/A / -0.1862 N/A / -0.1311 N/A / -0.0843 85.6 / -11.3 N/A / -0.1902 N/A / -0.1582 N/A / -0.1025 148.1 / -28.4 N/A / -0.1823
+PLVC
+N/A / N/A
+N/A / N/A
+N/A / N/A
+110.6 / N/A
+N/A / N/A
+N/A / N/A
+N/A / N/A
+N/A / N/A
+118.8 / N/A
+139.6 / N/A
+89.4 / N/A
+243.0 / N/A
+DiffVC
+- / -
+- / -
+- / -
+- / -
+298.2 / N/A
+N/A / N/A
+- / -
+- / -
+162.6 / N/A
+N/A / N/A
+- / -
+- / -
+GLC-Video
+0.0 / 0.0000
+0.0 / 0.0000
+0.0 / 0.0
+0.0 / 0.0000
+0.0 / 0.0000
+0.0 / 0.0000
+0.0 / 0.0
+0.0 / 0.0000
+0.0 / 0.0000
+0.0 / 0.0000
+0.0 / 0.0
+0.0 / 0.0000
+GNVC-VD -22.9 / 0.0168 -43.4 / 0.0208
+- / -
+- / -
+19.3 / -0.0047 -2.0 / 0.0034
+- / -
+- / -
+0.5 / -0.0002 -15.7 / 0.0082
+- / -
+- / -
+GVCHR
+-63.7 / 0.0405 N/A / 0.0370 -49.3 / 10.2 -30.7 / 0.0117 -65.0 / 0.0326 -74.0 / 0.0258
+-7.6 / 2.6
+-51.4 / 0.0237 -36.4 / 0.0152 -65.8 / 0.0251
+-22.2 / 3.9
+9.7 / -0.0036
+The best and second-best results are highlighted in red and blue, respectively. “N/A” indicates that BD-rate cannot be computed due to insufficient overlap
+between the rate–metric curves. “-” denotes that the closed-source baseline does not report the result.
+the weight of LCodec so that the optimization focuses more
+on pixel-domain reconstruction.
+IV. EXPERIMENTS
+A. Experimental Protocol
+1) Training Details: To build a high-quality training set, we
+curate source video clips from Pexels1. For data filtering, we
+retain clips whose aesthetic scores in VBench [42] are above
+4.5 and clarity scores based on CLIP-IQA [43] are above 0.65,
+where both metrics are averaged across all frames in each clip.
+We further preserve only samples with aspect ratios close to
+16:9, yielding approximately 480K videos for the training.
+We initialize the HA-Adapter and the video DiT with the
+pretrained weights from VACE [10], while keeping the HA-
+Adapter trainable and the video DiT frozen. The latent codec
+builds upon the architecture of DCVC-RT [8] and is trained
+from scratch. AdamW is used as the optimizer [44]. The
+1https://www.pexels.com
+latent GOP size and latent mini-GOP size are set to 8 and
+4, respectively, corresponding to a GOP size of 32. Here, a
+GOP size of 32 denotes 32 inter-frames excluding the first
+intra-frame, so each coding and generation pass operates on
+33 frames in total. The trade-off parameter λ in the RD loss
+is sampled at five points via logarithmic interpolation over
+[160, 3072]. Following [8], each λ is paired with a QP to
+control bitrate during inference. For each hierarchical temporal
+weight wt, we assign a QP offset. Specifically, the QP offset
+is 8 for w0 = 8.0. For the periodically repeated pattern
+[wt, wt+1, wt+2, wt+3] = [0.5, 0.9, 0.5, 1.2] in a latent mini-
+GOP of size 4, the QP offsets are set to [0, 2, 0, 4]. Additional
+training settings are summarized in Table I.
+2) Test Details: We evaluate GVCHR on the HEVC B [2],
+UVG [45], and MCL-JCV [46] datasets, where raw YUV420
+videos are converted to RGB using BT.709 [6]. For each se-
+quence, the first 96 frames are tested under the GOP 32 setting.
+In the last segment, the final frame is replicated as padding
+to reach 33 frames, and the padded frames are discarded
+after reconstruction. We use BD-Rate and BD-Metric [47] to
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+8
+Ground Truth
+DCVC-FM
+PLVC
+GLC-Video
+GVCHR
+Kimono
+BPP↓/ LPIPS↓
+0.0125 / 0.292
+0.0263 / 0.155
+0.0111 / 0.156
+0.0103 / 0.147
+Fig. 6. Visual comparisons with open-source baselines on the Kimono sequence from HEVC B.
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+26
+28
+30
+32
+34
+PSNR (dB) ↑
+HEVC_B
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.84
+0.86
+0.88
+0.90
+0.92
+0.94
+0.96
+MS-SSIM ↑
+HEVC_B
+VTM-17.0
+DCVC-FM
+PLVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+30
+32
+34
+36
+38
+PSNR (dB) ↑
+UVG
+VTM-17.0
+DCVC-FM
+PLVC
+DiffVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.88
+0.90
+0.92
+0.94
+0.96
+MS-SSIM ↑
+UVG
+VTM-17.0
+DCVC-FM
+PLVC
+DiffVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+28
+30
+32
+34
+36
+PSNR (dB) ↑
+MCL-JCV
+VTM-17.0
+DCVC-FM
+PLVC
+DiffVC
+GLC-Video
+GNVC-VD
+GVCHR
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+0.035
+BPP
+0.88
+0.90
+0.92
+0.94
+0.96
+MS-SSIM ↑
+MCL-JCV
+VTM-17.0
+DCVC-FM
+PLVC
+DiffVC
+GLC-Video
+GNVC-VD
+GVCHR
+Fig. 7. Rate-fidelity curves on HEVC B, UVG, and MCL-JCV.
+evaluate compression performance. Signal fidelity is measured
+by PSNR and MS-SSIM [48]. Perceptual quality is assessed
+by LPIPS [41] and DISTS [49]. To assess temporal perceptual
+consistency, we use FloLPIPS [50], a flow-guided LPIPS
+variant. To measure generative realism, we compute FID [51]
+following [52]. Bitrate is reported in bits per pixel (BPP).
+3) Baselines: We compare GVCHR with three categories
+of baseline: 1) the traditional video codec VTM-17.0 [3]; 2)
+the fidelity-oriented NVC method DCVC-FM [7]; and 3) GVC
+methods, including PLVC [20], GLC-Video [22], DiffVC [12],
+and GNVC-VD [13]. For VTM-17.0, we follow the evaluation
+protocol in [6]. Since the code for DiffVC and GNVC-VD is
+unavailable, we report the results extracted from their paper.
+Other baselines are tested with their default settings.
+We use the latest open-source GLC-Video as the anchor for
+BD-rate computation, rather than VTM-17.0 as usual, because
+the RD curves of VTM-17.0 are often far from those of GVC
+methods and have limited overlap in quality range.
+B. Comparison Results
+1) Quantitative Results: As shown in Table II and Fig. 5,
+GVCHR outperforms all baselines on most perceptual metrics.
+Width
+Time
+Ground Truth
+BPP↓
+FloLPIPS↓
+DCVC-FM
+0.0062
+0.1923
+GLC-Video
+0.0061
+0.1555
+GVCHR
+0.0059
+0.0828
+PLVC
+0.0234
+0.0834
+Fig. 8. Visual comparison of temporal coherence by stacking the red pixel
+row across consecutive frames in the videoSRC15 sequence from MCL-JCV.
+TABLE III
+BD-RATE (%)↓AND RUNTIME (MS) ↓COMPARISON WITH GNVC-VD.
+Method
+Averaged on three test sets
+Enc. T
+Dec. T
+LPIPS
+DISTS PSNR
+MS-SSIM
+GNVC-VD
+0.0
+0.0
+0.0
+0.0
+439
+4225
+GVCHR (GOP 24)
+-47.0
+-49.1
+-12.4
+-4.6
+472
+2431
+GVCHR (GOP 32)
+-50.5
+-54.0
+-23.3
+-11.1
+396
+2814
+“Enc. T” / “Dec. T” denotes the per-frame encoding / decoding time (ms),
+tested on an NVIDIA H20 GPU. We pair GOP 24 with latent GOP 6 and
+latent mini-GOP 6, and GOP 32 with latent GOP 8 and latent mini-GOP 4.
+Compared to GLC-Video, GVCHR achieves BD-rate gain of
+55.0% w.r.t. LPIPS averaged on all three test sets. In terms of
+PSNR and MS-SSIM, GVCHR remains competitive among all
+GVC methods, as shown in Fig. 7. Additionally, we report the
+performance of GVCHR using the latest closed-source method
+GNVC-VD as the anchor in Table III. Compared with GNVC-
+VD, GVCHR achieves average BD-rate gain of 50.5% w.r.t.
+LPIPS under the GOP 32 setting. GVCHR also outperforms
+GNVC-VD under the GOP 24 setting, which matches the
+setting used in their paper. Note that GOP 24 refers to 24
+inter-frames excluding the first intra-frame, and therefore cor-
+responds to the GOP 25 setting reported by GNVC-VD which
+counts both intra- and inter-frames. These results demonstrate
+the state-of-the-art compression performance of GVCHR in
+diffusion-based GVC.
+2) Qualitative Results: As shown in Fig. 6, GVCHR recon-
+structs visually pleasing details with higher perceptual quality
+at lower bitrates. The fidelity-oriented NVC method DCVC-
+FM struggles to recover clear textures, resulting in blurred
+regions. Both PLVC and GLC-Video improve detail sharp-
+ness but introduce noticeable variegated and garbled artifacts.
+Furthermore, Fig. 8 highlights GVCHR’s superior temporal
+coherence. Under cross-frame motion, DCVC-FM introduces
+blurring, whereas PLVC and GLC-Video exhibit flickering
+and temporally discontinuous textures. In contrast, GVCHR
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+9
+TABLE IV
+BD-RATE (%)↓COMPARISON OF DIFFERENT MODEL VARIANTS.
+Method
+MCL-JCV
+LPIPS
+DISTS FloLPIPS PSNR
+w/o Short-term Reference
+44.5
+42.4
+35.1
+37.2
+w/o Long-term Reference
+21.4
+26.8
+14.6
+18.5
+w/o Keyframe Sampling
+11.4
+16.6
+8.5
+11.2
+Ours
+0.0
+0.0
+0.0
+0.0
+TABLE V
+BD-RATE (%)↓COMPARISON OF VARIOUS CONFIGURATIONS OF
+HIERARCHICAL REFERENCE STRUCTURES.
+Coding
+Generation
+MCL-JCV
+Reference
+hierarchy
+Quality
+hierarchy
+Reference
+hierarchy
+LPIPS
+DISTS FloLPIPS PSNR
+(a)
+1
+19.3
+20.7
+7.1
+17.5
+(b)
+2
+9.2
+11.8
+5.2
+12.4
+(c)
+3 (Ours)
+0.0
+0.0
+0.0
+0.0
+(d)
+4
+-3.1
+-2.6
+2.4
+6.2
+(e)
+1
+3
+1
+12.9
+15.2
+9.3
+16.4
+(f)
+1
+3
+3
+8.4
+9.7
+6.8
+10.5
+(g)
+3
+3
+1
+7.2
+7.4
+5.3
+8.1
+preserves sharp details with smoother temporal transitions.
+3) Complexity: As shown in Table III, we compare the per-
+frame encoding and decoding time of GVCHR with GNVC-
+VD. Since GNVC-VD is not open-source, we implement
+its architecture without training. Under the GOP 32 setting,
+GVCHR achieves faster encoding and decoding, owing to
+fewer costly intra-coding operations and the acceleration of
+block attention in the proposed HA-Adapter. Under the GOP
+24 setting used in the GNVC-VD paper, GVCHR is only
+slightly slower in encoding. This is expected because the
+proposed HTCM increases encoding complexity. Meanwhile,
+GVCHR employs the intra-model of DCVC-RT, whereas
+GNVC-VD adopts the more complex image codec ELIC [53],
+which helps narrow the gap. Overall, GVCHR improves RD
+performance while maintaining relatively fast coding speed.
+C. Ablations
+1) Short- and Long-term References: We ablate short- and
+long-term references in HTCM. As shown in Table IV, both
+contribute significantly to compression performance.
+2) Hierarchical Reference Structures: As presented in Ta-
+ble V, rows (a) to (d) evaluate different numbers of hierarchies
+in coding and generation. Notably, row (a) follows the setting
+of GNVC-VD, which discards both hierarchical reference and
+quality structures. Overall, the three-layer setting in row (c)
+achieves the superior performance. We further compare row
+(a) and row (c) in terms of frame-level perceptual quality
+and bit cost in Fig. 9, which shows that both reference and
+quality hierarchies effectively suppresses error propagation
+and achieves better bit allocation. Row (e) uses only the
+hierarchical quality structure in coding, following DiffVC.
+Rows (f) and (g) remove the hierarchical reference structures
+from coding and generation, respectively. The results in rows
+(e), (f), and (g) show that the hierarchical reference and quality
+structures in coding, together with the hierarchical reference
+0
+1
+2
+3
+4
+5
+6
+7
+8
+Latent Frame Index
+0.065
+0.070
+0.075
+0.080
+0.085
+LPIPS
+w/o reference and quality hierarchy, Mean LPIPS=0.0830
+w/ reference and quality hierarchy, Mean LPIPS=0.0738
+0
+1
+2
+3
+4
+5
+6
+7
+8
+Latent Frame Index
+0.00
+0.02
+0.04
+0.06
+BPP
+w/o reference and quality hierarchy, Mean BPP=0.0171
+w/ reference and quality hierarchy, Mean BPP=0.0156
+Fig. 9.
+Perceptual quality and bit cost across latent frames within a latent
+GOP of the Cactus sequence from HEVC B. Note that the LPIPS of a latent
+frame is averaged over its corresponding pixel-domain frames.
+2000
+4000
+6000
+8000
+10000
+Per-frame decoding time (ms) 
+10
+0
+10
+20
+BD-Rate (%)  w.r.t. LPIPS
+16 (4)
+16 (4)
+32 (8)
+32 (8)
+48 (12)
+48 (12)
+96 (24)
+96 (24)
+Our default setting:
+GOP 32 (latent GOP 8)
+w/ reference and quality hierarchy
+w/o reference and quality hierarchy
+Fig. 10. Trade-off between performance and complexity across different GOP
+sizes (latent GOP sizes) on MCL-JCV.
+structure in generation, are coupled and jointly contribute to
+compression performance.
+3) GOP Size: Fig. 10 presents a performance comparison
+of applying hierarchical reference and quality structures across
+different GOP sizes (or latent GOP sizes). The results demon-
+strate that a larger latent GOP size improves BD-Rate w.r.t.
+LPIPS, but increases decoding time, since the computational
+cost of attention in the generative model scales quadratically
+with the input GOP size. Our default setting, i.e., latent GOP
+8, achieves promising compression performance while keeping
+decoding time relatively low. Additionally, compared with the
+model variant without reference and quality hierarchy, the
+benefits of our hierarchical designs become more pronounced
+as the GOP size increases. This again shows that these hierar-
+chical structures are effective in suppressing error propagation
+over long dependency chains in diffusion-based GVC.
+4) Keyframe Sampling: As shown in Table IV, removing
+keyframe sampling leads to inferior performance, as preserv-
+ing all color information in the input increases the transmission
+budget. This demonstrates that GVCHR can recover full color
+information from a limited number of keyframes.
+V. CONCLUSION
+In this paper, we propose GVCHR, a generative video
+compression framework based on hierarchical referencing.
+GVCHR organizes latent frames by reference roles and coding
+quality, enabling high-quality references to support efficient
+coding and effective generative reconstruction. In latent cod-
+ing, GVCHR couples hierarchical reference and quality struc-
+tures, and introduces HTCM to exploit complementary short-
+and long-term temporal context. In generative reconstruction,
+GVCHR injects decoded latents into a video DiT through
+a HA-Adapter, which follows the coding-side hierarchy to
+reduce artifact propagation during denoising. Experiments on
+
+
+JOURNAL OF LATEX CLASS FILES, VOL. 18, NO. 9, SEPTEMBER 2020
+10
+multiple benchmarks demonstrate state-of-the-art compression
+performance of GVCHR among existing GVC methods.
+REFERENCES
+[1] T. Wiegand, G. J. Sullivan, G. Bjontegaard, and A. Luthra, “Overview
+of the h.264/avc video coding standard,” TCSVT, vol. 13, no. 7, pp.
+560–576, 2003.
+[2] G. J. Sullivan, J.-R. Ohm, W.-J. Han, and T. Wiegand, “Overview of the
+high efficiency video coding (hevc) standard,” TCSVT, vol. 22, no. 12,
+pp. 1649–1668, 2012.
+[3] B. Bross, Y.-K. Wang, Y. Ye, S. Liu, J. Chen, G. J. Sullivan, and J.-R.
+Ohm, “Overview of the versatile video coding (vvc) standard and its
+applications,” TCSVT, vol. 31, no. 10, pp. 3736–3764, 2021.
+[4] J. Li, B. Li, and Y. Lu, “Deep contextual video compression,” NeurIPS,
+vol. 34, pp. 18 114–18 125, 2021.
+[5] X. Sheng, J. Li, B. Li, L. Li, D. Liu, and Y. Lu, “Temporal context
+mining for learned video compression,” TMM, vol. 25, pp. 7311–7322,
+2022.
+[6] J. Li, B. Li, and Y. Lu, “Neural video compression with diverse
+contexts,” in CVPR, 2023, pp. 22 616–22 626.
+[7] ——, “Neural video compression with feature modulation,” in CVPR,
+2024, pp. 26 099–26 108.
+[8] Z. Jia, B. Li, J. Li, W. Xie, L. Qi, H. Li, and Y. Lu, “Towards practical
+real-time neural video compression,” in CVPR, 2025, pp. 12 543–12 552.
+[9] T. Wan, A. Wang, B. Ai, B. Wen, C. Mao, C.-W. Xie, D. Chen, F. Yu,
+H. Zhao, J. Yang et al., “Wan: Open and advanced large-scale video
+generative models,” arXiv preprint arXiv:2503.20314, 2025.
+[10] Z. Jiang, Z. Han, C. Mao, J. Zhang, Y. Pan, and Y. Liu, “Vace: All-in-one
+video creation and editing,” in ICCV, 2025, pp. 17 191–17 202.
+[11] Z. Yang, J. Teng, W. Zheng, M. Ding, S. Huang, J. Xu, Y. Yang,
+W. Hong, X. Zhang, G. Feng et al., “Cogvideox: Text-to-video diffusion
+models with an expert transformer,” in ICLR, vol. 2025, 2025, pp.
+83 048–83 077.
+[12] W. Ma and Z. Chen, “Diffusion-based perceptual neural video compres-
+sion with temporal diffusion information reuse,” TOMM, 2025.
+[13] Q. Mao, H. Cheng, T. Yang, L. Jin, and S. Ma, “Generative neural video
+compression via video diffusion prior,” in CVPR, 2026, pp. 43 239–
+43 248.
+[14] D. P. Kingma and M. Welling, “Auto-encoding variational bayes,” arXiv
+preprint arXiv:1312.6114, 2013.
+[15] H. Schwarz, D. Marpe, and T. Wiegand, “Overview of the scalable video
+coding extension of the h. 264/avc standard,” TCSVT, vol. 17, no. 9, pp.
+1103–1120, 2007.
+[16] J. M. Boyce, Y. Ye, J. Chen, and A. K. Ramasubramonian, “Overview of
+shvc: Scalable extensions of the high efficiency video coding standard,”
+TCSVT, vol. 26, no. 1, pp. 20–34, 2015.
+[17] J. Liao, Y. Wu, C. Lin, Z. Deng, L. Li, D. Liu, and X. Sun, “Ehvc:
+Efficient hierarchical reference and quality structure for neural video
+coding,” in ACM MM, 2025, pp. 12 083–12 091.
+[18] S. Zhang, M. Mrak, L. Herranz, M. G. Blanch, S. Wan, and F. Yang,
+“Dvc-p: Deep video compression with perceptual optimizations,” in
+VCIP, 2021, pp. 1–5.
+[19] F. Mentzer, E. Agustsson, J. Ball´e, D. Minnen, N. Johnston, and
+G. Toderici, “Neural video compression using gans for detail synthesis
+and propagation,” in ECCV, 2022, pp. 562–578.
+[20] R. Yang, R. Timofte, and L. Van Gool, “Perceptual learned video
+compression with recurrent conditional gan.” in IJCAI, 2022, pp. 1537–
+1544.
+[21] M. Li, Y. Shi, J. Wang, and Y. Huang, “High visual-fidelity learned
+video compression,” in ACM MM, 2023, pp. 8057–8066.
+[22] L. Qi, Z. Jia, J. Li, B. Li, H. Li, and Y. Lu, “Generative latent coding
+for ultra-low bitrate image and video compression,” TCSVT, 2025.
+[23] A. Van Den Oord, O. Vinyals et al., “Neural discrete representation
+learning,” NeurIPS, vol. 30, 2017.
+[24] M. Liu, C. Xu, Y. Gu, C. Yao, and Y. Zhao, “I2vc: A unified
+framework for intra-& inter-frame video compression,” arXiv preprint
+arXiv:2405.14336, 2024.
+[25] R. Wan, Q. Zheng, and Y. Fan, “M3-cvc: Controllable video compression
+with multimodal generative models,” in ICASSP, 2025, pp. 1–5.
+[26] Z. Wang, H. Man, W. Li, X. Wang, X. Fan, and D. Zhao, “T-gvc:
+Trajectory-guided generative video coding at ultra-low bitrates,” in
+AAAI, vol. 40, no. 12, 2026, pp. 10 430–10 438.
+[27] M. Zhang, H. Wu, R. Jin, D. G¨und¨uz, and K. Mikolajczyk, “Diffusion-
+aided extreme video compression with lightweight semantics guidance,”
+in ICASSP, 2026, pp. 8422–8426.
+[28] H. Schwarz, D. Marpe, and T. Wiegand, “Analysis of hierarchical b
+pictures and mctf,” in ICME, 2006, pp. 1929–1932.
+[29] K. Wu, Z. Li, Y. Yang, Q. Liu, and X.-P. Zhang, “End-to-end deep video
+compression based on hierarchical temporal context learning,” TMM,
+vol. 27, pp. 4386–4399, 2025.
+[30] R. Yang, F. Mentzer, L. V. Gool, and R. Timofte, “Learning for video
+compression with hierarchical quality and recurrent enhancement,” in
+CVPR, 2020, pp. 6628–6637.
+[31] M.-J. Chen, Y.-H. Chen, and W.-H. Peng, “B-canf: Adaptive b-frame
+coding with conditional augmented normalizing flows,” TCSVT, vol. 34,
+no. 4, pp. 2908–2921, 2023.
+[32] M. A. Yılmaz and A. M. Tekalp, “End-to-end rate-distortion optimized
+learned hierarchical bi-directional video compression,” TIP, vol. 31, pp.
+974–983, 2021.
+[33] D. Alexandre, H.-M. Hang, and W.-H. Peng, “Hierarchical b-frame video
+coding using two-layer canf without motion coding,” in CVPR, 2023,
+pp. 10 249–10 258.
+[34] X. Sheng, L. Li, D. Liu, and S. Wang, “Bi-directional deep contextual
+video compression,” TMM, 2025.
+[35] W. Jiang, J. Li, K. Zhang, and L. Zhang, “Biecvc: Gated diversification
+of bidirectional contexts for learned video compression,” in ACM MM,
+2025, pp. 7248–7257.
+[36] Y. Liu, S. Huo, J. Gu, C. Zhou, H. Bai, M. Lu, Z. Ma et al., “Neural b-
+frame video compression with bi-directional reference harmonization,”
+NeurIPS, vol. 38, pp. 154 369–154 394, 2026.
+[37] Y. Lipman, R. T. Chen, H. Ben-Hamu, M. Nickel, and M. Le, “Flow
+matching for generative modeling,” in ICLR, 2023.
+[38] Y. Zhang, S. Yang, R. Zhu, Y. Zhang, L. Cui, Y. Wang, B. Wang, F. Shi,
+B. Wang, W. Bi et al., “Gated slot attention for efficient linear-time
+sequence modeling,” NeurIPS, vol. 37, pp. 116 870–116 898, 2024.
+[39] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez,
+Ł. Kaiser, and I. Polosukhin, “Attention is all you need,” NeurIPS,
+vol. 30, 2017.
+[40] M. Zaheer, G. Guruganesh, K. A. Dubey, J. Ainslie, C. Alberti,
+S. Ontanon, P. Pham, A. Ravula, Q. Wang, L. Yang et al., “Big bird:
+Transformers for longer sequences,” NeurIPS, vol. 33, pp. 17 283–
+17 297, 2020.
+[41] R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang, “The
+unreasonable effectiveness of deep features as a perceptual metric,” in
+CVPR, 2018, pp. 586–595.
+[42] Z. Huang, Y. He, J. Yu, F. Zhang, C. Si, Y. Jiang, Y. Zhang, T. Wu,
+Q. Jin, N. Chanpaisit et al., “Vbench: Comprehensive benchmark suite
+for video generative models,” in CVPR, 2024, pp. 21 807–21 818.
+[43] J. Wang, K. C. Chan, and C. C. Loy, “Exploring clip for assessing the
+look and feel of images,” in AAAI, vol. 37, no. 2, 2023, pp. 2555–2563.
+[44] I. Loshchilov and F. Hutter, “Decoupled weight decay regularization,”
+in ICLR, 2019.
+[45] A. Mercat, M. Viitanen, and J. Vanne, “Uvg dataset: 50/120fps 4k
+sequences for video codec analysis and development,” in ACM MMSys,
+2020, pp. 297–302.
+[46] H. Wang, W. Gan, S. Hu, J. Y. Lin, L. Jin, L. Song, P. Wang,
+I. Katsavounidis, A. Aaron, and C.-C. J. Kuo, “Mcl-jcv: a jnd-based
+h. 264/avc video quality assessment dataset,” in ICIP, 2016, pp. 1509–
+1513.
+[47] G. Bjontegaard, “Calculation of average psnr differences between rd-
+curves,” ITU SG16 Doc. VCEG-M33, 2001.
+[48] Z. Wang, E. P. Simoncelli, and A. C. Bovik, “Multiscale structural
+similarity for image quality assessment,” in Asilomar conference on
+signals, systems & computers, vol. 2, 2003, pp. 1398–1402.
+[49] K. Ding, K. Ma, S. Wang, and E. P. Simoncelli, “Image quality
+assessment: Unifying structure and texture similarity,” TPAMI, vol. 44,
+no. 5, pp. 2567–2581, 2020.
+[50] D. Danier, F. Zhang, and D. Bull, “Flolpips: A bespoke video quality
+metric for frame interpolation,” in PCS, 2022, pp. 283–287.
+[51] M. Heusel, H. Ramsauer, T. Unterthiner, B. Nessler, and S. Hochreiter,
+“Gans trained by a two time-scale update rule converge to a local nash
+equilibrium,” NeurIPS, vol. 30, 2017.
+[52] F. Mentzer, G. D. Toderici, M. Tschannen, and E. Agustsson, “High-
+fidelity generative image compression,” NeurIPS, vol. 33, pp. 11 913–
+11 924, 2020.
+[53] D. He, Z. Yang, W. Peng, R. Ma, H. Qin, and Y. Wang, “Elic:
+Efficient learned image compression with unevenly grouped space-
+channel contextual adaptive coding,” in CVPR, 2022, pp. 5718–5727.

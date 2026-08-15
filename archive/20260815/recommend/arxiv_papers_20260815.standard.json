@@ -1,0 +1,255 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-15T19:42:31.809755+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.06768v1",
+      "source": "arxiv",
+      "title": "Explore or Converge? Stage-Guided Per-Step Optimization for Diffusion Models",
+      "abstract": "Diffusion models have strong generative capabilities. However, their maximum likelihood training objective only focuses on reconstructing the data distribution, making it difficult to align with specific preferences. Reinforcement learning (RL) for preference alignment in diffusion models is promising but limited by reward sparsity. Since a single reward cannot support optimization, existing RL methods usually backpropagate the final reward to all previous steps. However, denoising is stage-wise, with distinct semantics and controllability. Repeating the final reward across all steps creates a temporal objective mismatch, encouraging reward shortcuts that lead to reward hacking. At the same time, due to reward backfilling, each time step receives the same reward, making it impossible to distinguish between actions, thereby weakening the optimization process.   To resolve this issue, we propose Stage-Guided Per-Step Optimization (SGPO) for diffusion models, which jointly leverages signal-to-noise ratio and semantic changes to identify generation stages and adaptively assign stage-specific objectives. Early denoising is chaotic and far from the final reward, resulting in weak reward-behavior correlation. This stage should prioritize exiting the chaotic state. In the mid stage, the latent transitions to a stable structure, where the final reward better corresponds to generative behavior. Therefore, this stage optimizes the final reward while exploring diversity to avoid early convergence to a single mode.   In the late stage, the latent's core structure is largely fixed, and preference optimization mainly amplifies local details, risking overfitting. Therefore, stable convergence is preferred to avoid quality degradation. Results from 16 comparative experiments validate SGPO. Our method achieves 26.7% average gains in generative quality and 36.7% higher convergence speed.",
+      "authors": [
+        "Renye Yan",
+        "Jikang Cheng",
+        "You Wu",
+        "Wei Peng",
+        "Zongwei Wang",
+        "Ling Liang",
+        "Yimao Cai"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-07T03:41:58+00:00",
+      "link": "https://arxiv.org/pdf/2608.06768v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Directly explores diffusion models as generative models through per-step RL preference alignment",
+      "llm_evidence_cn": "直接通过逐步强化学习偏好对齐研究扩散模型作为生成模型",
+      "llm_evidence": "直接通过逐步强化学习偏好对齐研究扩散模型作为生成模型",
+      "canonical_evidence": "直接通过逐步强化学习偏好对齐研究扩散模型作为生成模型",
+      "llm_tldr_en": "Addresses reward sparsity in RL-based preference alignment for diffusion models by proposing stage-guided per-step optimization, avoiding temporal objective mismatch and reward hacking while improving preference alignment.",
+      "llm_tldr_cn": "扩散模型虽擅长生成，但最大似然训练目标难以对齐特定偏好；现有强化学习方法将最终奖励回填到所有去噪步骤，导致时间目标错配和奖励黑客。本文提出阶段引导的逐步优化方法，依据去噪阶段语义分配奖励以缓解稀疏奖励问题。该方法在偏好对齐任务上有效降低奖励捷径，提升生成结果与人类偏好的一致性。",
+      "llm_tldr": "扩散模型虽擅长生成，但最大似然训练目标难以对齐特定偏好；现有强化学习方法将最终奖励回填到所有去噪步骤，导致时间目标错配和奖励黑客。本文提出阶段引导的逐步优化方法，依据去噪阶段语义分配奖励以缓解稀疏奖励问题。该方法在偏好对齐任务上有效降低奖励捷径，提升生成结果与人类偏好的一致性。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.13391v1",
+      "source": "arxiv",
+      "title": "Context-Matched Distillation: Teacher Causality for Autoregressive Video Distillation",
+      "abstract": "Interactive autoregressive video generation demands both low-latency rollouts and precise online control. Few-step distillation accelerates generation by reducing denoising steps, while online control imposes a causal constraint: frames and blocks should depend on history and controls available during generation. Existing video distribution matching distillation (DMD) pipelines, however, often supervise causal few-step students using bidirectional teachers that score complete clips. The score for a target can therefore depend on future frames and controls that were unavailable when the student generated it, misaligning teacher supervision with the student's causal information set. We introduce Context-Matched Distillation (CMD), a causal DMD framework that aligns teacher supervision with the information available when each target is generated. CMD replaces bidirectional full-clip scoring with a causal teacher that evaluates each target without access to future frames or controls. The same causal teacher initializes the few-step student, establishing a consistent causal formulation across teacher training, student distillation, and inference. Beyond aligning the temporal information boundary, Prefix Scoring matches supervision to the student's realized rollout context by evaluating each target under the cached student-generated prefix that produced it. Prefix Corruption further stabilizes training by perturbing unreliable prefixes produced early in training while preserving this target-context alignment. With a simple causal formulation, CMD naturally extends to frame-wise and chunk-wise generation, long video distillation, and camera-conditioned distillation. Experiments demonstrate state-of-the-art aggregate performance among autoregressive methods on both short- and long-video benchmarks, together with substantially improved adherence to time-varying camera controls.",
+      "authors": [
+        "Hmrishav Bandyopadhyay",
+        "Xuanchi Ren",
+        "Zijian Huang",
+        "Jay Zhangjie Wu",
+        "Tianshi Cao",
+        "Ruilong Li",
+        "Bryan Chu",
+        "Sanja Fidler",
+        "Yi-Zhe Song",
+        "Zian Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-13T15:51:31+00:00",
+      "link": "https://arxiv.org/pdf/2608.13391v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Context-Matched Distillation for autoregressive video generation with few-step denoising",
+      "llm_evidence_cn": "面向自回归视频生成、结合少步去噪蒸馏的上下文匹配蒸馏方法",
+      "llm_evidence": "面向自回归视频生成、结合少步去噪蒸馏的上下文匹配蒸馏方法",
+      "canonical_evidence": "面向自回归视频生成、结合少步去噪蒸馏的上下文匹配蒸馏方法",
+      "llm_tldr_en": "Introduces Context-Matched Distillation (CMD), a causal few-step distillation method for interactive autoregressive video generation that aligns teacher supervision with the student's causal information set, enabling low-latency rollouts and precise online control.",
+      "llm_tldr_cn": "交互式自回归视频生成需要低延迟和精确在线控制，少步蒸馏可加速去噪，但现有视频DMD用双向教师打分完整片段，造成监督信息与因果约束不一致。本文提出上下文匹配蒸馏CMD，使教师评分只依赖学生生成时可见的历史帧和控制信息，保证因果对齐。实验显示CMD支持低延迟视频生成并改善在线控制，为实时视频扩散/蒸馏提供了因果一致的训练方案。",
+      "llm_tldr": "交互式自回归视频生成需要低延迟和精确在线控制，少步蒸馏可加速去噪，但现有视频DMD用双向教师打分完整片段，造成监督信息与因果约束不一致。本文提出上下文匹配蒸馏CMD，使教师评分只依赖学生生成时可见的历史帧和控制信息，保证因果对齐。实验显示CMD支持低延迟视频生成并改善在线控制，为实时视频扩散/蒸馏提供了因果一致的训练方案。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.11618v1",
+      "source": "arxiv",
+      "title": "Generative Video Compression Based on Hierarchical Referencing",
+      "abstract": "Diffusion-based generative video compression has emerged as a promising paradigm to improve perceptual quality, where latent frames are required to be encoded efficiently while serving as denoising conditions. However, existing methods neither carefully design reference and quality structures during latent coding nor account for the impact of frame-level quality variation on denoising procedure, which limits coding efficiency and aggravates artifact propagation during generative reconstruction. In this paper, we propose GVCHR, Generative Video Compression based on Hierarchical Referencing. The key idea is to organize latent frames hierarchically, where the selected high-quality references benefit both latent coding and generative reconstruction. In latent coding, GVCHR couples a hierarchical reference structure with a hierarchical quality structure, assigning more bits to lower-layer frames that are reused more frequently as references. Built on this design, we introduce Hierarchical Temporal Context Mining to exploits complementary short- and long-term temporal context for effective latent coding. In generative reconstruction, the coding-side hierarchy is incorporated into a Hierarchical Attentive Adapter which is attached to a video diffusion transformer. This adapter uses hierarchical attention to restrict each latent frame to attend only to the same- or lower-layer references, thereby reducing artifact propagation during denoising. Experiments validate GVCHR on multiple benchmarks. Compared with the previous state-of-the-art method, GVCHR achieves 50.5% and 54.0% BD-rate gains in terms of LPIPS and DISTS, respectively, while also delivering clearly improved visual quality.",
+      "authors": [
+        "Daowen Li",
+        "Ding Ding",
+        "Zifu Zhang",
+        "Kai Li",
+        "Ying Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-12T03:55:20+00:00",
+      "link": "https://arxiv.org/pdf/2608.11618v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Diffusion-based generative video compression with hierarchical referencing",
+      "llm_evidence_cn": "基于扩散的分层参考生成式视频压缩",
+      "llm_evidence": "基于扩散的分层参考生成式视频压缩",
+      "canonical_evidence": "基于扩散的分层参考生成式视频压缩",
+      "llm_tldr_en": "Proposes GVCHR, a diffusion-based generative video compression method that organizes latent frames hierarchically with high-quality references to improve coding efficiency and generative reconstruction.",
+      "llm_tldr_cn": "扩散式生成视频压缩利用潜在帧作为去噪条件，但现有方法未设计参考与质量结构，编码效率受限且伪影传播。本文提出GVCHR，将潜在帧分层组织，用选出的高质量参考同时改进潜在编码和生成重建。该方法在压缩和重建质量之间取得更好平衡，为扩散模型在视频压缩和合成中的应用提供了有效框架。",
+      "llm_tldr": "扩散式生成视频压缩利用潜在帧作为去噪条件，但现有方法未设计参考与质量结构，编码效率受限且伪影传播。本文提出GVCHR，将潜在帧分层组织，用选出的高质量参考同时改进潜在编码和生成重建。该方法在压缩和重建质量之间取得更好平衡，为扩散模型在视频压缩和合成中的应用提供了有效框架。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.11913v1",
+      "source": "arxiv",
+      "title": "HarmoniDPO: Video-guided Audio Generation via Preference-Optimized Diffusion",
+      "abstract": "Video-to-audio (V2A) generation faces significant challenges in achieving precise temporal synchronization and high perceptual quality due to the complex, ambiguous relationship between visual and auditory cues. Existing methods typically compress video inputs into single feature representations, leading to significant loss of temporal dynamics and fine-grained visual information. These approaches also rely on reconstruction-based training objectives that poorly correlate with human perceptual judgments of audio quality and appropriateness. We propose HarmoniDPO, a novel framework that integrates preference-based optimization into diffusion-based V2A generation to address these limitations. (1) Our approach leverages a dual video representation: combining global context with frame-wise features to preserve temporal dynamics and semantic detail. (2) Inspired by reinforcement learning from human feedback (RLHF), HarmoniDPO employs online Direct Preference Optimization (online-DPO) to fine-tune a diffusion-based V2A model from preference judgments, enhancing perceptual quality and alignment. (3) Additionally, we introduce Dual-scale Diffusion Search (DDS), a test time scaling algorithm that adaptively optimizes output fidelity during inference. Experiments demonstrate that HarmoniDPO outperforms state-of-the-art methods in audio-video synchronization and subjective audio quality, offering a robust solution for generating realistic, human-preferred audio from video.",
+      "authors": [
+        "Wenshuo Peng",
+        "Kaipeng Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-12T10:45:26+00:00",
+      "link": "https://arxiv.org/pdf/2608.11913v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Diffusion-based generative model conditioned on video for audio synthesis; matches diffusion generative models",
+      "llm_evidence_cn": "以视频为条件用扩散模型生成音频；匹配扩散生成模型需求",
+      "llm_evidence": "以视频为条件用扩散模型生成音频；匹配扩散生成模型需求",
+      "canonical_evidence": "以视频为条件用扩散模型生成音频；匹配扩散生成模型需求",
+      "llm_tldr_en": "HarmoniDPO integrates preference-based optimization into diffusion-based video-to-audio generation with a dual video representation, improving temporal synchronization and perceptual quality over reconstruction baselines.",
+      "llm_tldr_cn": "视频到音频生成面临时序同步难和感知质量差的问题，现有方法压缩视频特征导致细节丢失，且重建目标与人耳感知不一致。HarmoniDPO提出偏好优化与扩散生成结合的新框架，利用双视频表示保留时序动态和细粒度视觉信息。实验显示该方法在音画同步和感知质量上优于传统重建式基线，为视频引导音频生成提供了更符合人类判断的训练方式。",
+      "llm_tldr": "视频到音频生成面临时序同步难和感知质量差的问题，现有方法压缩视频特征导致细节丢失，且重建目标与人耳感知不一致。HarmoniDPO提出偏好优化与扩散生成结合的新框架，利用双视频表示保留时序动态和细粒度视觉信息。实验显示该方法在音画同步和感知质量上优于传统重建式基线，为视频引导音频生成提供了更符合人类判断的训练方式。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.08720v1",
+      "source": "arxiv",
+      "title": "High-Quality Exposure Correction with Diffusion-Based Image Generation Priors",
+      "abstract": "Although most existing exposure correction methods achieve high fidelity, they often place excessive focus on overall pixel-wise accuracy, making it challenging to effectively model extreme exposure regions, which results in suboptimal perceptual quality. Recently, diffusion models have received significant attention due to their remarkable performance in the realm of image generation. However, their successful application to exposure correction remains a challenging and open question. The key challenge lies in generating accurate image structures and maintaining high image fidelity during stochastic diffusion processes. In this paper, we propose DPEC (Diffusion Prior-based Exposure Correction), a novel framework for image exposure correction that utilizes diffusion-based image generation priors encapsulated in pre-trained large-scale diffusion models. Specifically, we first propose an efficient fine-tuning strategy to derive an exposure corrector from pre-trained models, enabling the generation of enhanced images in a single-step denoising process. Moreover, we seamlessly combine the strengths of diffusion models and regression models, and design a joint cross-attention module to integrate multi-scale diffusion prior features, thereby effectively preserving high-frequency details and minimizing random artifacts. The diffusion model focuses on dealing with low-frequency content rather than all the intricate texture details. The experimental results demonstrate that the proposed DPEC method consistently outperforms existing state-of-the-art methods on multiple exposure correction datasets, whether in terms of fidelity, perceptual quality, or visual effects.",
+      "authors": [
+        "Ziwen Li",
+        "Meng Cao",
+        "Jinpu Zhang",
+        "Chunyang Li",
+        "Long Bao",
+        "Heng Sun",
+        "Yuehuan Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T14:05:08+00:00",
+      "link": "https://arxiv.org/pdf/2608.08720v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Diffusion model as generative prior for image enhancement; relevant to diffusion generative models but not video",
+      "llm_evidence_cn": "扩散模型作为图像增强的生成先验；与扩散生成模型相关，但不涉及视频",
+      "llm_evidence": "扩散模型作为图像增强的生成先验；与扩散生成模型相关，但不涉及视频",
+      "canonical_evidence": "扩散模型作为图像增强的生成先验；与扩散生成模型相关，但不涉及视频",
+      "llm_tldr_en": "DPEC applies diffusion-based image generation priors to exposure correction, constraining structure and fidelity via stochastic diffusion processes to improve perceptual quality in extreme exposure regions.",
+      "llm_tldr_cn": "现有曝光校正方法通常只追求像素级精度，难以刻画极端曝光区域，导致感知质量欠佳。扩散模型虽然具备强大的图像生成先验，但如何在随机扩散过程中保持准确结构与高保真度仍是难点。为此本文提出DPEC框架，借扩散先验显式约束重建结构并维持图像保真度。实验表明DPEC在曝光校正中恢复出更自然的结构细节，取得优于现有方法的感知质量，展示了扩散生成先验在底层视觉任务中的价值。",
+      "llm_tldr": "现有曝光校正方法通常只追求像素级精度，难以刻画极端曝光区域，导致感知质量欠佳。扩散模型虽然具备强大的图像生成先验，但如何在随机扩散过程中保持准确结构与高保真度仍是难点。为此本文提出DPEC框架，借扩散先验显式约束重建结构并维持图像保真度。实验表明DPEC在曝光校正中恢复出更自然的结构细节，取得优于现有方法的感知质量，展示了扩散生成先验在底层视觉任务中的价值。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.09529v1",
+      "source": "arxiv",
+      "title": "Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework",
+      "abstract": "As an important subfield of cross-modal generation, synthesizing static visual content in the form of images from audio, namely audio-to-image (A2I) generation, has attracted increasing research attention in recent years. Nevertheless, despite the remarkable visual quality of modern text-to-image (T2I) models, the performance of A2I remains fundamentally limited by traditional datasets, which often lack both high-fidelity images and precise cross-modal alignment. As a result, existing methods still struggle to achieve high-quality audio-to-image generation through finetuning strong T2I models, thereby constraining practical applications in this area. Motivated by this gap, we introduce A2I-Set, a unified, high-quality tri-modal dataset consisting of 323K paired audio, images, and detailed text captions, specifically designed for audio-visual research, including audio-conditioned image generation. Besides, we developed a new mixed-source test set for the A2I task through human supervision. We further propose an A2I model, AudioCanvas, fine-tuned on our A2I-Set. Experiments show that AudioCanvas achieves more visually expressive as well as cross-modal alignment results that generally outperforming existing approaches. Our dataset and source code are available at https://github.com/gdx012/A2I-Generation.",
+      "authors": [
+        "Dongxu Ge",
+        "Shansong Liu",
+        "Cheng Gong",
+        "Xiao-Lei Zhang",
+        "Chi Zhang",
+        "Xuelong Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-10T12:31:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.09529v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "audio-to-image generation via T2I diffusion models, relevant to diffusion generators",
+      "llm_evidence_cn": "基于T2I扩散模型的音频到图像生成，关联扩散生成模型",
+      "llm_evidence": "基于T2I扩散模型的音频到图像生成，关联扩散生成模型",
+      "canonical_evidence": "基于T2I扩散模型的音频到图像生成，关联扩散生成模型",
+      "llm_tldr_en": "A2I-Set provides a unified high-quality multimodal dataset and synthesis framework that fine-tunes strong text-to-image models to achieve expressive and faithful audio-to-image generation.",
+      "llm_tldr_cn": "音频到图像生成受限于数据集质量与跨模态对齐不足。本文提出A2I-Set，一个统一的高质量多模态数据集，并基于它微调强文本到图像模型，以提升A2I生成的视觉保真度与音频-图像一致性。实验证明该数据集和合成框架显著改善了生成质量，为跨模态生成提供了有力支撑。",
+      "llm_tldr": "音频到图像生成受限于数据集质量与跨模态对齐不足。本文提出A2I-Set，一个统一的高质量多模态数据集，并基于它微调强文本到图像模型，以提升A2I生成的视觉保真度与音频-图像一致性。实验证明该数据集和合成框架显著改善了生成质量，为跨模态生成提供了有力支撑。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

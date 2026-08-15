@@ -1,0 +1,105 @@
+{
+  "date": "20260815",
+  "date_label": "",
+  "generated_at": "2026-08-15 19:49:25 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.06768v1",
+      "route": "202608/15/2608.06768v1-explore-or-converge-stage-guided-per-step-optimization-for-diffusion-models",
+      "title": "Explore or Converge? Stage-Guided Per-Step Optimization for Diffusion Models",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "直接通过逐步强化学习偏好对齐研究扩散模型作为生成模型",
+      "first_seen_at": "2026-08-15 19:49:25 UTC",
+      "updated_at": "2026-08-15 19:49:25 UTC"
+    },
+    {
+      "paper_id": "2608.13391v1",
+      "route": "202608/15/2608.13391v1-context-matched-distillation-teacher-causality-for-autoregressive-video-distillation",
+      "title": "Context-Matched Distillation: Teacher Causality for Autoregressive Video Distillation",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向自回归视频生成、结合少步去噪蒸馏的上下文匹配蒸馏方法",
+      "first_seen_at": "2026-08-15 19:49:25 UTC",
+      "updated_at": "2026-08-15 19:49:25 UTC"
+    },
+    {
+      "paper_id": "2608.11618v1",
+      "route": "202608/15/2608.11618v1-generative-video-compression-based-on-hierarchical-referencing",
+      "title": "Generative Video Compression Based on Hierarchical Referencing",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "基于扩散的分层参考生成式视频压缩",
+      "first_seen_at": "2026-08-15 19:49:25 UTC",
+      "updated_at": "2026-08-15 19:49:25 UTC"
+    },
+    {
+      "paper_id": "2608.11913v1",
+      "route": "202608/15/2608.11913v1-harmonidpo-video-guided-audio-generation-via-preference-optimized-diffusion",
+      "title": "HarmoniDPO: Video-guided Audio Generation via Preference-Optimized Diffusion",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "以视频为条件用扩散模型生成音频；匹配扩散生成模型需求",
+      "first_seen_at": "2026-08-15 19:49:25 UTC",
+      "updated_at": "2026-08-15 19:49:25 UTC"
+    },
+    {
+      "paper_id": "2608.08720v1",
+      "route": "202608/15/2608.08720v1-high-quality-exposure-correction-with-diffusion-based-image-generation-priors",
+      "title": "High-Quality Exposure Correction with Diffusion-Based Image Generation Priors",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "扩散模型作为图像增强的生成先验；与扩散生成模型相关，但不涉及视频",
+      "first_seen_at": "2026-08-15 19:49:25 UTC",
+      "updated_at": "2026-08-15 19:49:25 UTC"
+    },
+    {
+      "paper_id": "2608.09529v1",
+      "route": "202608/15/2608.09529v1-towards-expressive-and-faithful-audio-to-image-generation-a-unified-multimodal-dataset-and-synthesis-framework",
+      "title": "Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "基于T2I扩散模型的音频到图像生成，关联扩散生成模型",
+      "first_seen_at": "2026-08-15 19:49:25 UTC",
+      "updated_at": "2026-08-15 19:49:25 UTC"
+    }
+  ]
+}

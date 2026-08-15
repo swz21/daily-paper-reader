@@ -41,17 +41,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-08-14</span>
+      <span class="dpr-home-dashboard-kicker">2026-08-15</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 15 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 6 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
     <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>6</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>9</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>4</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>2</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-08-14 21:07:05 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-08-15 19:49:25 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -62,9 +62,9 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日精读6篇、速读9篇，聚焦视频生成与高效生成建模，重点覆盖空间接地文本到视频、多维快捷流扩展等前沿方向。</p>
-<p>最值得关注的是《Spatially-Grounded Text-to-Video Generation via Inference-Time Gradient-Free Optimization》（10/10）与《XYZFlow: Scaling Multi dimensional Shortcut Flows for Efficient Generative Modeling》（9/10），分别指向可控视频生成和无梯度优化的新路径。</p>
-<p>建议普通读者优先看视频生成的可控性与效率提升相关成果，留意生成模型在空间细节与推理成本上的平衡。</p>
+<p>今日共读6篇论文，精读4篇、速读2篇，核心聚焦扩散模型优化与视频蒸馏方法。</p>
+<p>最值得关注9.0分高分工作：扩散模型的阶段引导逐步优化策略，以及自回归视频蒸馏中的教师因果性设计。</p>
+<p>建议下一步可结合图像曝光修正与音频到图像生成等应用，验证扩散模型与多模态生成方向的实践价值。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -73,12 +73,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">精读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">6 篇</strong>
+    <strong class="dpr-home-dashboard-count">4 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Spatially-Grounded Text-to-Video Generation via Inference-Time Gradient-Free Optimization">Spatially-Grounded Text-to-Video Generation via Inference-Time Gradient-Free Optimization</span></li><li><span class="dpr-home-dashboard-paper-title" title="XYZFlow:Scaling Multi dimensional Shortcut Flows for Efficient Generative Modeling">XYZFlow:Scaling Multi dimensional Shortcut Flows for Efficient Generative Modeling</span></li><li><span class="dpr-home-dashboard-paper-title" title="Beyond Trial-and-Error: Agentic Optimization for Image-to-Video Adherence">Beyond Trial-and-Error: Agentic Optimization for Image-to-Video Adherence</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Explore or Converge? Stage-Guided Per-Step Optimization for Diffusion Models">Explore or Converge? Stage-Guided Per-Step Optimization for Diffusion Models</span></li><li><span class="dpr-home-dashboard-paper-title" title="Context-Matched Distillation: Teacher Causality for Autoregressive Video Distillation">Context-Matched Distillation: Teacher Causality for Autoregressive Video Distillation</span></li><li><span class="dpr-home-dashboard-paper-title" title="Generative Video Compression Based on Hierarchical Referencing">Generative Video Compression Based on Hierarchical Referencing</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>6</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>4</strong></span></div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-skim-card">
   <div class="dpr-home-dashboard-header">
@@ -86,12 +86,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">9 篇</strong>
+    <strong class="dpr-home-dashboard-count">2 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="In-Loop Model Adaptation with Coupled Latent-Noise Guidance for High-Fidelity Subject-Driven Text-to-Image Generation">In-Loop Model Adaptation with Coupled Latent-Noise Guidance for High-Fidelity Subject-Driven Text-to-Image Generation</span></li><li><span class="dpr-home-dashboard-paper-title" title="Beyond Pixels: From Video Priors to 4D Worlds">Beyond Pixels: From Video Priors to 4D Worlds</span></li><li><span class="dpr-home-dashboard-paper-title" title="V-RAE: Rethinking Video Latent Spaces for Generation">V-RAE: Rethinking Video Latent Spaces for Generation</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="High-Quality Exposure Correction with Diffusion-Based Image Generation Priors">High-Quality Exposure Correction with Diffusion-Based Image Generation Priors</span></li><li><span class="dpr-home-dashboard-paper-title" title="Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework">Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>9</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>2</strong></span></div>
 </section>
 </div>
 

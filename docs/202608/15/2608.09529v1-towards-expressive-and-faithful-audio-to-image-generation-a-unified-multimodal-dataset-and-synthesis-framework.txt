@@ -1,0 +1,2235 @@
+Towards Expressive and Faithful Audio-to-Image Generation: A
+Unified Multimodal Dataset and Synthesis Framework
+Dongxu Ge∗
+University of Science and Technology
+of China
+Hefei, China
+Institute of Artificial Intelligence,
+China Telecom (TeleAI)
+Beijing, China
+gedongxu@mail.ustc.edu.cn
+Shansong Liu
+Institute of Artificial Intelligence,
+China Telecom (TeleAI)
+Beijing, China
+dadinghh2@gmail.com
+Cheng Gong
+Institute of Artificial Intelligence,
+China Telecom (TeleAI)
+Beijing, China
+gongchengcheng@tju.edu.cn
+Xiao-Lei Zhang†
+Institute of Artificial Intelligence,
+China Telecom (TeleAI)
+Beijing, China
+Northwest Polytechnical University
+Xi’an, China
+xiaolei.zhang@nwpu.edu.cn
+Chi Zhang
+Institute of Artificial Intelligence,
+China Telecom (TeleAI)
+Beijing, China
+zhangc120@chinatelecom.cn
+Xuelong Li†
+Institute of Artificial Intelligence,
+China Telecom (TeleAI)
+Beijing, China
+xuelong_li@ieee.org
+Abstract
+As an important subfield of cross-modal generation, synthesizing
+static visual content in the form of images from audio, namely
+audio-to-image (A2I) generation, has attracted increasing research
+attention in recent years. Nevertheless, despite the remarkable vi-
+sual quality of modern text-to-image (T2I) models, the performance
+of A2I remains fundamentally limited by traditional datasets, which
+often lack both high-fidelity images and precise cross-modal align-
+ment. As a result, existing methods still struggle to achieve high-
+quality audio-to-image generation through finetuning strong T2I
+models, thereby constraining practical applications in this area. Mo-
+tivated by this gap, we introduce A2I-Set, a unified, high-quality tri-
+modal dataset consisting of 323K paired audio, images, and detailed
+text captions, specifically designed for audio-visual research, includ-
+ing audio-conditioned image generation. Besides, we developed a
+new mixed-source test set for the A2I task through human supervi-
+sion. We further propose an A2I model, AudioCanvas, fine-tuned on
+our A2I-Set. Experiments show that AudioCanvas achieves more vi-
+sually expressive as well as cross-modal alignment results that gen-
+erally outperforming existing approaches. Our dataset and source
+code are available at https://github.com/gdx012/A2I-Generation.
+∗Work done during an internship at TeleAI.
+†Corresponding authors.
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+MM ’26, Rio de Janeiro, Brazil
+© 2026 Copyright held by the owner/author(s).
+ACM ISBN 979-8-4007-2213-4/2026/11
+https://doi.org/10.1145/3767308.3836313
+CCS Concepts
+• Computing methodologies →Computer vision problems;
+Neural networks; • Information systems →Multimedia and mul-
+timodal retrieval.
+Keywords
+Audio-Vision Dataset, Audio to Image Generation, Image Genera-
+tion
+ACM Reference Format:
+Dongxu Ge, Shansong Liu, Cheng Gong, Xiao-Lei Zhang, Chi Zhang, and Xue-
+long Li. 2026. Towards Expressive and Faithful Audio-to-Image Generation:
+A Unified Multimodal Dataset and Synthesis Framework. In Proceedings of
+the 34th ACM International Conference on Multimedia (MM ’26), November
+10–14, 2026, Rio de Janeiro, Brazil. ACM, New York, NY, USA, 23 pages.
+https://doi.org/10.1145/3767308.3836313
+1
+Introduction
+Cross-modal generation, including the mutual generation of modal-
+ities such as vision, text, and audio, is a current research hotspot
+[10, 15, 35, 37, 39, 51, 52, 54]. As the most common form of visual
+expression, images are also the focus of cross-modal research. Exten-
+sive research has significantly accelerated text-to-image generation
+[20], and the ability of models to generate high-fidelity and diverse
+images has been significantly enhanced. Thanks to their powerful
+performance, text-to-image models have been widely applied in
+multiple commercial fields. Moreover, recently, many studies have
+begun to focus on audio-to-image generation. Although significant
+progress has been made, the expressiveness of audio-to-image gen-
+eration is still difficult to compare with SOTA-level text-to-image
+models. We attribute this phenomenon to the following reasons:
+Firstly, due to relatively few studies on visual-audio modality
+earlier, there are few datasets focusing on visual-audio bimodality.
+Traditional datasets either only focus on the visual part and lack
+various classes of audio data, or pay more attention to audio quality
+1
+arXiv:2608.09529v1  [cs.CV]  10 Aug 2026
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+Multimodal Caption
+"[Audio Caption]": A female vocal is singing in a minor key accompanied by prominent acoustic guitar strumming and 
+chord progressions. The low-quality audio contains intermittent breathing sounds and suggests an intimate musical 
+performance with a passionate melody.
+"[Main Subject]": "<female vocalist>, <guitar>"
+"[Visual Generation Instruction]": "A woman passionately singing into a vintage microphone, softly illuminated by 
+warm lighting on a small stage, an acoustic guitar rests on a stool beside her, intimate setting with close-up details 
+capturing the emotion in her expression and gentle strumming fingers."
+Figure 1: Some examples from A2I-Set. A2I-Set has a detailed description of audio as well as paired visual generation instructions
+Benefit from strict filter strategy and strong T2I model, our images are superior in terms of visual effects and audio-vision
+alignment.
+and annotation accuracy while ignoring visual quality. The lack
+of datasets in the visual-audio field has hindered further research
+on the mutual generation of two modalities. Hence, to skip this
+issue, some existing approaches simply align the features of text
+and audio, and then feed audio as a replacement for text into text-
+to-image models to generate images. However, due to the lack of
+detailed audio-text annotations, most existing models align audio
+with ground truth categories, which limits more fine-grained image
+generation. Meanwhile, this kind of method neglects the description
+gap between audio and image.
+Besides, to perform end-to-end training, other researchers try
+to intercept images from videos to obtain image-audio pairs as
+training data. Nevertheless, this approach brings two problems:
+first, although including sufficient audio types, the quality of the
+obtained images cannot be ensured due to noisy source videos of
+traditional datasets represented by AudioSet and VGGSound. The
+low-quality image data will affect the performance of text-to-image
+models during finetuning; even the strongest open-source models
+will suffer severe quality degradation. Second, it is difficult to ensure
+that the image obtained by randomly intercepting a certain frame
+in the video is completely aligned with the audio, because the
+sounding entity in the audio does not necessarily appear in this
+frame at the same time. Some studies [41, 53] are aware of this
+issue and choose to extract sounding objects via visual information
+through specific models, but such models are not general-purpose
+and perform poorly in various domains of wild data.
+To break the current predicament in A2I, one direct way is to pro-
+pose a high-quality audio-image pairing dataset with fine-grained
+captions. To achieve this goal, we developed a multi-stage, object-
+level audio-visual aligned pipeline to extract an image from a video
+source. However, we found that only a small number of frames can
+meet such high standards. Thus we further use the newly released
+powerful open-source model FLUX.1-Krea-dev [21] to generate
+realistic images. Since the research benefits brought by realistic
+images are greater than those from data of other styles, with limited
+computing resources, we first consider building a set of images that
+are close to real photos and have a high degree of aesthetic ap-
+peal, rather than a general dataset. We name our dataset as A2I-Set,
+which consists of a total of 241 hierarchical classes of typical audio,
+pair-wise images, as well as fine-grained multimodal captions. To
+conclude, our main contribution can be summary as follows:
+• We propose a large-scale dataset A2I-Set for audio-visual
+cross-modal research, which includes more than 200 com-
+mon types of audio, including music, speech, and natural
+sounds. In addition, to boost A2I evaluation, we delicately
+label a new eval set with multiple sounding objects.
+• To obtain the dataset, we propose a complete data synthe-
+sis process, which realizes the entire workflow from audio
+2
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+and video of the source dataset to high-quality audio-image-
+text tri-paired data via SOTA models, including captioning,
+extraction, generation, filtering, etc.
+• To demonstrate the effectiveness of our dataset, we trained
+an effective audio-to-image baseline model called AudioCan-
+vas using our A2I-Set. The experimental results show that,
+benefiting from the high quality of A2I-Set, AudioCanvas ex-
+hibits excellent generation performance while maintaining
+a high degree of cross-modal alignment.
+2
+Related Work
+2.1
+Audio-Image Pairwise Dataset
+Due to the lack of corresponding audio data in common image
+datasets, most existing methods are constructed from existing au-
+dio datasets with video source labels such as [7, 14, 22–24, 29]. As
+two of the most famous and large-scale audio datasets, AudioSet
+[14] as well as VGGSound [7] have a huge impact on the audio
+generation field. However, both of them mainly focus on audio
+quality instead of the video that is accompanied by audio. Although
+VGGSound has automatic detection of video-audio correspondence
+in addition to audio quality, video quality is still not considered
+the primary criterion for screening. In recent years, some stud-
+ies have identified their shortcomings in annotation quality and
+cross-modal pairing, and have attempted to propose improvements:
+VGGSounder [55] analyzes the issues of label overlap, missing, and
+audio-visual alignment in VGGSound, and presents a re-annotated
+test set of VGGSound. FusionAudio-1.2M [9] extracts contextual
+clues from videos to assist audio captioning, reducing the hallucina-
+tion problem that occurs when single audio modal models perform
+annotation, and provides high-quality audio annotations with visual
+representations for AudioSet. To construct an Audio-Image pairwise
+dataset, existing methods simply perform rule-based (mid-frame,
+random frame, etc.) extracting frames from videos [4, 6, 22, 26, 42]
+or use a pretrained model to intercept [41, 53]. Although the lat-
+ter method has improved the former, current audio-visual video
+parsing models and sound source localization models only perform
+well on in-domain data; it is difficult to ensure good extraction
+capabilities for a wide range of noisy video data.
+2.2
+Audio to Image Generation
+Early Audio to Image (A2I) generation mainly focused on a specific
+field of audio and used a small amount of data to train models from
+scratch [6]. Benefiting from the rapid development of text-to-image
+generation, researchers have begun to try to use audio instead of
+text to generate images. Among these, Generative Adversarial Net-
+works (GANs) and Stable Diffusion models [33] are representative:
+Sound2Scene [41] aligns images and audio into a consistent space
+to achieve image-to-image generation based on ICGAN [5]. Fac-
+ing the fact that there’s no available audio-image pairing dataset,
+AudioToken [48], GlueGen [31], and SonicDiffusion [4] choose to
+directly train a model to convert audio into text tokens and use
+them as conditional prompts for diffusion models to drive image
+generation. More recently, SoundAdapter [44] further proposes a
+multi-granularity method to achieve better alignment between au-
+dio and clip embedding. MACS [53] proposes a two-stage solution
+which separates audio first, then performs IP-Adapter [49] like end-
+to-end training based on a diffusion model. However, this approach
+relies heavily on a well-developed audio-image dataset.
+2.3
+Synthetic Dataset
+Benefiting from the rapid development of generative models, many
+works have begun to synthesize data as training data in recent
+years [8, 16, 50]. Synthetic data can play as a supplement to rare
+scenarios in real-world datasets, providing clear and controllable
+supervision[50]. BLIP3-o [8] leverages approximately 10k image-
+text pairs generated by GPT-4o during fine-tuning, which yields
+significant improvements in instruction-following performance. Re-
+alSyn [16] designs a synthetic text generation module to construct
+datasets and promote vision-language representation learning. In
+speech generation [25, 34], using synthetic data for training is a
+common and natural choice. In our task, we find that after filtering
+nearly one million candidate frames from the video source, we
+only obtained approximately 100,000 valid images. This is because
+many audio elements themselves are difficult to appear in the same
+frame simultaneously. To better achieve universal audio-to-image
+generation, we used FLUX.1-Krea-dev [21] to simulate real images.
+3
+Dataset
+In this section, to ensure data quality, we construct a multi-stage
+pipeline which includes captioning, extraction, generation and fil-
+tering stages, building upon two typical audio datasets. We build
+a large-scale audio-image dataset through multiple strong models,
+namely A2I-Set. The constructed dataset is characterized by its large
+size, high quality, and high audio-visual matching. It encompasses
+a wide range of audio categories, including music, natural sounds,
+and speech. This comprehensive and diverse dataset is designed to
+promote cross-modal research between audio and images.
+3.1
+Vision Enhanced Audio Caption
+In order to quickly obtain audio and video with a high degree
+of matching, we directly utilize two existing datasets: AudioSet
+consists of 632 hierarchically inclusive audio event classes and
+a collection of around 2M human-labelled 10-second sound clips
+drawn from YouTube videos. VGGSound contains approximately
+200k video clips, covering 309 audio categories, with a total dura-
+tion of about 550 hours. Each clip is fixed at 10 seconds, while the
+matching between audio and source video has been simply checked.
+Thanks to FusionAudio-1.2M [9], which has already incorporated
+video information to caption the audio from AudioSet, we directly
+incorporate this part of the captions into our collection. Meanwhile,
+we processed the VGGSound dataset in a similar manner. Due to
+the long time since AudioSet and VGGSound datasets were released,
+some audio or videos are no longer available. Eventually, we ob-
+tained a total of around 1.1M of valid audio entries from these
+sources.
+Like FusionAudio-1.2M [9] does to AudioSet, we use the video
+caption model PLLaVA [47] and the audio caption model Qwen-
+audio-2 [11] to respectively obtain the information from pairwise
+source videos and audio data in VGGSound and integrate the two
+through the GPT-4o-mini model to yield a more reliable audio cap-
+tion with potential vision clues. This step is because a single audio
+3
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+Vision Enhanced Audio Caption
+Synthetic Image Generation
+Real Image Extraction
+<male vocalist>
+<drum> 
+<guitar>
+Audio-Image Alignment Filter
+Vision Enhanced 
+Audio Caption
+VLLM Cross-Check
+Is this picture taken in reality?
+1. Audio Caption
+2. Video Caption
+3. Multimodal Caption
+Core Task: Given a [VIDEO CAPTION] generated by a visual language 
+model and an [AUDIO CAPTION] generated by an audio language 
+model.
+Your goals are:
+Fuse: Integrate the information from the two captions.
+Reffne: Utilize the video caption to enhance, correct, and specify 
+the audio caption, eliminating any potential ambiguity or 
+hallucination in the audio description.
+Output: Generate a pure ffnal audio caption that only describes 
+auditory perceptions ...
+Audio
+Caption
+Synthetic Instruction  Generation
+Audio Caption Example:
+"The auditory scene is dominated by intense gusts of wind, contrasting with the 
+joyful laughter and playful shouts of children, suggesting an outdoor setting 
+filled with energy and activity."
+Synthetic Instruction Example:
+"[Main Subject]": "<child>, <wind>"
+"[Visual Generation Instruction]": "A vibrant outdoor playground scene on a windy 
+day, children laughing and playing energetically, their hair and clothes fluttering 
+in the wind, colorful playground equipment in the background, bright blue sky with 
+fluffy white clouds, warm sunlight illuminating the joyful atmosphere."
+        
+Image Candidates
+Multiple
+ Rounds
+Audio Source Separation & Detection
+Visual Grounding
+<male vocalist>
+<drum> 
+<guitar>
+Images (Obj Level)
+Structured BBox
+<male vocalist>: 
+<x1,y1,x2,y2>,
+<drum>: 
+<x1,y1,x2,y2>, 
+...
+raw video
+Image Candidates
+High quality ? 
+Low jitter？
+High resolution？
+Scene-wise Image Extraction 
+Scene 1
+Scene 2
+Scene 3
+Audio-Image Candidates
+CLAP Filter
+Source Audio
+Align score > 
+threshold ?
+Sam Audio
+RMS Energy 
+Detection
+Audio (Obj Level)
+Real
+Synthetic
+A2I-Set
+323K-Image
+260K-Audio
+Human Check
+A2I-Eval
+A2I-Train
+3280-Audio
+A2I-Balanced
+Audio-Vison 
+Ranking
+Figure 2: An overview of our proposed A2I-Set dataset synthesis pipeline, where we used multiple reliable models for captioning,
+filtering, generation, and evaluation. Human experts are employed to ensure data quality.
+Figure 3: The proportion of different
+categories of audio in the training set
+of A2I-Set.
+Figure 4: Proportion of the number of
+sound sources in the audio of A2I-Set.
+A2I-Set has a uniform proportion of
+sound sources.
+Figure 5: Comparison of A2I-Set with
+several other audio-visual related
+datasets.
+caption model always suffers from severe hallucination problems,
+which will affect the quality of the data. The introduction of visual
+information has greatly alleviated this phenomenon. At the same
+time, doing so allows our data to be aligned with FusionAudio-1.2M,
+enabling unified subsequent processing. Since the correspondence
+between audio and video in the source data cannot be perfectly
+guaranteed, to obtain reliable audio captions, we further filter all
+generated audio captions through CLAP [46], a large-scale audio-
+text cross-modal contrastive learning pre-trained model. By calcu-
+lating the similarity scores of the two modalities, we filtered out
+nearly 40% of the total data.
+3.2
+Real Image Extraction
+To obtain high-quality images, we first filtered high-resolution
+videos. Specifically, videos need to be no less than 540×360. Addi-
+tionally, we use an optical flow estimation method [13] to perform
+jitter filtering on the videos to obtain stable videos for extracting
+images. Next, we utilize TransNet V2 [40] to perform scene seg-
+mentation on videos and extract the middle frame for each scene.
+To ensure image quality, we further used the image quality assess-
+ment model ARNIQA [1] for evaluation and filtered out images
+with a score lower than 0.4. All qualified images are taken as im-
+age candidates and will be evaluated for audio-image alignment in
+subsequent steps.
+4
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+3.3
+Synthetic Image Generation
+In addition to extracting real image alternatives, we also used
+FLUX.1-Krea-dev to generate images. This is because, due to the
+temporal nature and mixed characteristics of audio, it is difficult
+for a single frame image in a video to be completely aligned with
+the source audio. After obtaining reliable audio captions in the
+first stage, we find that simply inputting descriptions from the
+audio modality into the image generation model yielded poor per-
+formance. Obviously, this is because the audio description is not
+completely aligned with the input of the text-to-image model. There-
+fore, we used GPT-4o-mini to adjust the audio descriptions again.
+Unlike previous instructions, at this stage, we allowed the model
+to appropriately expand the audio captions by incorporating po-
+tential visual descriptions within them, and to construct reliable
+drawing instructions from a professional perspective, including ele-
+ments such as subject identification, visual descriptions, atmosphere
+recognition, colors, and composition. Detailed and professional im-
+age generation instructions will be uniformly input together with
+clear instructions for generating realistic style images into FLUX.1-
+Krea-dev [21], a newly launched powerful image generation model
+characterized by realism. However, the quality of image genera-
+tion remains uncontrollable, and the model still often generates
+unrealistic-style images. At the same time, phenomena such as blur-
+riness and distortion can occasionally be observed in the generated
+images. We used two of the most powerful open-source visual large
+models (VLMS): Qwen2.5-VL-72B-Instruct [43] and GLM-4.5V [19]
+to visually screen the generated images. We have made various
+attempts with visual prompts. Finally, we find that directly having
+the model judge whether the images generated by FLUX.1-Krea-dev
+are real photos achieved the best results in judging the model’s
+style and visual details. For detailed instructions on VLMs, please
+refer to our supplementary material.
+Only synthetic images that are judged as qualified by both visual
+models can pass the screening. The overall pass rate is only 10%
+to 20%. To generate a sufficient number of images, we conducted
+multiple rounds of generation. In this stage, we finally obtain ap-
+proximately 240K qualified with a high resolution of 1024×1024
+images, which will be filtered together with real image candidates
+in the next stage.
+3.4
+Audio-Image Alignment Filter
+As mentioned earlier, the frames randomly captured from the video
+may not fully correspond to the elements in the audio. At the same
+time, large models may also encounter hallucinations when judging
+audio elements. Therefore, to ensure the rigour of the dataset, we
+used Sam Audio [38] to perform object-level separation of audio
+through prompts. By performing RMS energy detection on the
+separation results, we ensure that the object elements are present
+in the audio. Next, to judge the existence of object elements, we
+performed visual grounding separately for each object element
+using Qwen3-VL-Flash [3] and Ground Dino [27]. In this way, we
+obtained highly aligned audio-image pairs, and a detailed analysis
+will be provided in the next section.
+3.5
+Data Analysis
+A2I-Set contains 323,446 images and 260,060 audios with 241 hier-
+archical labels, which means an audio may be paired with multiple
+valid images. Specifically, A2I-Set includes 193,653 synthetic images
+and 129,773 real images. In particular, to encourage audio-visual
+research in multi-source scenes, we also select 3,280 evaluation
+image-audio pairing data as evaluation dataset A2I-eval from the
+same source data obtained from our data construction pipeline,
+where the audio categories are the same as the training set. The
+final evaluation set is manually screened by field experts to ensure
+audio object correction for element-wise evaluation. In addition,
+we notice that the long-tail problem exists in A2I-Set, so we fur-
+ther propose an A2I-balanced set. A2I-balanced is a 10K sample
+selected from the synthetic images in A2I-Set by ranking both Im-
+ageBind scores and aesthetic scores, and also has undergone expert
+evaluation to ensure visual quality. We provide some downstream
+applications based on A2I-balanced in the appendix to further high-
+light the high quality of the dataset.
+fig. 3 shows the distribution of audio types in A2I-Set, highlight-
+ing its universal diversity, which contrasts with small specialized
+datasets such as the natural sound dataset Landscape [22], Into the
+Wild [24], Greatest Hits[29], and the dance music dataset AIST++
+[23]. Such diversity secures our dataset with an abundant variety
+and general knowledge, which can be applied in model training. In
+addition, we have also counted the distribution of the number of
+sound sources in the audio. As can be seen from fig. 4, our dataset
+is balanced across various numbers of sound sources, indicating
+that our dataset provides both simple (single sound source) and
+complex (multiple sound sources) training data. Meanwhile, our
+dataset is consistent with the view of MACS [53], real-world audio
+is mainly mixed audio rather than single-source audio. This further
+underscores our purpose, which is to construct a dataset that can
+better mimic the real world. As shown in fig. 5, we compare it
+with several related multimodal datasets, demonstrating A2I-Set’s
+advantage in data scale and the number of audio classes.
+4
+Method
+4.1
+Problem Formulation
+Let an audio signal 𝑎∈A correspond to a visual scene 𝑥∈X. Our
+goal is to learn a generative model 𝐺capable of synthesizing an
+image ˆ𝑥conditioned solely on the audio input:
+ˆ𝑥= 𝐺(𝑎).
+(1)
+To train such a neural network 𝐺, a dataset containing audio-
+visual data pairs D = {𝑋𝑖,𝐴𝑖}𝑁
+𝑖=1 is generally required. However,
+directly training such a general modal alignment model requires a
+fairly large number 𝑁of training data, which is usually difficult to
+achieve. Therefore, we utilize the image generation capabilities of
+an existing pretrained generation model, specifically text-to-image
+(t2i) diffusion-based generator ˆ𝐺conditioned on text embeddings 𝑒𝑡.
+To obtain such text embedding, a text encoder 𝐸𝑡∈R𝑑𝑡is typically
+needed to encode the input text 𝑦into latent space. Therefore, our
+problem is transformed into how to embed audio embeddings 𝑒𝑎
+into the pre-trained t2i model. Most previous methods sidestep
+this challenge by directly mapping audio features to text features.
+Several years ago, image-to-image (I2I) generation also faced similar
+5
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+challenges. IP-Adapter [49] proposed a decoupled cross-attention
+module, which was originally designed as an adapter to enable a
+pretrained text-to-image diffusion model to generate images with
+an image prompt. Hence, most works in A2I, such as MACS [53],
+use it for the injection of audio embeddings. Notably, we propose a
+new injection method named FiLM-weighted Audio-Text Fusion,
+which will be introduced later.
+4.2
+Pre-Aligned Audio Projector
+When training a stable diffusion model (here we utilize SD 1.4), a
+large dataset of text-image pairs is typically used to learn a good
+text-image space correspondence. To preserve this good alignment
+as much as possible and achieve better performance, we first in-
+troduce an Audio Projector module with Pre-Alignment before
+fine-tuning the Stable Diffusion model. As fig. 6 (a) shows, we ex-
+tract multi-level features of the CLAP model, adjust the dimensions
+using MLP, then concatenate and input them together into the Au-
+dio Projector. The Audio Projector extracts useful information from
+the CLAP features through learnable queries and attempts to align
+with the CLIP model [32] output. Thanks to the object elements
+corresponding to the audio in our annotations, we directly use "An
+image of <object1> and <object2> ..." as the input to CLIP.
+To enable audio conditioning, we first adopt the pretrained au-
+dio encoder 𝐸𝑎(·) from CLAP [46] that extracts multi-layer audio
+embeddings 𝑒𝑎1,𝑒𝑎2,𝑒𝑎3,𝑒𝑎4 = 𝐸𝑎(𝑎) from audio signals. Then each
+audio embedding is projected by an MLP separately to obtain a
+uniform hidden dimension R𝑑𝑎. 𝑒𝑎1, 𝑒𝑎2, 𝑒𝑎3, and 𝑒𝑎4 are then con-
+catenated and input into the Audio Projector, finally yielding the
+aggregated audio representation 𝑒. To better align the output of
+the Audio Projector with the CLIP space, we use a joint-training
+strategy that combines Mean Squared Error (MSE) loss and con-
+trastive loss functions. Specifically, we used the InfoNCE [2] loss,
+treating audio clips from the same class as positive pairs and audio
+clips from different classes as negative pairs. Given a batch of audio
+features input 𝐴= {𝑒1, . . . ,𝑒𝑁}, the InfoNCE loss can be denoted
+as:
+LInfoNCE = −log
+exp  ⟨e𝑖, e𝑝𝑜𝑠⟩
+Í
+𝑛𝑒𝑔∈𝑁𝑒𝑔exp  ⟨e𝑖, e𝑛𝑒𝑔⟩ .
+(2)
+where 𝐴𝑝𝑜𝑠shares same object between 𝑒𝑖, while 𝑒𝑛𝑒𝑔in negative
+set 𝑁𝑒𝑔don’t. ⟨·⟩denotes inner product between elements. Besides,
+the MSE loss is defined as the squared norm difference between the
+audio feature 𝑎𝑖and the text feature 𝑡𝑖:
+LMSE = ∥𝑎𝑖−𝑡𝑖∥2
+2 .
+(3)
+The total training object LTotal of audio projector combines these
+two losses:
+LTotal = LMSE + 0.2 ∗LInfoNCE.
+(4)
+4.3
+FiLM-weighted Audio-Text Fusion
+The projected audio feature 𝑒obtained from Audio Projector is then
+integrated into the pre-trained UNet model by the FiLM-weighted
+Audio-Text Fusion (FAT Fusion) module. Among these, the cross-
+attention layers used for text features and image features are sep-
+arated. Specifically, we add a new cross-attention layer to each
+cross-attention layer of the original UNet model to insert audio
+features, which can be denoted as:
+Z𝑎= Attention(Q, Ka, Va) = Softmax
+ QKa⊤
+√𝑑𝑎
+
+Va,
+(5)
+where Q = ZWq is the query matrices from UNet latent, Ka =
+e′Wk, Va = e′Wv are key and values matrices computed from the
+audio features through corresponding weight matrices Wka and
+Wva. 𝑑𝑎denotes the dimension of learned features 𝑒′.
+In addition to audio conditions, the model also accepts text con-
+dition injection through cross-attention. Therefore, for each layer
+of UNet, the latent features undergo two updates. Specifically, the
+features integrated with text information and the features inte-
+grated with audio information are summed to serve as the output
+latent. Thus, the final formulation of the decoupled cross-attention
+is defined as follows:
+Z𝑡= Attention(Q, Kt, Vt) = Softmax
+ QKt⊤
+√𝑑𝑡
+
+Vt,
+(6)
+where Ka = etWk, Va = etWv. Notably, in both cross-attention,
+the query Q remains the same. After obtaining the text representa-
+tion Z𝑡and the audio representation Z𝑎, instead of directly sum-
+ming them, we propose a flexible feature fusion technique similar to
+Feature-wise Linear Modulation (FiLM)[30]. FiLM is a feature-level
+linear modulation technology that performs Affine Transforma-
+tion on the intermediate features of the neural network, enabling
+the model to dynamically adjust feature expressions according to
+inputs.
+Specifically, as fig. 6 shows, given representations Z𝑎and Z𝑡
+in the 𝑙𝑡ℎlayer of unet, each representation is modulated by two
+channel-wise feature-aware modulation parameters𝛾𝑙, 𝛽𝑙∈R𝐵×1×𝐷.
+In practice, we adopt 𝐷= 𝑑𝑎= 𝑑𝑡. This process can be denoted as:
+𝛾𝑙
+audio = 𝑓𝑎𝑢𝑑𝑖𝑜(Z𝑙
+𝑎),𝛾𝑙
+text = 𝑓𝑡𝑒𝑥𝑡(Z𝑙
+𝑡),
+(7)
+𝛽𝑙
+audio = ℎ𝑎𝑢𝑑𝑖𝑜(Z𝑙
+𝑎), 𝛽𝑙
+text = ℎ𝑡𝑒𝑥𝑡(Z𝑙
+𝑡),
+(8)
+Z𝑙
+𝑎′ = FAT-Fusionaudio(Z𝑙
+𝑎) = (1 + 𝛾𝑙
+audio) · Z𝑙
+𝑎+ 𝛽𝑙
+audio,
+(9)
+Z𝑙
+𝑡′ = FAT-Fusiontext(Z𝑙
+𝑡) = (1 + 𝛾𝑙
+text) · Z𝑙
+𝑡+ 𝛽𝑙
+text,
+(10)
+Z𝑙
+𝑛𝑒𝑤= (1 −𝛼)Z𝑙
+𝑡′ + 𝛼Z𝑙
+𝑎′.
+(11)
+In practice, we keep 𝛼= 0.5 to ensure modal balance. Since the
+text information corresponding to the audio is generally unknown
+during inference, we keep the input text empty for extraction during
+both training and inference.
+4.4
+Training and Inference
+During the training process, we finetune AudioCanvas while keep-
+ing the parameters of the pre-trained diffusion model unchanged.
+AudioCanvas is trained on our proposed paired audio-image dataset
+A2I-Set, using the same training objective as the original stable dif-
+fusion:
+𝐿𝑆𝐷= E𝑥0,𝜖,𝑦,𝑎,𝑡∥𝜖−𝜖𝜃(𝑥𝑡,𝑦,𝑎,𝑡)∥2.
+(12)
+6
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Text Features
+Audio Features
+K
+V
+Q
+Audio 
+Fusion
+Text 
+Fusion
+K
+V
+Q
+l
+audio
+
+l
+audio
+
+l
+text
+
+l
+text
+
+
+
+
+1
+tx
+1
+
+tx
+Trainable Modules
+Frozen Modules
+VAE
+ Gaussian noise
+VAE
+Layer 1
+Layer 2
+Layer n
+CLAP
+Audio
+Projecter
+Learnable queries
+CLIP
+Audio Projecter
+CLIP
+MSE
+L
+Contrast
+L
+Pulling
+Pushing
+Anchor
+An image of <object1> and
+<object2> and ... 
+Empty 
+Text Input
+(a)  Pre-Alignment
+(b)   Pipeline
+(c)   FiLM-weighted Audio-Text Fusion
+Self Attention
+FAT Fusion
+MLP
+MLP
+MLP
+Figure 6: The overview of audio-to-image generation architecture AudioCanvas, audio features are injected into the diffusion
+model through FAT-Fusion. We keep the text input empty for both training and inference stages. Only few modules need
+training while the diffusion model backbone is frozen.
+In addition, to ensure style consistency, we also set a probability
+of 𝑝= 0.1 to randomly drop the audio conditions. Since the text
+condition has always been set to empty, the model performs uncon-
+ditional generation at this point, which also enables classifier-free
+guidance in the inference stage.
+5
+Experiments
+5.1
+Implementation details
+We train AudioCanvas on our proposed A2I-Set. During training,
+we keep the text input empty to prevent any additional text from
+affecting the model. To ensure the model to learn strong high-level
+aesthetic priors, we first train it for 25 epochs on the synthetic
+part of the A2I-Set, followed by 45 additional epochs on the entire
+dataset. All training was conducted on a single H100 machine with
+8 cards. During training, a probability of 𝑝= 0.1 is used to ran-
+domly drop the audio conditions to ensure the style transfer of the
+model, which enables our model to generate stably facing missing
+or highly noisy inputs. The training stage utilizes the AdamW opti-
+mizer with a batch size of 8 samples per GPU. We also use gradient
+accumulation with a step of 8. The hyperparameters of optimizer
+are set to 𝛽1 = 0.9, 𝛽2 = 0.99, with a weight decay of 0.01. In terms
+of the selection of generative models, we have observed that most
+audio-to-image models adopt early versions of SD. To ensure a fair
+comparison, we have also followed this selection and used SD v1.4
+as our image generation backbone. We further provide more exper-
+iments and qualitative analysis using stronger backbones (SD2 and
+SD-XL) in the Appendix.
+During the inference phase, to ensure the comprehensiveness
+of the results, we used two datasets to test our model. A2I-eval
+contains 3,280 manually-label audio-image data pairs with all 241
+classes in A2I-Set. In addition, we also use the single-source dataset
+Landscape [22], which contains 9 distinct labels for 1,000 video
+clips, as an exogenous single-source evaluation dataset. Due to the
+small size of the Landscape dataset, to ensure the stability of the
+test, we generate multiple images for each audio during inference.
+For AudioCanvas, we choose cfg scale of 7.5 for A2I-eval and 8.5
+for Landscape.
+5.2
+Evaluation Metrics
+We use multiple metrics to evaluate our model, which can be divided
+into three parts: 1) Visual quality of the generated images, which
+includes Fréchet Inception Distance (FID) [17], and Inception Score
+(IS) [36]. 2) Human preference of the generated images, represented
+by Aesthetic evaluation score (Aes) and HPSv3 score [28]. Aes is
+directly extracted by the LAION-Aesthetics Predictor V2. Notably,
+HPSv3 requires a text prompt during inference; we directly input
+a template sentence filled with ground truth labels. 3) Modality
+alignment, following [48], we introduce Audio-Image Similarity
+(AIS), which assesses the similarity between the source audio and
+the generated images using the Wav2CLIP model [45]. In addition,
+we do not adopt the Image-Image Similarity (IIS) proposed in [48],
+as the ground truth image of audio is a vague concept. Instead,
+we directly measure the similarity between the generated image
+and the ground truth labels with CLIP [32], namely Text-Image
+Similarity (TIS). In addition, we also indicate the backbones and
+the amount of training data used by different methods in table 1
+and table 2, because the generative ability of the model is closely
+related to them.
+7
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+Table 1: Performance comparison on A2I-eval (mixed-source). The best results are bold, and the second-best results are
+underlined. Training data refers to the estimated additional training data related to visual modality and audio modality
+introduced during the model training process. † denotes the model designed for sound generation (instead of general audio).
+Method
+FID ↓
+IS ↑
+Aes ↑
+HPSv3 ↑
+AIS ↑
+TIS ↑
+Backbone
+training data
+AudioToken [48]
+69.79
+24.52
+5.42
+0.2168
+0.0721
+0.2395
+SD1.4
+≈200k
+Sound2Scene † [41]
+79.95
+16.54
+3.85
+-5.8154
+0.0712
+0.2380
+BigGAN
+< 100k
+SonicDiffusion † [4]
+91.57
+12.55
+4.94
+-2.2509
+0.0468
+0.2043
+SD1.4
+≈22k
+SoundAdapter [44]
+74.55
+21.51
+5.04
+-1.3218
+0.0613
+0.2329
+SD1.5
+≈200k
+CoDi [42]
+75.89
+24.75
+5.41
+2.9352
+0.0837
+0.2489
+SD1.5
+≈100M
+MACS [53]
+72.27
+22.49
+4.67
+0.4623
+0.0792
+0.2189
+SD1.4
+≈100k
+AudioCanvas (ours)
+73.93
+26.07
+5.47
+4.8115
+0.0841
+0.2547
+SD1.4
+≈323k
+Table 2: Performance comparison on Landscape (single-source). The best results are bold, and the second-best results are
+underlined. Training data refers to the estimated additional training data related to visual modality and audio modality
+introduced during the model training process. † denotes the model designed for sound generation (instead of general audio).
+Method
+FID ↓
+IS ↑
+Aes ↑
+HPSv3 ↑
+AIS ↑
+TIS ↑
+Backbone
+training data
+AudioToken [48]
+100.42
+15.66
+5.50
+1.9184
+0.0718
+0.2339
+SD1.4
+≈200k
+Sound2Scene † [41]
+120.86
+7.98
+4.18
+-1.7713
+0.1039
+0.2485
+BigGAN
+< 100k
+SonicDiffusion † [4]
+110.05
+10.26
+5.14
+3.3671
+0.0844
+0.2370
+SD1.4
+≈22k
+SoundAdapter [44]
+127.54
+11.83
+5.11
+2.3801
+0.0866
+0.2628
+SD1.5
+≈200k
+CoDi [42]
+154.56
+6.93
+5.59
+5.6715
+0.1031
+0.2585
+SD1.5
+≈100M
+MACS [53]
+124.62
+9.05
+4.59
+0.6207
+0.0786
+0.2364
+SD1.4
+≈100k
+AudioCanvas (ours)
+137.03
+7.31
+5.75
+5.8728
+0.0952
+0.2592
+SD1.4
+≈323k
+5.3
+Main Results
+In table 1 and table 2, we compare several representative models
+[4, 41, 42, 44, 48, 53]. Noted that we do not select recent integrated
+foundation models for comparison, out of concern that the dispari-
+ties in model scale and volume of training data would lead to unfair
+comparisons. As seen from the tables, AudioCanvas achieves the
+most balanced performance between visual quality and modal align-
+ment. AudioCanvas performs excellently in all human preference
+scores on both test datasets, and IS on A2I-eval. Notably, our model
+achieves better performance than CoDi, which has approximately
+100M visual training data. This can be attributed to the powerful
+visual quality of A2I-Set; Similar findings were also obtained in [12],
+where significantly improving the quality of the denoising model
+can be achieved by performing quality-tuning on it with a small
+amount of high-quality data. More details about model generation
+performance and comparisons with baseline models can be find in
+the Appendix.
+At the same time, AudioCanvas performs excellently in terms
+of audio-visual relevance. We attribute this to two points: 1. A2I-
+Set contains a large amount of multi-source data, which has great
+learning value for the model. Although the AudioCanvas does not
+specially process the multi-source data, it can also master the corre-
+sponding relationships through extensive learning. 2. Thanks to the
+delicate pipeline, the high-quality of A2I-Set cross-modal pairings
+can bring more efficient training, even surpassing 100M of rough
+matching pairs in CoDi. Besides, AudioToken, which achieves excel-
+lent visual-generation performance by keeping a completely frozen
+backbone, performs poorly in terms of audio-visual relevance. This
+may be because AudioToken uses indirect text tokens rather than
+audio as input to the diffusion model, which reveals the importance
+of end-to-end training.
+Table 3: Comparison of AudioCanvas on different experiment
+settings or model components in A2I-eval. The best results
+are bold and the second-best results are underlined.
+Method
+FID↓
+IS↑
+Aes↑
+HPSv3↑
+AIS↑
+TIS↑
+Real-Only
+69.86
+25.47
+4.63
+2.0524
+0.0948
+0.2532
+Synth-Only
+91.65
+21.96
+5.65
+5.0926
+0.0771
+0.2493
+Mixture
+73.93
+26.07
+5.47
+4.8115
+0.0841
+0.2547
+w FiLM-Large
+76.29
+24.27
+5.39
+4.4098
+0.0798
+0.2487
+w/o FiLM
+74.87
+27.49
+5.40
+4.4528
+0.0832
+0.2532
+AudioCanvas
+73.93
+26.07
+5.47
+4.8115
+0.0841
+0.2547
+5.4
+Ablation Studies
+In table 3, we first report the performance of AudioCanvas on dif-
+ferent data splits of A2I-Set. All experiments are conducted for
+the same training settings. "Real-Only" and "Synth-Only" denote
+AudioCanvas models that are trained on real and synthetic im-
+ages of A2I-Set, respectively. "Mixture" follows the original training
+recipe of AudioCanvas. We can see from the table that synthetic
+data serves as the core source for the model to learn high aesthetic
+8
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+features, while purely real data can only enhance the realism of
+generated images (higher FID). Our training strategy that mixes
+real and synthetic data plays a key role for AudioCanvas to achieve
+optimal overall performance. It greatly improves the aesthetic score
+of images while preserving authenticity, and also delivers outstand-
+ing performance in audio-image alignment. Besides, we further
+discover the effect of FiLM in FAT-Fusion. We can see from the ta-
+ble that the FiLM module provides significant improvements to the
+model’s audio-image alignment and aesthetic performance. How-
+ever, when we further increase the parameters with a 3-layer MLP
+(denoted as FiLM-Large), it leads to performance degradation. This
+may be because an overly deep network disrupts the favourable
+feature distribution. To sum up, AudioCanvas has comprehensively
+achieved leading overall performance on the A2I-eval dataset, ver-
+ifying the rationality of its data strategy and model component
+design.
+6
+Limitations
+We mainly evaluate our model on A2I-eval, which shares the same
+source data with our training data. This may bring potential impact
+on evaluation fairness. To amend this issue, we bring more test on
+Landscape. Besides, to inherit good aesthetic styles, We train our
+model on Flux-Style images, which may bring possible style over-
+fitting issue. Meanwhile, we introduce real images as training data
+for robust real-world generalization, yet relatively low aesthetic
+images reduce the artistic performance of our model. We have not
+fully explored the trade-off of real and synthetic data.
+7
+Conclusion
+To address the vision quality and cross-modal alignment issues
+existing in the current audio-to-image datasets, we propose a new
+audio-vision-text tri-modal dataset named A2I-Set with a sophisti-
+cated pipeline. And a hand-labelled test set A2I-eval. Furthermore,
+we proposed a new A2I baseline AudioCanvas with FAT-Fusion.
+Experimental results show that despite being trained on only 323K
+data, AudioCanvas can achieve high-quality image generation while
+maintaining a high degree of image-audio alignment, even surpass-
+ing models trained on an order of magnitude more training data or
+a stronger backbone. We hope this research can open new avenues
+in the challenging task of the audio-to-image generation field.
+9
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+References
+[1] Lorenzo Agnolucci, Leonardo Galteri, Marco Bertini, and Alberto Del Bimbo.
+2024. ARNIQA: Learning Distortion Manifold for Image Quality Assessment. In
+Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision.
+189–198.
+[2] Jean-Baptiste Alayrac, Adria Recasens, Rosalia Schneider, Relja Arandjelović,
+Jason Ramapuram, Jeffrey De Fauw, Lucas Smaira, Sander Dieleman, and Andrew
+Zisserman. 2020. Self-supervised multimodal versatile networks. Advances in
+neural information processing systems 33 (2020), 25–37.
+[3] Shuai Bai, Yuxuan Cai, Ruizhe Chen, Keqin Chen, Xionghui Chen, Zesen Cheng,
+Lianghao Deng, Wei Ding, Chang Gao, Chunjiang Ge, et al. 2025. Qwen3-vl
+technical report. arXiv preprint arXiv:2511.21631 (2025).
+[4] Burak Can Biner, Farrin Marouf Sofian, Umur Berkay Karakaş, Duygu Ceylan,
+Erkut Erdem, and Aykut Erdem. 2024. Sonicdiffusion: Audio-driven image genera-
+tion and editing with pretrained diffusion models. arXiv preprint arXiv:2405.00878
+(2024).
+[5] Arantxa Casanova, Marlene Careil, Jakob Verbeek, Michal Drozdzal, and Adriana
+Romero Soriano. 2021. Instance-conditioned gan. Advances in Neural Information
+Processing Systems 34 (2021), 27517–27529.
+[6] Moitreya Chatterjee and Anoop Cherian. 2020. Sound2sight: Generating visual
+dynamics from sound and context. In European Conference on Computer Vision.
+Springer, 701–719.
+[7] Honglie Chen, Weidi Xie, Andrea Vedaldi, and Andrew Zisserman. 2020. Vg-
+gsound: A large-scale audio-visual dataset. In ICASSP 2020-2020 IEEE International
+Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 721–725.
+[8] Jiuhai Chen, Zhiyang Xu, Xichen Pan, Yushi Hu, Can Qin, Tom Goldstein, Lifu
+Huang, Tianyi Zhou, Saining Xie, Silvio Savarese, et al. 2025. Blip3-o: A family of
+fully open unified multimodal models-architecture, training and dataset. arXiv
+preprint arXiv:2505.09568 (2025).
+[9] Shunian Chen, Xinyuan Xie, Zheshu Chen, Liyan Zhao, Owen Lee, Zhan Su, Qilin
+Sun, and Benyou Wang. 2025. FusionAudio-1.2 M: Towards Fine-grained Audio
+Captioning with Multimodal Contextual Fusion. arXiv preprint arXiv:2506.01111
+(2025).
+[10] Shihao Cheng, Jiaxu Zhang, Quanyue Song, Shansong Liu, Zhizhi Guo, Xiaolei
+Zhang, Chi Zhang, Xuelong Li, and Zhigang Tu. 2026.
+Unison: Harmoniz-
+ing Motion, Speech, and Sound for Human-Centric Audio-Video Generation.
+arXiv:2605.08729 [cs.CV] https://arxiv.org/abs/2605.08729
+[11] Yunfei Chu, Jin Xu, Qian Yang, Haojie Wei, Xipin Wei, Zhifang Guo, Yichong
+Leng, Yuanjun Lv, Jinzheng He, Junyang Lin, et al. 2024. Qwen2-audio technical
+report. arXiv preprint arXiv:2407.10759 (2024).
+[12] Xiaoliang Dai, Ji Hou, Chih-Yao Ma, Sam Tsai, Jialiang Wang, Rui Wang, Peizhao
+Zhang, Simon Vandenhende, Xiaofang Wang, Abhimanyu Dubey, et al. 2023. Emu:
+Enhancing image generation models using photogenic needles in a haystack.
+arXiv preprint arXiv:2309.15807 (2023).
+[13] Gunnar Farnebäck. 2003. Two-frame motion estimation based on polynomial
+expansion. In Scandinavian conference on Image analysis. Springer, 363–370.
+[14] Jort F Gemmeke, Daniel PW Ellis, Dylan Freedman, Aren Jansen, Wade Lawrence,
+R Channing Moore, Manoj Plakal, and Marvin Ritter. 2017. Audio set: An ontology
+and human-labeled dataset for audio events. In 2017 IEEE international conference
+on acoustics, speech and signal processing (ICASSP). IEEE, 776–780.
+[15] Rohit Girdhar, Alaaeldin El-Nouby, Zhuang Liu, Mannat Singh, Kalyan Vasudev
+Alwala, Armand Joulin, and Ishan Misra. 2023. Imagebind: One embedding space
+to bind them all. In Proceedings of the IEEE/CVF conference on computer vision and
+pattern recognition. 15180–15190.
+[16] Tiancheng Gu, Kaicheng Yang, Chaoyi Zhang, Yin Xie, Xiang An, Ziyong Feng,
+Dongnan Liu, Weidong Cai, and Jiankang Deng. 2025. Realsyn: An effective
+and scalable multimodal interleaved document transformation paradigm. In
+Proceedings of the 33rd ACM International Conference on Multimedia. 3487–3496.
+[17] Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and
+Sepp Hochreiter. 2017. Gans trained by a two time-scale update rule converge to
+a local nash equilibrium. Advances in neural information processing systems 30
+(2017).
+[18] Jonathan Ho, Ajay Jain, and Pieter Abbeel. 2020. Denoising diffusion probabilistic
+models. Advances in neural information processing systems 33 (2020), 6840–6851.
+[19] Wenyi Hong, Wenmeng Yu, Xiaotao Gu, Guo Wang, Guobing Gan, Haomiao
+Tang, Jiale Cheng, Ji Qi, Junhui Ji, Lihang Pan, et al. 2025. Glm-4.5 v and glm-4.1
+v-thinking: Towards versatile multimodal reasoning with scalable reinforcement
+learning. arXiv preprint arXiv:2507.01006 (2025).
+[20] Zhihao Huang, Xi Qiu, Yukuo Ma, Yifu Zhou, Junjie Chen, Hongyuan Zhang, Chi
+Zhang, and Xuelong Li. 2026. NFIG: multi-scale autoregressive image generation
+via frequency ordering. Advances in Neural Information Processing Systems 38
+(2026), 25692–25714.
+[21] Sangwu Lee, Titus Ebbecke, Erwann Millon, Will Beddow, Le Zhuo, Iker García-
+Ferrero, Liam Esparraguera, Mihai Petrescu, Gian Saß, Gabriel Menezes, and
+Victor Perez. 2025. FLUX.1 Krea [dev]. https://github.com/krea-ai/flux-krea.
+[22] Seung Hyun Lee, Wonseok Roh, Wonmin Byeon, Sang Ho Yoon, Chanyoung
+Kim, Jinkyu Kim, and Sangpil Kim. 2022. Sound-guided semantic image manipu-
+lation. In Proceedings of the IEEE/CVF conference on computer vision and pattern
+recognition. 3377–3386.
+[23] Ruilong Li, Shan Yang, David A Ross, and Angjoo Kanazawa. 2021. Ai choreog-
+rapher: Music conditioned 3d dance generation with aist++. In Proceedings of the
+IEEE/CVF international conference on computer vision. 13401–13412.
+[24] Tingle Li, Yichen Liu, Andrew Owens, and Hang Zhao. 2022. Learning visual
+styles from audio-visual associations. In European Conference on Computer Vision.
+Springer, 235–252.
+[25] Fan Liu, Cheng Gong, Boyu Zhu, Ruihao Jing, Chunyu Qiang, Tianrui Wang,
+Xiao-Lei Zhang, and Xuelong Li. 2025. Augment Mandarin to Cantonese Speech
+Databases via Retrieval-Augmented Generation and Speech Synthesis. In Inter-
+speech 2025. 4248–4252. doi:10.21437/Interspeech.2025-737
+[26] Shansong Liu, Atin Sakkeer Hussain, Chenshuo Sun, and Ying Shan. 2024. Music
+understanding llama: Advancing text-to-music generation with question an-
+swering and captioning. In ICASSP 2024-2024 IEEE International Conference on
+Acoustics, Speech and Signal Processing (ICASSP). IEEE, 286–290.
+[27] Shilong Liu, Zhaoyang Zeng, Tianhe Ren, Feng Li, Hao Zhang, Jie Yang, Chunyuan
+Li, Jianwei Yang, Hang Su, Jun Zhu, et al. 2023. Grounding dino: Marrying
+dino with grounded pre-training for open-set object detection. arXiv preprint
+arXiv:2303.05499 (2023).
+[28] Yuhang Ma, Xiaoshi Wu, Keqiang Sun, and Hongsheng Li. 2025. Hpsv3: To-
+wards wide-spectrum human preference score. In Proceedings of the IEEE/CVF
+International Conference on Computer Vision. 15086–15095.
+[29] Andrew Owens, Phillip Isola, Josh McDermott, Antonio Torralba, Edward H
+Adelson, and William T Freeman. 2016. Visually indicated sounds. In Proceedings
+of the IEEE conference on computer vision and pattern recognition. 2405–2413.
+[30] Ethan Perez, Florian Strub, Harm De Vries, Vincent Dumoulin, and Aaron
+Courville. 2018. Film: Visual reasoning with a general conditioning layer. In
+Proceedings of the AAAI conference on artificial intelligence, Vol. 32.
+[31] Can Qin, Ning Yu, Chen Xing, Shu Zhang, Zeyuan Chen, Stefano Ermon, Yun Fu,
+Caiming Xiong, and Ran Xu. 2023. Gluegen: Plug and play multi-modal encoders
+for x-to-image generation. In Proceedings of the IEEE/CVF international conference
+on computer vision. 23085–23096.
+[32] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh,
+Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark,
+et al. 2021. Learning transferable visual models from natural language supervision.
+In International conference on machine learning. PmLR, 8748–8763.
+[33] Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn
+Ommer. 2022. High-resolution image synthesis with latent diffusion models. In
+Proceedings of the IEEE/CVF conference on computer vision and pattern recognition.
+10684–10695.
+[34] Andrew Rosenberg, Yu Zhang, Bhuvana Ramabhadran, Ye Jia, Pedro Moreno,
+Yonghui Wu, and Zelin Wu. 2019. Speech Recognition with Augmented Syn-
+thesized Speech. In 2019 IEEE Automatic Speech Recognition and Understanding
+Workshop (ASRU). 996–1002. doi:10.1109/ASRU46091.2019.9003990
+[35] Ludan Ruan, Yiyang Ma, Huan Yang, Huiguo He, Bei Liu, Jianlong Fu,
+Nicholas Jing Yuan, Qin Jin, and Baining Guo. 2023. Mm-diffusion: Learning
+multi-modal diffusion models for joint audio and video generation. In Proceed-
+ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition.
+10219–10228.
+[36] Tim Salimans, Ian Goodfellow, Wojciech Zaremba, Vicki Cheung, Alec Radford,
+and Xi Chen. 2016. Improved techniques for training gans. Advances in neural
+information processing systems 29 (2016).
+[37] Jiawei Shao and Xuelong Li. 2025. Ai flow at the network edge. IEEE Network 40,
+1 (2025), 330–336.
+[38] Bowen Shi, Andros Tjandra, John Hoffman, Helin Wang, Yi-Chiao Wu, Luya
+Gao, Julius Richter, Matt Le, Apoorv Vyas, Sanyuan Chen, et al. 2025. Sam audio:
+Segment anything in audio. arXiv preprint arXiv:2512.18099 (2025).
+[39] Quanyue Song, Yishan He, Yanfei Zhang, Shihao Cheng, Zhixiang He, Zhizhi
+Guo, Chi Zhang, Xuelong Li, and Caigui Jiang. 2026. InteractiveAvatar: Real-
+Time Streaming Video Generation for Consistent and Intent-Aware Avatars.
+arXiv:2606.22905 [cs.CV] https://arxiv.org/abs/2606.22905
+[40] Tomáš Souček and Jakub Lokoč. 2020. TransNet V2: An effective deep network
+architecture for fast shot transition detection. arXiv preprint arXiv:2008.04838
+(2020).
+[41] Kim Sung-Bin, Arda Senocak, Hyunwoo Ha, Andrew Owens, and Tae-Hyun Oh.
+2023. Sound to visual scene generation by audio-to-visual latent alignment. In
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition.
+6430–6440.
+[42] Zineng Tang, Ziyi Yang, Chenguang Zhu, Michael Zeng, and Mohit Bansal. 2023.
+Any-to-any generation via composable diffusion. Advances in Neural Information
+Processing Systems 36 (2023), 16083–16099.
+[43] Qwen Team. 2025. Qwen2.5-VL. https://qwenlm.github.io/blog/qwen2.5-vl/
+[44] Mingjie Wang, Song Yuan, Xian-Feng Han, and Zili Yi. 2025. Draw What You
+Hear: High-Fidelity Image Generation and Manipulation via SoundAdapter. IEEE
+Transactions on Neural Networks and Learning Systems (2025).
+10
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+[45] Ho-Hsiang Wu, Prem Seetharaman, Kundan Kumar, and Juan Pablo Bello. 2022.
+Wav2clip: Learning robust audio representations from clip. In ICASSP 2022-2022
+IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP).
+IEEE, 4563–4567.
+[46] Yusong Wu*, Ke Chen*, Tianyu Zhang*, Yuchen Hui*, Taylor Berg-Kirkpatrick,
+and Shlomo Dubnov. 2023. Large-scale Contrastive Language-Audio Pretraining
+with Feature Fusion and Keyword-to-Caption Augmentation. In IEEE International
+Conference on Acoustics, Speech and Signal Processing, ICASSP.
+[47] Lin Xu, Yilin Zhao, Daquan Zhou, Zhijie Lin, See Kiong Ng, and Jiashi Feng. 2024.
+Pllava: Parameter-free llava extension from images to videos for video dense
+captioning. arXiv preprint arXiv:2404.16994 (2024).
+[48] Guy Yariv, Itai Gat, Lior Wolf, Yossi Adi, and Idan Schwartz. 2023. Audiotoken:
+Adaptation of text-conditioned diffusion models for audio-to-image generation.
+arXiv preprint arXiv:2305.13050 (2023).
+[49] Hu Ye, Jun Zhang, Sibo Liu, Xiao Han, and Wei Yang. 2023. Ip-adapter: Text
+compatible image prompt adapter for text-to-image diffusion models. arXiv
+preprint arXiv:2308.06721 (2023).
+[50] Junyan Ye, Dongzhi Jiang, Zihao Wang, Leqi Zhu, Zhenghao Hu, Zilong Huang,
+Jun He, Zhiyuan Yan, Jinghua Yu, Hongsheng Li, et al. 2025. Echo-4o: Harnessing
+the power of gpt-4o synthetic images for improved image generation. arXiv
+preprint arXiv:2508.09987 (2025).
+[51] Lei Zhao, Rujin Chen, Chi Zhang, Xiao-Lei Zhang, and Xuelong Li. 2025. Fo-
+leyspace: Vision-aligned binaural spatial audio generation.
+arXiv preprint
+arXiv:2508.12918 (2025).
+[52] Lei Zhao, Linfeng Feng, Dongxu Ge, Fangqiu Yi, Chi Zhang, Xiao-Lei Zhang, and
+Xuelong Li. 2025. UniForm: A Unified Diffusion Transformer for Audio-Video
+Generation. arXiv e-prints (2025), arXiv–2502.
+[53] Hao Zhou, Xiaobao Guo, Yuzhe Zhu, and Adams Wai-Kin Kong. 2025. MACS:
+Multi-source Audio-to-image Generation with Contextual Significance and Se-
+mantic Alignment. arXiv preprint arXiv:2503.10287 (2025).
+[54] Ruishu Zhu, Zhihao Huang, Jiacheng Sun, Ping Luo, Hongyuan Zhang, and
+Xuelong Li. 2025. Viewmask-1-to-3: Multi-view consistent image generation via
+multimodal discrete diffusion models. arXiv preprint arXiv:2512.14099 (2025).
+[55] Daniil Zverev, Thaddäus Wiedemer, Ameya Prabhu, Matthias Bethge, Wieland
+Brendel, and A Koepke. 2025. Vggsounder: Audio-visual evaluations for founda-
+tion models. In Proceedings of the IEEE/CVF International Conference on Computer
+Vision. 1027–1037.
+11
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+The image captures a moment of a drummer in a studio, engrossed in playing a drum 
+set. The drummer, dressed in a black shirt and blue jeans, is seated on a stool, his 
+hands skillfully maneuvering the drumsticks over the drumheads. The drum set, a mix 
+of silver and gold tones, is adorned with green and gold drumheads, adding a touch 
+of color to the scene. The studio setting is further enhanced by the presence of 
+microphones and other musical equipment in the background, suggesting a 
+professional recording session. The drummer's focused expression and the rhythmic 
+motion of his hands indicate his deep involvement in the music he's creating.
+This audio features a lively jazz drum beat with distinct snare rolls, powerful bass 
+drums, and an occasional cymbal crash, creating a fast-paced, rhythmic composition. 
+The tempo is upbeat and groovy, evoking a sense of excitement. No speech or 
+language identification is included in this description.
+The lively and upbeat sound of a jazz drum beat dominates the auditory scene, 
+characterized by distinct snare rolls, powerful bass drum thumps, and occasional 
+crashes of cymbals. The rhythm is fast-paced and rhythmic, evoking a sense of 
+excitement that matches the visual of the drummer skillfully maneuvering his 
+drumsticks in a professional studio setting.
+A drummer energetically performing in a professional studio, skillfully maneuvering 
+drumsticks over a vibrant drum set, close-up of hands in motion, bright studio lights 
+reflecting off the drums, creating an atmosphere of excitement and rhythm.
+(a)
+(b)
+(c)
+(d)
+Figure 7: A complete example of caption transformation. In
+the Multimodal Caption stage, video caption (a) and audio
+caption (b) are firstly transformed into an audio caption with
+video message (c). To fit Text2image model input, it is then
+utilized to construct audio related image instruction (d).
+A
+Additional Details of A2I-Set
+In this section, we further elaborate extra details of A2I-Set as
+well as the implementation process in the subsequent subsections.
+Finally, in fig. 12, we present some additional examples of A2I-Set,
+which further prove the high quality of our dataset.
+A.1
+Audio Classes Distribution
+In table 4, we display the 241 audio event classes that appear in
+A2I-Set, noting that there may be concept overlap within some
+categories due to the hierarchical characteristics in A2I-Set. In fig. 8,
+we show the detailed correspondence between audio categories
+and total image counts in A2I-Set. We observe that the number
+of data points for different audio categories is unbalanced. This
+occurs because our data sources AudioSet and VGGSound exhibit
+similar characteristics. For this reason, we further present A2I-
+balanced to encourage research that requires balanced data. A2I-
+balanced includes approximately 50 images per class selected from
+the synthetic images in A2I-Set, with a total of 10K images. In later
+chapters, we use the A2I-balanced subset to further demonstrate
+the broad applicability of A2I-Set.
+A.2
+Multimodal Caption
+Before performing the caption task, we find during sampling in-
+spection that the quality of a few audio files is poor, which will
+affect the captioning effect of the audio model. Therefore, we first
+performed audio filtering before the Multimodal Caption. We have
+set three filtering dimensions: 1. Duration filtering: the audio length
+must be at least 4.0 seconds to eliminate overly short segments lack-
+ing effective content. 2. Silence filtering: we calculate the audio’s
+87
+73
+93
+100
+1000
+10,000
+100,000
+Audio Class
+Number of Examples
+53544
+Drum
+male vocalist
+guitar
+electric guitar
+33569
+35910
+34162
+bass
+person
+male voice
+22781
+17726
+14760
+drumming
+tick
+click
+zipper
+82
+computer
+cutlery
+hair dryer
+83
+81
+72
+110 classes omitted ...
+110 classes omitted ...
+electric bass
+pan
+backing vocalist
+420
+419
+415
+woodwind instrument
+goose
+heavy vehicle
+406
+408
+398
+mechanical equipment
+407
+Figure 8: The correspondence between audio categories and
+image counts in A2I-240K-train. Note that one piece of data
+can include multiple audio categories. Some categories are
+omitted to save space. Music, speeches, and sounds are dis-
+played in different colors.
+Root Mean Square (RMS) energy frame by frame, and mark frames
+with RMS < 0.01 as "silent frames", finally we filter out data where
+the proportion of silent frames of the total duration exceeds 35%.
+3. Signal-to-Noise Ratio (SNR) filtering: we use short-time RMS
+energy to distinguish signal from noise, and adopt 1.5 × median
+energy as the separation threshold between signal and noise to
+ensure audio clarity and eliminate samples with excessive noise.
+Given audio-video pairs, we use Qwen2-Audio-7B-Instruct to
+caption the audio. In this step, in order to fully utilize the model’s
+ability, we simply prompt the model to describe the content within
+the audio. For video data, we use PLLaVA-34B to caption the
+video data, with all settings kept as the default setting of PLLaVA.
+After obtaining the captions of the two modalities, we perform
+caption fusion using GPT-4o-mini to get an audio caption with
+the potential information of the video. The input instruction can
+be found in fig. 9 and the example of caption process can be found
+in fig. 7.
+FusionAudio-1.2M [9] creates fine-grained audio captions through
+a novel multimodal context fusion pipeline. We find that the audio
+captions in FusionAudio-1.2M also carry implicit visual informa-
+tion, which may be due to visual caption fusion. So we use it as
+a supplement to our caption after the Multimodal Caption Stage.
+Due to the inability to obtain some audio sources, we finally obtain
+approximately 1.1M of valid audio data to be processed.
+Then, we adopt CLAP [46] for audio-text pairwise data filtering.
+Specifically, we use CLAP’s audio encoder and text encoder to
+process the audio and the obtained audio captions respectively, and
+calculate the cosine similarity between the two. For FusionAudio-
+1.2M caption derived from AudioSet, we choose to filter data pairs
+with a similarity less than 0.4, while for the data we constructed
+from VGGSound, we selected to filter those with a similarity less
+than 0.3. As we want to retain a large amount of natural sound data
+in VGGSound. Finally, we filtered out nearly 40% of the total data.
+12
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Table 4: Audio Event Classes in A2I-Set
+241 Audio Event Classes
+DJ
+accordion
+air conditioning unit
+aircraft
+aircraft engine
+airplane
+alarm
+ambulance
+animal
+artillery
+artist
+audience
+baby
+background music
+backing vocalist
+badminton
+bagpipe
+ball
+band
+band instrument
+banjo
+basketball
+bass
+bass drum
+bell
+bicycle
+bird
+blender
+boat
+bongo drum
+bowl
+brass instrument
+breath
+bus
+camera
+car
+cat
+cello
+chainsaw
+chicken
+child
+chime
+choir
+chorus
+church bell
+clap
+clarinet
+click
+clock
+computer
+conga drum
+container
+conversation
+cow
+cowbell
+crow
+crowd
+cutlery
+cymbal
+dancer
+didgeridoo
+digital drum
+dish
+dog
+door
+drawer
+drill
+drum
+drum machine
+drum set
+drumming
+duck
+electric bass
+electric device
+electric guitar
+electronic drum
+electronic music
+emergency vehicle
+engine
+explosion
+fabric
+fan
+faucet
+female
+female speaker
+female vocalist
+fighter jet
+fire
+fire truck
+firework
+flute
+fog horn
+food
+footstep
+french horn
+frog
+glass
+glockenspiel
+goose
+guitar
+gun
+hair dryer
+hammer
+hand
+harmonica
+harmonium
+harp
+harpsichord
+heavy vehicle
+helicopter
+horn
+horse
+impact noise
+impact sound
+insect
+keyboard
+kick drum
+kitchenware
+knife
+laughter
+lawn mower
+leaf
+lion
+liquid
+machine
+male
+male speaker
+male vocal
+male vocalist
+male voice
+mallet percussion
+mandolin
+marching band
+marimba
+mechanical equipment
+metal object
+microphone
+motor vehicle
+motorboat
+motorcycle
+mouse click
+music
+musical Instrument
+musical instrument
+musician
+object
+orchestra
+organ
+paddle
+pan
+paper
+percussion instrument
+performer
+person
+piano
+pig
+pigeon
+plastic
+player
+police car
+power tool
+printer
+racing car
+radio
+rain
+rapper
+river
+rocket
+roller coaster
+runner
+saxophone
+sewing machine
+shaker
+sheep
+shoe
+singing bowl
+siren
+sitar
+skateboard
+snowmobile
+soloist
+speaker
+speaking person
+speech
+spray
+spray can
+steam train
+steel drum
+steelpan
+string
+string instrument
+stringed instrument
+subway
+synth instrument
+synth pad
+synth string
+synthesizer
+tabla
+table tennis
+tambourine
+tap
+tap dancer
+telephone
+tennis ball
+thunder
+tick
+timpani
+tire
+toilet
+tool
+toy
+tractor
+traffic
+train
+train horn
+truck
+trumpet
+tuba
+turntable
+typewriter
+ukulele
+utensil
+vacuum cleaner
+vehicle
+video game
+violin
+vocal
+vocal ensemble
+vocalist
+voice
+water
+watercraft
+waterfall
+wave
+whistle
+wind
+wind chime
+wood
+woodwind instrument
+xylophone
+zipper
+A.3
+Synthetic Image Generation
+In practice, we find that directly feeding audio captions with video
+messages into a text-to-image model, specifically FLUX.1-Krea-
+dev [21], does not yield good results. We believe this is because
+text-to-image models sometimes struggle to understand abstract
+and complex audio captions. Therefore, before inputting the cap-
+tion, we use GPT-4o-mini to transform it and incorporate a large
+amount of visual element information, ultimately obtaining the
+audio-related image instruction. Specifically, we used the prompt in
+fig. 10 and constructed a high-quality image generation instruction
+by prompting the model to perform sounding objects identifica-
+tion, visual description generation, and atmosphere recognition
+(including lighting, color, composition, etc.).
+We also present the instructions for visual large models in the
+VLLM Cross-Check stage in fig. 11. In practice, we find that di-
+rectly prompting the model to identify whether an image is a real
+photograph yields better results than asking the model to identify
+unreasonable parts in the image. The model has quite an accurate
+recognition ability for images with non-realistic stylism, and also
+has good ability to distinguish unreasonable object relationships.
+However, even the most powerful open-source VLMs currently
+available struggle to perfectly identify defects in images. We found
+that the models perform poorly in recognizing facial distortions
+and the number of limbs. Although such images are in the minority
+in the sampling evaluation, we must still acknowledge that the
+images in A2I-Set cannot guarantee 100% perfection.
+A.4
+Real Image Extraction
+In the Real Image Extraction stage, we restrict the resolution to
+above 540×360 and set the video’s minimum frame rate to 12 fps.
+Besides, we restrict the aspect ratio of source videos to stay between
+1:3 and 3:1. This is because images with extremely skewed ratios
+are difficult to use in training. For jitter detection, we calculate
+dense optical flow within each scene on a per-shot basis and use
+the median value to reduce the influence of extreme values. To
+further refine image quality, we filter out images with an ARNIQA
+score below 0.4, and finally obtain approximately 150k real image
+candidates.
+A.5
+Audio-Image Alignment Filter
+To ensure audio-visual alignment of the dataset, we introduce Sam
+Audio [38] to perform object-level separation on the audio. Specif-
+ically, we take the previously annotated sound-emitting objects
+as prompts and input them individually into sam-audio-base. We
+perform root mean square (RMS) energy filtering on the separated
+results to ensure that the target element is present in the audio. Next,
+to determine whether the target elements exist in the image, we use
+Qwen3-VL-Flash [3] and Ground DINO [27] respectively to locate
+each target element. For Ground DINO, we set BOX_THRESHOLD
+and TEXT_THRESHOLD to 0.3 to perform the grounding task. For
+Qwen3-VL-Flash, we simply prompt it to perform the grounding
+task and output None for objects that are not found.
+B
+Details of Selected Metrics
+To comprehensively measure the visual quality of generated images,
+we use typical quantitative metrics, including the Fréchet Inception
+Distance (FID) and the Inception Score (IS). Besides, evaluating
+the vision quality of image generation models requires alignment
+with human perception. Thus, we introduce two human preference
+metrics, Aesthetic evaluation score (Aes) and Human Preference
+Score v3 (HPSv3). For cross-modal alignment evaluation metrics
+in this work, we use Audio-Image Similarity (AIS) and Text-Image
+13
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+Similarity (TIS). Both metrics aim to measure the similarities of the
+paired data by projecting them to the shared embedding space.
+Fréchet Inception Distance (FID) measures the distribution
+discrepancy between the real images 𝑋𝑟and the generated images
+𝑋𝑔in the feature space of an Inception-V3 network. Let 𝑓(·) denote
+the Inception-V3 pool3 feature extractor. For the real and generated
+features, we compute the mean of image features 𝜇𝑟and 𝜇𝑔and the
+covariance of image features Σ𝑟and Σ𝑔:
+𝜇𝑟= E[𝑓(𝑋𝑟)],
+Σ𝑟= Cov(𝑓(𝑋𝑟))
+𝜇𝑔= E[𝑓(𝑋𝑔)],
+Σ𝑔= Cov(𝑓(𝑋𝑔)).
+(1)
+FID is then defined as the Fréchet distance between the two Gaus-
+sians distribution:
+FID(𝑋𝑟,𝑋𝑔) = ∥𝜇𝑟−𝜇𝑔∥2
+2 + Tr
+
+Σ𝑟+ Σ𝑔−2(Σ𝑟Σ𝑔)1/2
+.
+(2)
+where Tr denotes the trace of a matrix, and ∥· ∥2
+2 denotes the
+Euclidean norm. Lower FID indicates that the generated images
+are closer to the real data distribution in both feature statistics
+and visual diversity. In our work, we uniformly use precomputed
+distribution of ImageNet to calculate FID.
+Inception Score (IS) evaluates both the image quality and the
+class diversity of the generated images using the Inception-V3 clas-
+sifier. IS converts the predicted class distribution 𝑝(𝑦|𝑋𝑔) of gen-
+erated images 𝑋𝑔into quantifiable scores through the pre-trained
+Inception-v3 image classification model. The marginal class distri-
+bution can be denoted as:
+𝑝(𝑦) =
+∑︁
+𝑖
+𝑝(𝑦|𝑥𝑖)
+𝑤ℎ𝑒𝑟𝑒
+𝑥𝑖∈𝑋𝑔
+(3)
+IS is defined as:
+IS = exp
+
+E𝑥∼𝑝𝑔[𝐷KL (𝑝(𝑦|𝑥) ∥𝑝(𝑦))]
+
+(4)
+where 𝐷KL denotes the KL divergence, which measures the de-
+gree of difference between two probability distributions. IS is a
+measure of the clarity and diversity of generated images, and a
+larger IS value is better. IS depends on the ImageNet classifier and
+may not fully reflect semantics of non-ImageNet domains. Thus IS
+is often used as an auxiliary metric alongside FID.
+Aesthetic evaluation score (Aes) represents the aesthetic score
+of generated images. Specifically, we use Aesthetic Predictor V2 1 to
+predict a score range in 1-10 with a higher score representing a more
+attractive visual effect. Aesthetic Predictor V2 is trained on multiple
+human annotated aesthetic rating datasets and demonstrates strong
+consistency with human evaluation results. Generally speaking,
+the Aes score distribution of ordinary images is concentrated at 4
+to 5.
+Human Preference Score v3 (HPSv3) is introduced by [28],
+aiming at evaluating the performance of Text-to-Image Genera-
+tion Models Aligned with Human Perception. Specifically, HPSv3
+introduces over 1M pairwise comparison data covering the full
+spectrum from low-quality generated images to high-quality real
+photographic images, achieving state-of-the-art human perception
+alignment prediction. The HPSv3 benchmark in [28] shows that
+1https://github.com/christophschuhmann/improved-aesthetic-predictor
+Stable Diffusion v2.0 has an average HPSv3 score of -0.24. In compar-
+ison, Stable Diffusion 3 achieves a score of 5.31, and state-of-the-art
+text-to-image models such as Flux-dev exceed 10. Noted that al-
+though fine-tuned with the older version SD 1.4, our AudioCanvas
+scores 4.81 on A2I-eval.
+Audio-Image Similarity (AIS) is initially designed by [48] to
+evaluate the semantic alignment between input audios and gener-
+ated images through measuring their cosine similarity in a shared
+feature space. Specifically, Wav2CLIP [45] is used to project audio
+inputs into shared representations. while image representations
+are extracted from generated images through CLIP image encoder.
+The higher the similarity between the two, the more the generated
+image fits the input audio.
+Text-Image Similarity (TIS) has a similar idea as AIS. Modal
+consistency is measured by comparing the cosine similarity be-
+tween the text feature corresponding to the audio and the feature
+of the generated images. Since A2I-Eval and Landscape contains
+ground truth sounding objects corresponding to the test audio, we
+use the CLIP text encoder to perform feature extraction on them.
+And we utilize the CLIP image encoder to perform feature extrac-
+tion on the generated images. Similarly, the higher the similarity
+between the two features, the more the generated image conforms
+to the audio’s descriptive text.
+C
+A2I-Set on Other SD Models
+In this section, we further conducted qualitative experiments on
+SD2 and SD-XL to demonstrate the high quality of the dataset we
+proposed. Specifically, considering computational resource con-
+straints, we use image-text pairs from A2I-balanced instead of the
+full training set to perform full-parameter fine-tuning on both mod-
+els. fig. 16 shows the generated results of fine-tuned SD2. For SD2,
+we set the learning rate to 4e-7 and trained for a total of 10,000
+steps on our dataset. The image resolution during training and
+inference is maintained at 768×768. During inference, we set the
+denoising steps to 30 and the cfg scale to 7.5. To ensure fairness,
+we keep the seed consistent for the three examples across different
+training steps models. It can be seen that when comparing with the
+images generated by the original SD2, the images generated by our
+fine-tuned model are significantly better in generation effect. In the
+early stage of training, the model quickly adjusted the image style
+and learned the application of light and shadow knowledge. At the
+end of training, the model mainly focused on optimizing the details
+of the images. As can be seen in the last two columns of fig. 16, we
+zoom in to show some visual details in the images.
+For SD-XL, we set the learning rate to 1e-6 and trained for a
+total of 5,000 steps on our A2I-balanced. The image resolution
+during training and inference is maintained at 1024×1024. However,
+the conclusion regarding the fine-tuning of the SD-XL model is
+somewhat different. As in fig. 17, since the performance of SD-XL is
+already very powerful, the most prominent change after fine-tuning
+is the drawing style—from the original comic-like style to a style
+closer to reality. In terms of image details, we can only observe a
+slight improvement. This may be due to the fact that the amount
+of training data is too small compared to the massive training data
+of SD-Xl. Or it may be because our training steps are not sufficient.
+14
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+D
+Preliminary on Diffusion Model
+Diffusion models are a type of deep learning model based on prob-
+abilistic generation. They gradually add Gaussian noise to data
+through a forward diffusion process, and then recover data from
+the noise through a reverse diffusion process, thereby generating
+new data similar to the training data. The SD v1.4 model we used is
+base on Latent Diffusion Models (LDMs) [33], a class of conditional
+generative models that perform diffusion not directly in pixel space
+but in a compressed latent space learned by a variational autoen-
+coder (VAE). Compared to pixel-space diffusion DDPM [18], LDMs
+significantly reduce computational cost while maintaining high
+generative fidelity.
+Given an image 𝑥0 ∈R𝐻×𝑊×3, a pretrained VAE encoder E maps
+it to a latent representation:
+𝑧0 = E(𝑥0),
+𝑧0 ∈Rℎ×𝑤×𝑐.
+(5)
+The VAE decoder D reconstructs the image:
+ˆ𝑥= D(𝑧0).
+(6)
+Since ℎ,𝑤≪𝐻,𝑊, diffusion process is then performed on a much
+smaller latent tensor, which highly reduce the computational cost of
+DDPMs. LDMs adopt the same forward noising process as DDPMs,
+but applied in latent space. Noise is gradually added to 𝑧0 as:
+𝑞(𝑧𝑡| 𝑧𝑡−1) = N
+√︁
+1 −𝛽𝑡𝑧𝑡−1, 𝛽𝑡I
+
+,
+(7)
+or equivalently:
+𝑞(𝑧𝑡| 𝑧0) = N
+√¯𝛼𝑡𝑧0, (1 −¯𝛼𝑡)I
+
+,
+(8)
+where ¯𝛼𝑡= Î𝑡
+𝑠=1(1 −𝛽𝑠), 𝛽𝑡is the noise coefficient at step 𝑡, which
+is used to control the intensity of Gaussian noise added to the latent
+variable at the 𝑡-th step in the forward diffusion process.
+In LDMs, the noise prediction model parameterized by 𝜃, specifi-
+cally a denoising UNet 𝜖𝜃, is trained to model the reverse process:
+𝑝𝜃(𝑧𝑡−1 | 𝑧𝑡,𝑐) = N  𝜇𝜃(𝑧𝑡,𝑡,𝑐), Σ𝜃(𝑧𝑡,𝑡,𝑐),
+(9)
+where 𝑐denotes a conditioning signal (e.g., text embedding).
+Typically, training follows the simplified noise-prediction objec-
+tive:
+Lsimple = E𝑧0,𝑡,𝜖
+h
+∥𝜖−𝜖𝜃(𝑧𝑡,𝑡,𝑐)∥2
+2
+i
+,
+(10)
+where
+𝑧𝑡= √¯𝛼𝑡𝑧0 + √1 −¯𝛼𝑡𝜖.
+(11)
+Conditions such as texts, images and audios are injected through
+cross-attention layers inside the UNet:
+𝜖𝜃(𝑧𝑡,𝑡,𝑐) = UNet𝜃(𝑧𝑡,𝑡,𝑐).
+(12)
+Classifier-free guidance is a guidance technique in diffusion
+models that does not require an external classifier. It achieves a
+trade-off between the quality and diversity of generated samples by
+jointly training conditional and unconditional diffusion models and
+linearly combining their score estimates during sampling. Classifier-
+free guidance is applied during inference:
+𝜖guided = (1 + 𝑤) 𝜖𝜃(𝑧𝑡,𝑡,𝑐) −𝑤𝜖𝜃(𝑧𝑡,𝑡, ∅),
+(13)
+where 𝑤is the guidance scale.
+Starting from Gaussian noise 𝑧𝑇∼N (0, I), the model iteratively
+denoises process can be denoted as:
+𝑧𝑡−1 =
+1
+√𝛼𝑡
+
+𝑧𝑡−1 −𝛼𝑡
+√1 −¯𝛼𝑡
+𝜖𝜃(𝑧𝑡,𝑡,𝑐)
+
++ 𝜎𝑡𝜉,
+(14)
+where 𝜉∼N (0, I).
+E
+Additional Comparison with baseline
+In fig. 13, we present visual comparisons between the baseline
+model and our AudioCanvas across both test datasets. The compari-
+son shows that AudioCanvas outperforms other models through its
+strong visual effects, including the better use of lighting, shadow,
+and composition skill, and also high audio-visual alignment. In con-
+trast, previous end-to-end trained models such as MACS struggle to
+produce satisfactory image generation, limited by the visual quality
+and alignment of their training data. Meanwhile, non-end-to-end
+models like AudioToken maintain good visual quality but frequently
+face semantic alignment issues. This leads them to sometimes gen-
+erate images with meaningless content. Overall, our qualitative
+analysis results align closely with earlier objective metric evalua-
+tions, further validating several conjectures presented in the main
+article. In fig. 14, we present more pictures generated by AudioCan-
+vas.
+F
+Failure Cases
+In this chapter, we further analyze some failed generation cases. In
+fig. 15, we list five common cases of generation failure: (a) Abnormal
+object position: Images generated by the model may exhibit abnor-
+malities in the positions of some objects. This may be because the
+backbone (SD 1.4) we use is relatively old. (b) Unreal-style images:
+AudioCanvas sometimes may generate Unreal-style images, which
+may be affected by the prior of images synthesized by FLUX.1-Krea-
+dev, although we have made every effort to avoid unrealistic-style
+images. (c) Wrong number of limbOverall, although limited by a
+relative weak backbone model, AudioCanvas still achieved much
+stronger generation performance than former A2I models. Although
+A2I is a complex and challenging task, we hope our research can bet-
+ter advance A2I research and ultimately achieve better generation
+results.
+15
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+Prompt for Multimodal Caption
+Core Task
+Given a [VIDEO_CAPTION] generated by a visual language model and an [AUDIO_CAPTION] generated by an audio language model.
+Your goals are:
+Fuse: Integrate the information from the two captions.
+Refine: Utilize the video caption to enhance, correct, and specify the audio caption, eliminating any potential ambiguity or hallucination in the audio description.
+Output: Generate a pure final audio caption that only describes auditory perceptions.
+Processing Steps
+Please strictly follow the following thought chain for processing and complete these steps in your mind, and finally output only the result in the specified format:
+Analysis and Preliminary Judgment:
+Step 1.1: Analyze [AUDIO_CAPTION], identify the core sound events described therein (such as speaking, music, impact sounds), sound characteristics (such as fast
+rhythm, high pitch), and the environment (such as sounds like it’s indoors).
+Step 1.2: Analyze [VIDEO_CAPTION], identify the key visual elements therein (such as people, vehicles, animals), actions (such as running, playing musical instruments),
+and the environment (such as streets, forests, concert halls).
+Cross - Validation and Information Fusion:
+Step 2.1 - Confirmation and Enhancement: Look for parts where the video and audio information can corroborate each other. If the audio description is "the sound of a
+vehicle driving" and the video description is "a red sports car accelerating on the track", then the final description can be enhanced to "the roaring engine sound of a sports
+car accelerating".
+Step 2.2 - Ambiguity Elimination: When the [AUDIO_CAPTION] description is ambiguous (for example, "a burst of noise"), use the [VIDEO_CAPTION] (for example, "a
+plate dropped on the ground and broke") to make it specific to "the sound of a plate breaking".
+Step 2.3 - Conflict Resolution and Hallucination Correction:
+If the [AUDIO_CAPTION] describes an event (such as "the barking of a dog"), but there is relative but conflict visual entity in the [VIDEO_CAPTION] (the video shows a
+cat), this is likely a hallucination of the audio model. At this time, the visual information should be given priority, and the description of sound should be ignored.
+Conversely, if a clear sound is heard (such as "the siren sound"), but there is no possible conflict visual entity mentioned in the video caption, the sound is still an objective
+fact (it may be off-screen). At this time, it should be described as "the siren sound is heard in the background".
+Constructing the Final Audio Caption:
+Step 3.1 - Fact Synthesis: Based on the above analysis, integrate all the verified and corrected auditory facts.
+Step 3.2 - Language Style:
+Objective and Accurate: Only describe what can be heard. Do not over-extend or make unfounded guesses based on the input information.
+Rich in Details: Incorporate the sound details inferred from the visual information (such as the sound source, the dynamic changes of the sound).
+Cautious in Wording: Try to avoid information that cannot be completely determined. If necessary, use conservative expressions such as "it sounds like...", "it may be
+accompanied by...", "it implies...".
+If the input information is extremely scarce or severely conflicting, making it impossible to construct a reliable auditory fact, please directly output a specific string:
+[UNCERTAIN].
+Example
+Input 1:
+[VIDEO_CAPTION]: "A man is sitting in front of a wooden table with a laptop in front of him. He is quickly typing on the keyboard and occasionally picks up the cup next
+to him to drink water." [AUDIO_CAPTION]: "Continuous tapping sounds and occasional liquid flowing sounds can be heard, and there seems to be a slight wind sound in
+the background."
+Example Output 1 Format:
+"final_caption": "The continuous and rapid typing sounds of the keyboard form the main auditory scene, interspersed with the swallowing sound and the slight sound of
+liquid sloshing when drinking water."
+Input 2:
+[VIDEO_CAPTION]: "The camera pans slowly, revealing a peaceful lakeside park with shady trees and several ducks swimming on the lake. There are no man-made
+vehicles in the frame except for the natural scenery." [AUDIO_CAPTION]: "Clear bird chirping and the rustling sound of leaves in the gentle breeze can be heard. In the
+distance of the background, there seems to be the rumbling sound and whistle of a passing train."
+Example Output 2 Format:
+"final_caption": "A peaceful natural soundscape, with the foreground featuring the clear and melodious chirping of birds and the gentle rustling of leaves in the wind. In the
+background of these sounds, the rumbling of a train and a long whistle can be heard coming from a distance, suggesting that the world outside the park is still in motion."
+Now please process the following input:
+Figure 9: Prompt for Multimodal Caption.
+16
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Prompt for Caption Transfer
+Core Task
+For a text describing an audio scene [Audio Scene Description], parse out the sound-producing subject within it, and with this subject as the center, generate a visual
+generation instruction that describes details such as the appearance, actions, and environment of this subject, in order to provide inspiration for an AI painting model.
+Please think strictly in accordance with the following steps:
+1. Subject Identification: Identify the main sound-producing subject (such as a person, an animal, an object, etc.) from the text. Sometimes the text may contain some
+visual elements. In this case, consider both visual and auditory elements comprehensively. For elements with uncertainties in the description, carefully consider whether to
+include them in combination with other definite elements. If the descriptions of visual and auditory elements are related but different, give priority to visual elements. If
+there is no practical connection between the two, you can output "<UNCERTAIN>" and end the output directly. After successfully identifying the subject, output the
+name of the subject in the following format: <Subject Name>; and output.
+2. Visual Description: Based on the previously identified subject, generate a concise and reasonable visual description, including the appearance characteristics, actions,
+and environment of the subject. While meeting the visual expression needs, avoid adding unnecessary or unhinted visual details. If the relevance between the subjects is
+poor, choose a more representative subject for description. At this time, the secondary subjects can be ignored in the subsequent process.
+3. Atmosphere Identification: If there is a description of the auditory atmosphere, transform it into a visual atmosphere (lighting, color, composition). Grasp the
+"emotional tone and scene characteristics" in the auditory sense, and then match them through visual elements such as the intensity of light and shadow, the warmth and
+coolness of colors, and the density of composition, so that the two senses resonate.
+Note: The final generated visual generation instruction needs to completely eliminate any words that directly describe sounds. At the same time, the final described scene
+must be a realistic one, and any description of abstract or non-realistic symbol is not allowed.
+Processing Steps
+Please strictly follow the following thought process to convert the auditory description into a visual instruction:
+Identify Core Elements: First, break down the input [Audio Scene Description] and identify:
+Sound Emitters: What is in fact making the sound according to the description? Selectively convert the certain sound emitter into a specific visual object. (e.g., "keyboard
+sound" →<keyboard>. "footsteps" →<feet and the ground>. "guitar melody" →<guitar>) Combine all visual elements and judge whether to adopt all or part of
+them to form a reasonable and concise scenario.
+Acoustic Actions: What action is the sound emitter doing? (e.g., <keyboard> →rapid tapping, <vehicle> →accelerating roar, <piano> →gentle strumming, <machine>
+→running)
+Auditory Environment & Atmosphere (selectively do): What is the sense of space and the feeling the sound gives? (e.g., open and reverberant, noisy and chaotic, peaceful
+and serene, tense and mysterious)
+Conduct Visual Translation:
+Atmosphere →Style/Lighting (selectively do): Translate the auditory atmosphere into visual language. For example,
+"Open and reverberant" →"A vast space, minimalist composition, cool colors, and perhaps long shadows".
+"Noisy and chaotic" →"Crowded composition, overlapping elements, high contrast, and perhaps motion blur".
+"Peaceful and serene" →"Soft light, symmetrical composition, warm or natural colors, and a clean picture".
+Action →Dynamics/Composition (selectively do): Convert the acoustic action into motion or action in the description. Additionally, determine composition and viewpoint
+using simple composition rules (centered, diagonal, or rule-of-thirds), and ensure the sound source remains the visual focus with minimal distractions. For example,
+"Rapid tapping" →"Close-up of hands with motion blur at the fingertips".
+"Accelerating roar" →"Vehicle with speed lines and a blurred background, wide angle view".
+"Gentle strumming" →"Close-up of fingers on guitar strings, soft light, and a focused atmosphere".
+Use AI Painting Grammar: Adopt the grammar preferred by AI painting models, usually keywords or phrases separated by commas. Note that the text length should not
+exceed 77 tokens. The visual generation instruction should be concise and clear, avoiding unnecessary words.
+Example
+Input 1:
+[Audio Scene Description]: "The continuous and rapid typing sounds of the keyboard form the main auditory scene, interspersed with the swallowing sounds when
+drinking water and the slight sounds of liquid sloshing, implies a scene where an employee is working overtime."
+Example Output 1 Format: "[Main Subject]": "<keyboard>, <liquid>, <swallowing>", "[Visual Generation Instruction]": "A person’s hands typing rapidly on a
+mechanical keyboard, close-up shot, a glass of water sits on the desk beside the keyboard, shallow depth of field, focused on the fingers."
+Input 2:
+[Audio Scene Description]: "A solo melody played by an acoustic guitar, close-up shot, with a clear and bright timbre. The performer creates soothing and textured phrases
+through strumming and fingerpicking techniques, the environment is very quiet and the overall musical atmosphere is serene and focused."
+Example Output 2 Format: "[Main Subject]": "<guitar>", "[Visual Generation Instruction]": "A musician sitting on a stool on a dimly lit stage and playing guitar, a
+single warm spotlight illuminates him, intimate and focused atmosphere, high contrast, dark background."
+Now please process the following input:
+Figure 10: Prompt for Caption Transfer.
+17
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+Prompt for Image Filtering
+Play the role of a professional image analyst and strictly evaluate the authenticity of the following picture. Some of the pictures are fake images
+or digital artworks generated by AI model while other pictures are real-world photos taken by a camera. You need to evaluate and identify them
+carefully. Your evaluation should be based on the general public’s perception of the real world. You should consider multiple aspects, if there is an
+abnormality in the picture, the picture is considered fake:
+Here are some reference points for your evaluation, but you are not limited to these points, try to be as comprehensive as possible:
+Logical and Contextual Sanity:
+Scene Plausibility: Is the central scene in the image logical? For example, are birds appearing in inappropriate indoor environments (like an office or
+bedroom)? Are large mammals in illogically confined spaces?
+Object Relations: Are the relationships between objects in the image reasonable? For instance, are the size proportions of objects consistent? Do their
+positions and interactions make sense?
+Physical World Consistency:
+Light and Reflection: Is the direction of the light source consistent? Do the direction, length, and sharpness of shadows match the light source? Are
+the reflections and refractions on object surfaces consistent with their materials and the environment?
+Physical Dynamics: If the image contains dynamic elements (e.g., flowing water, fire, moving objects), do their forms and trajectories adhere to the
+laws of physics?
+Detail and Structural Integrity:
+Biological Features:
+Humans: Are facial features (eyes, teeth, ears) symmetrical and natural? Is the number, length, and shape of fingers and toes correct? Are the
+connections and bending of limbs anatomically correct? Is the skin texture overly smooth or exhibiting anomalies? Is the face clearly visible without
+distortion or blurring?
+Animals: Is the animal’s body structure complete and correctly proportioned? Is the texture of fur or feathers natural?
+Object Structure: Do objects appear strange due to unnatural distortion, stretching, or compression? Are the edges and joints of objects clear and
+logical?
+Absence of Anomalous Visual Elements:
+No Abstract Symbols or Patterns: Does the image contain geometric patterns, symbols, text, or abstract visual effects that do not exist in the real
+world and have no clear meaning? Does the background or object surfaces contain unexplainable, repetitive, or strange textures?
+Color Realism: Is the overall tone and color saturation of the image natural? Are there illogical, overly vibrant, or bizarre color combinations? Is the
+color tone of the picture a common one in the real world?
+More: Anything else that seems out of place or inconsistent with the real world.
+Finally, consider the question above and directly output "Real" when you definitely believe the picture is from real world or "Fake" for else situations,
+outputting anything else.
+Figure 11: Prompt for Image Filtering.
+18
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Figure 12: Additional image examples of A2I-Set.
+19
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+SonicDiffusion
+MACS
+CoDi
+AudioCanvas
+AudioToken
+Sound2Scene
+SoundAdapter 
+GT Label
+sewing machine
+engine
+aircraft engine
+& helicopter
+frog
+motorcycle
+explosion
+thunder
+underwater 
+bubbling
+fire cracking
+splashing water
+SonicDiffusion
+MACS
+CoDi
+AudioCanvas
+AudioToken
+Sound2Scene
+SoundAdapter 
+GT Label
+Figure 13: Comparison results of different models on A2I-eval and Landscape. Zoom in for a better experience.
+20
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Figure 14: More results generated by AudioCanvas. Zoom in for a better viewing experience.
+(a) Abnormal object position
+(b)  Unreal-style images
+(c)  Wrong number of limb 
+(d)  Blurred faces
+(e)  Image quality degradation
+Figure 15: Some failure generated cases. Zoom in for a better viewing experience.
+21
+
+
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+Dongxu Ge. et al.
+3000 steps
+7000 steps
+10000 steps
+SD2
+Figure 16: Test results of SD2 fine-tuned on A2I-balanced. To ensure fairness, the seeds are set to be consistent. Zoom in for a
+better viewing experience.
+22
+
+
+Towards Expressive and Faithful Audio-to-Image Generation: A Unified Multimodal Dataset and Synthesis Framework
+MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil
+3000 steps
+5000 steps
+SDXL
+Figure 17: Test results of SD-XL fine-tuned on A2I-balanced. To ensure fairness, the seeds are set to be consistent. Zoom in for a
+better viewing experience.
+23
