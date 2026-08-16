@@ -1,0 +1,73 @@
+{
+  "date": "20260816",
+  "date_label": "",
+  "generated_at": "2026-08-16 19:48:24 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.09493v1",
+      "route": "202608/16/2608.09493v1-georoute-geometry-aware-hybrid-inference-for-traffic-future-frame-prediction",
+      "title": "GeoRoute: Geometry-Aware Hybrid Inference for Traffic Future-Frame Prediction",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "潜在视频扩散模型用于交通未来帧预测，无训练几何感知推理",
+      "first_seen_at": "2026-08-16 19:48:24 UTC",
+      "updated_at": "2026-08-16 19:48:24 UTC"
+    },
+    {
+      "paper_id": "2608.10162v1",
+      "route": "202608/16/2608.10162v1-mad-hoi-masked-autoregressive-diffusion-for-generating-articulated-hand-object-interactions-from-text",
+      "title": "MAD-HOI: Masked Autoregressive Diffusion for Generating Articulated Hand Object Interactions from Text",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "基于扩散的关节手物交互序列生成模型",
+      "first_seen_at": "2026-08-16 19:48:24 UTC",
+      "updated_at": "2026-08-16 19:48:24 UTC"
+    },
+    {
+      "paper_id": "2608.12829v1",
+      "route": "202608/16/2608.12829v1-semantic-steering-for-controllable-generation-tuning-free-concept-erasure-in-multimodal-diffusion-transformers",
+      "title": "Semantic Steering for Controllable Generation: Tuning-Free Concept Erasure in Multimodal Diffusion Transformers",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "扩散Transformer用于文本到图像生成和概念擦除，非视频任务",
+      "first_seen_at": "2026-08-16 19:48:24 UTC",
+      "updated_at": "2026-08-16 19:48:24 UTC"
+    },
+    {
+      "paper_id": "2608.13492v1",
+      "route": "202608/16/2608.13492v1-alayaworld-interactive-long-horizon-world-modeling---full-technical-report-v11",
+      "title": "AlayaWorld: Interactive Long-Horizon World Modeling - Full Technical Report (v1.1)",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "交互式长时程世界建模与视频生成，采用自回归而非扩散",
+      "first_seen_at": "2026-08-16 19:48:24 UTC",
+      "updated_at": "2026-08-16 19:48:24 UTC"
+    }
+  ]
+}

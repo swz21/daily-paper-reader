@@ -1,0 +1,194 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-16T19:45:02.743386+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.09493v1",
+      "source": "arxiv",
+      "title": "GeoRoute: Geometry-Aware Hybrid Inference for Traffic Future-Frame Prediction",
+      "abstract": "Long-horizon future-frame prediction is important for autonomous driving, traffic surveillance, and intelligent transportation systems, yet remains challenging due to temporal ghosting, geometry drift, and inconsistent object motion. Recent latent video diffusion models have achieved impressive visual quality, but directly applying them to structured traffic scenes often leads to unstable geometry and degraded temporal coherence over extended horizons. We present a training-free inference framework that stabilizes reliable static structure in pretrained video predictions through multi-frame temporal context and view-conditioned routing. For front-camera videos, our method refines generated futures with a multi-frame depth-layered renderer that projects static geometry from observed history frames while preserving dynamic regions from the generative base model. For heterogeneous traffic views, a frozen vision-language model infers a coarse camera group from the observed clip and selects a specialized motion-based predictor. The framework requires neither retraining nor fine-tuning of the underlying video model and can be applied directly to pretrained generators. We validate the proposed framework on the AI City Challenge Track 5 benchmark, where our final system achieves competitive performance among the top-ranked teams. These results demonstrate that geometry-aware inference-time refinement and view-conditioned hybrid inference can improve static-geometry stability and low-level structural fidelity without changing the original model architecture.",
+      "authors": [
+        "Khang Minh Le",
+        "Hieu Dinh Trung Pham",
+        "Luu Thanh Danh",
+        "Nam-Tien Le",
+        "Hieu Anh Ngo",
+        "Phuong Huu Vu Tran",
+        "Son Nguyen Minh Le",
+        "Nguyen Trong Nghia",
+        "Tu Tran Thi Cam",
+        "Huy Minh Nhat Nguyen",
+        "Cuong Tuan Nguyen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-10T12:01:18+00:00",
+      "link": "https://arxiv.org/pdf/2608.09493v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "latent video diffusion models applied to traffic future-frame prediction, training-free geometry-aware inference",
+      "llm_evidence_cn": "潜在视频扩散模型用于交通未来帧预测，无训练几何感知推理",
+      "llm_evidence": "潜在视频扩散模型用于交通未来帧预测，无训练几何感知推理",
+      "canonical_evidence": "潜在视频扩散模型用于交通未来帧预测，无训练几何感知推理",
+      "llm_tldr_en": "GeoRoute stabilizes pretrained latent video diffusion predictions for traffic scenes via multi-frame temporal context and view-conditioned routing with a depth-layered renderer, improving geometry and temporal coherence over long horizons.",
+      "llm_tldr_cn": "长时程未来帧预测中，潜在视频扩散模型虽画质好，但直接用于结构化交通场景会导致几何漂移和时间一致性退化。论文提出GeoRoute，一个无训练的推理框架，利用多帧时间上下文和视图条件路由，并通过多帧深度分层渲染器细化生成结果。实验表明该方法能稳定场景静态结构，提升远时域预测质量。这为视频扩散模型在结构化场景中的应用提供了有效增强方式。",
+      "llm_tldr": "长时程未来帧预测中，潜在视频扩散模型虽画质好，但直接用于结构化交通场景会导致几何漂移和时间一致性退化。论文提出GeoRoute，一个无训练的推理框架，利用多帧时间上下文和视图条件路由，并通过多帧深度分层渲染器细化生成结果。实验表明该方法能稳定场景静态结构，提升远时域预测质量。这为视频扩散模型在结构化场景中的应用提供了有效增强方式。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "papers on diffusion models applied to video generation",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.10162v1",
+      "source": "arxiv",
+      "title": "MAD-HOI: Masked Autoregressive Diffusion for Generating Articulated Hand Object Interactions from Text",
+      "abstract": "Methods for text-based generation of hand-object interaction (HOI) sequences primarily focus on producing smooth, physically plausible trajectories. A truly utilitarian method should additionally support variable-length generation, composite motion sequences, motion completion and infilling, and reliable termination without compromising physical plausibility. Standard diffusion models for HOI generation are typically trained only for text-to-motion generation on atomic motions and require the motion length to be specified a-priori. Autoregressive (AR) methods provide greater sequence-level flexibility, but commonly depend on discrete motion codes, which can lose contact-sensitive motion detail. To address these key limitations, we present a model performing Masked Autoregression with Diffusion for HOI generation (MAD-HOI). Our method starts by encoding hand and object motions in a continuous latent space while keeping them disentangled to maintain stream-wise control. This is followed by a masked autoregressive transformer to predict context features that condition a flow-matching head. MAD-HOI is capable of motion generation for atomic and composite articulated sequences, conditioned motion completion and infilling, as well as EOM (End of Motion) prediction from a single training objective. We provide comprehensive evaluations for these capabilities and benchmark our method on the ARCTIC and GRAB datasets. Our experiments demonstrate that our method generates more diverse and physically plausible interactions compared to other open-sourced baseline methods.",
+      "authors": [
+        "Ananya Bal",
+        "Kartik Sharma",
+        "Ethan Lai",
+        "Samyak Tiwari",
+        "Liza Dahiya",
+        "Chaitanya Chawla",
+        "Laszlo A. Jeni"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-10T19:30:59+00:00",
+      "link": "https://arxiv.org/pdf/2608.10162v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Diffusion-based generative model for articulated hand-object interaction sequences",
+      "llm_evidence_cn": "基于扩散的关节手物交互序列生成模型",
+      "llm_evidence": "基于扩散的关节手物交互序列生成模型",
+      "canonical_evidence": "基于扩散的关节手物交互序列生成模型",
+      "llm_tldr_en": "Proposes MAD-HOI, a masked autoregressive diffusion model for text-based generation of hand-object interactions, supporting variable length, composite sequences, and infilling while preserving physical plausibility.",
+      "llm_tldr_cn": "文本生成手物交互（HOI）序列的方法需兼顾物理合理性与序列灵活性，但标准扩散模型需预知长度且难以支持组合动作，自回归方法依赖离散编码会丢失接触细节。MAD-HOI采用掩码自回归扩散，在保持物理合理性的同时支持变长生成、复合动作和运动补全。实验证明其能生成更具细节和灵活性的HOI序列。",
+      "llm_tldr": "文本生成手物交互（HOI）序列的方法需兼顾物理合理性与序列灵活性，但标准扩散模型需预知长度且难以支持组合动作，自回归方法依赖离散编码会丢失接触细节。MAD-HOI采用掩码自回归扩散，在保持物理合理性的同时支持变长生成、复合动作和运动补全。实验证明其能生成更具细节和灵活性的HOI序列。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.12829v1",
+      "source": "arxiv",
+      "title": "Semantic Steering for Controllable Generation: Tuning-Free Concept Erasure in Multimodal Diffusion Transformers",
+      "abstract": "Multimodal Diffusion Transformers (MM-DiTs) have demonstrated remarkable text-to-image generation performance, surpassing traditional U-Net-based diffusion models. Nevertheless, their powerful generative capabilities also raise significant safety concerns, as they may generate sensitive or inappropriate content. While existing concept erasure methods aim to mitigate such risks, most require modifying model parameters, which are often architecture-specific and impractical for deployed larger models. Several tuning-free approaches face challenges when applied to advanced large-scale MM-DiTs due to their deeply embedded knowledge, broad semantic space, and context-dependent text encoders. To address these challenges, we propose to erase concepts by directly manipulating the model's internal representations. Our key insight, derived from an in-depth analysis of MM-DiT's block-wise generative roles, is that text-conditioned semantic representations are most salient in the middle blocks of MM-DiTs. Based on this, we extract representations of an unwanted concept and a desirable safe one from the middle block, construct a steering vector from their difference, and inject this single vector into consecutive early and middle blocks. By operating exclusively on the sparse text-branch tokens and leveraging the straight sampling trajectory of rectified flow, our method achieves effective concept erasure with negligible overhead and without any training. Extensive experiments across MM-DiT models demonstrate that our method achieves state-of-the-art performance in erasing diverse concepts, enables effective control over the final output, and remains robust to adversarial attacks.",
+      "authors": [
+        "Qiao Li",
+        "Xiaomeng Fu",
+        "Yuanshu Zhao",
+        "Qipeng Wang",
+        "Jiao Dai",
+        "Jizhong Han"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-13T05:05:45+00:00",
+      "link": "https://arxiv.org/pdf/2608.12829v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "diffusion transformers for text-to-image generation, concept erasure, but not video",
+      "llm_evidence_cn": "扩散Transformer用于文本到图像生成和概念擦除，非视频任务",
+      "llm_evidence": "扩散Transformer用于文本到图像生成和概念擦除，非视频任务",
+      "canonical_evidence": "扩散Transformer用于文本到图像生成和概念擦除，非视频任务",
+      "llm_tldr_en": "Presents a tuning-free semantic steering method for concept erasure in multimodal diffusion transformers, addressing safety concerns without architecture-specific parameter modification.",
+      "llm_tldr_cn": "本文针对多模态扩散Transformer（MM-DiT）可能生成敏感或不当内容的安全问题，提出了一种无需微调的概念擦除方法。现有方法大多需要修改模型参数且具有架构特异性，难以用于大规模部署模型。本文通过语义引导实现概念擦除，无需调整参数，并适配现代大规模MM-DiT。该方法为扩散模型的可控与安全生成提供了新的解决思路。",
+      "llm_tldr": "本文针对多模态扩散Transformer（MM-DiT）可能生成敏感或不当内容的安全问题，提出了一种无需微调的概念擦除方法。现有方法大多需要修改模型参数且具有架构特异性，难以用于大规模部署模型。本文通过语义引导实现概念擦除，无需调整参数，并适配现代大规模MM-DiT。该方法为扩散模型的可控与安全生成提供了新的解决思路。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.13492v1",
+      "source": "arxiv",
+      "title": "AlayaWorld: Interactive Long-Horizon World Modeling - Full Technical Report (v1.1)",
+      "abstract": "This report presents an improved version of AlayaWorld. While the backbone architecture, chunk-wise autoregressive generation scheme, and training data remain unchanged from the previous release, we substantially revise how conditioning signals are represented and integrated into the model. The new design is guided by a simple principle: conditioning signals should match the generated content as closely as possible in both latent representation and temporal structure. To this end, we make two major changes. First, we replace the previous depth-warping-based spatial memory with a streaming 3D point-cache renderer. Second, we redesign the conditioning pipeline so that visual conditions are encoded in the same causal-VAE latent space, with temporal statistics consistent with those of the generated video. Concretely, the new version introduces six modifications: (1) replacing static-frame image conditioning with motion-aware latent conditioning; (2) causally encoding re-rendered spatial memory as a continuous sequence; (3) aligning the temporal-memory window in pixel space; (4) adopting hard memory dropout that removes memory tokens rather than zeroing them; (5) unifying the VAE encoding and decoding protocol across training and inference; and (6) removing the camera AdaLN branch, such that viewpoint control is provided entirely through the re-rendered spatial condition.",
+      "authors": [
+        "AlayaWorld Team",
+        "Kaipeng Zhang",
+        "Chuanhao Li",
+        "Yifan Zhan",
+        "Yongtao Ge",
+        "Yuanyang Yin",
+        "Jiaming Tan",
+        "Kang He",
+        "Liaoyuan Fan",
+        "Mingliang Zhai",
+        "Ruicong Liu",
+        "Xiaojie Xu",
+        "Xuangeng Chu",
+        "Zhen Li",
+        "Zhengyuan Lin",
+        "Zhixiang Wang",
+        "Zian Meng",
+        "Zihui Gao"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-13T17:21:03+00:00",
+      "link": "https://arxiv.org/pdf/2608.13492v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "interactive long-horizon world modeling and video generation, autoregressive not diffusion",
+      "llm_evidence_cn": "交互式长时程世界建模与视频生成，采用自回归而非扩散",
+      "llm_evidence": "交互式长时程世界建模与视频生成，采用自回归而非扩散",
+      "canonical_evidence": "交互式长时程世界建模与视频生成，采用自回归而非扩散",
+      "llm_tldr_en": "Presents AlayaWorld, an autoregressive long-horizon world model with improved conditioning via streaming 3D point-cache rendering and causal-VAE latent alignment.",
+      "llm_tldr_cn": "该技术报告介绍改进版AlayaWorld，一个交互式长时程世界模型。与上一版相比，它用流式3D点缓存渲染替代深度扭曲空间记忆，并把视觉条件编码进因果VAE潜在空间，使条件与生成内容在表征和时间结构上更一致。这提升了长时间视频与世界生成的一致性与可控性，为交互式世界建模提供新思路。",
+      "llm_tldr": "该技术报告介绍改进版AlayaWorld，一个交互式长时程世界模型。与上一版相比，它用流式3D点缓存渲染替代深度扭曲空间记忆，并把视觉条件编码进因果VAE潜在空间，使条件与生成内容在表征和时间结构上更一致。这提升了长时间视频与世界生成的一致性与可控性，为交互式世界建模提供新思路。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "video generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
