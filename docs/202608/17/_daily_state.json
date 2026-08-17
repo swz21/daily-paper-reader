@@ -1,0 +1,137 @@
+{
+  "date": "20260817",
+  "date_label": "",
+  "generated_at": "2026-08-17 19:58:52 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.13929v1",
+      "route": "202608/17/2608.13929v1-rgbx-next-towards-realistic-generative-rendering-from-g-buffers",
+      "title": "RGBX-Next: Towards Realistic Generative Rendering from G-Buffers",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "基于扩散Transformer的统一生成框架，可从G-buffer生成真实图像、视频和流",
+      "first_seen_at": "2026-08-17 19:58:52 UTC",
+      "updated_at": "2026-08-17 19:58:52 UTC"
+    },
+    {
+      "paper_id": "2608.14043v1",
+      "route": "202608/17/2608.14043v1-beyond-text-conditioning-a-systematic-study-of-mllm-dit-fusion-for-video-generation",
+      "title": "Beyond Text Conditioning: A Systematic Study of MLLM-DiT Fusion for Video Generation",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "针对MLLM-DiT融合用于视频生成开展系统研究",
+      "first_seen_at": "2026-08-17 19:58:52 UTC",
+      "updated_at": "2026-08-17 19:58:52 UTC"
+    },
+    {
+      "paper_id": "2608.11546v2",
+      "route": "202608/17/2608.11546v2-through-van-goghs-eyes-global-style-transfer-with-diffusion-model",
+      "title": "Through Van Gogh's Eyes: Global Style Transfer with Diffusion Model",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "文本到图像扩散模型实现艺术风格迁移",
+      "first_seen_at": "2026-08-17 19:58:52 UTC",
+      "updated_at": "2026-08-17 19:58:52 UTC"
+    },
+    {
+      "paper_id": "2608.14430v1",
+      "route": "202608/17/2608.14430v1-designing-reinforcement-learning-for-diffusion-models-a-unified-path-space-view",
+      "title": "Designing Reinforcement Learning for Diffusion Models: A Unified Path-Space View",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向扩散与流匹配模型的统一路径空间强化学习框架",
+      "first_seen_at": "2026-08-17 19:58:52 UTC",
+      "updated_at": "2026-08-17 19:58:52 UTC"
+    },
+    {
+      "paper_id": "2608.08982v1",
+      "route": "202608/17/2608.08982v1-twin-rollouts-noise-coupled-counterfactual-branching-in-interactive-video-world-models",
+      "title": "Twin Rollouts: Noise-Coupled Counterfactual Branching in Interactive Video World Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "在交互式视频世界模型中用噪声耦合反事实分支进行反事实生成",
+      "first_seen_at": "2026-08-17 19:58:52 UTC",
+      "updated_at": "2026-08-17 19:58:52 UTC"
+    },
+    {
+      "paper_id": "2608.13729v1",
+      "route": "202608/17/2608.13729v1-limitations-of-synthetic-data-generation-in-specialized-data-scarce-domains",
+      "title": "Limitations of Synthetic Data Generation in Specialized Data-Scarce Domains",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "评估基于扩散的合成图像生成用于数据增强",
+      "first_seen_at": "2026-08-17 19:58:52 UTC",
+      "updated_at": "2026-08-17 19:58:52 UTC"
+    },
+    {
+      "paper_id": "2608.14172v1",
+      "route": "202608/17/2608.14172v1-concept-guidance-precise-training-free-latent-control-for-text-to-image-generation",
+      "title": "Concept Guidance: Precise, Training-Free Latent Control for Text-to-Image Generation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "文本到图像扩散模型的免训练潜在控制",
+      "first_seen_at": "2026-08-17 19:58:52 UTC",
+      "updated_at": "2026-08-17 19:58:52 UTC"
+    },
+    {
+      "paper_id": "2608.11562v1",
+      "route": "202608/17/2608.11562v1-from-synthesis-to-removal-physics-grounded-reflection-simulation-and-diffusion-based-video-dereflection",
+      "title": "From Synthesis to Removal: Physics-Grounded Reflection Simulation and Diffusion-Based Video Dereflection",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "基于扩散模型的视频去反射，是扩散模型在视频恢复任务中的应用",
+      "first_seen_at": "2026-08-17 19:58:52 UTC",
+      "updated_at": "2026-08-17 19:58:52 UTC"
+    }
+  ]
+}

@@ -1,0 +1,606 @@
+Title: Through Van Gogh's Eyes: Global Style Transfer with Diffusion Model
+
+URL Source: https://arxiv.org/pdf/2608.11546v2
+
+Published Time: Fri, 14 Aug 2026 00:22:09 GMT
+
+Number of Pages: 24
+
+Markdown Content:
+# Through Van Gogh’s Eyes: Global Style Transfer with Diffusion Model 
+
+Jeongha Lee* 1,2 , Yujin Kim* 3 , Ghazanfar Ali 4 , Suhyun Kim †5 , and Jae-In Hwang †1
+
+> 1
+
+Korea Institute of Science and Technology, 2University of Science and Technology,  
+
+> 3
+
+Korea University, 4 Gachon University, 5 Kyung Hee University 
+
+wjdgk1029@gmail.com, lakeeye1220@gmail.com, ghazan@gachon.ac.kr, dr.suhyun.kim@gmail.com, hji@kist.re.kr Content    
+
+> Image 𝐼 𝑐
+> Artistic
+> image 𝑥 0
+> Artist Style Book (Artworks)
+> Artist Name
+> Van gogh
+> Monet
+> Nicholas
+> Boris -
+> Kustodiev
+> Salvador -
+> Dali
+> Ivan -
+> Shishkin
+> Pierre -
+> auguste -
+> Renoir
+
+Fig. 1: Artist-level Global Style Transfer results. Given a content image Ic(first col-umn), our framework synthesizes an artistic image x0 (second column) that reflects the global style of the target artist. The Artist Style Book (remaining columns) displays the top-6 real artworks from the artist’s corpus with the highest semantic similarity to x0, measured by CLIP distance. This demonstrates that our generated results are influenced by a diverse range of the artist’s genuine works, successfully capturing the global stylistic distribution rather than overfitting to a single iconic exemplar.  
+
+> ∗
+
+Equal contribution, † Corresponding author arXiv:2608.11546v2 [cs.CV] 13 Aug 2026 2 J. Lee et al. 
+
+Abstract. Artistic image synthesis aims to recreate the expressive vi-sual identity of a target artist, yet existing methods often fail to cap-ture an artist’s global style. Conventional style transfer methods trans-fer the style of one or a few reference artworks to a content image in a One-to-One manner, making them effective for artwork-level styliza-tion but limited in representing the broader stylistic distribution of an artist. Text-to-image diffusion models conditioned on artist names, such as ‘ ∼ in Van Gogh style ’, offer greater flexibility, but they often suffer from text-induced bias and reproduce patterns from only a few iconic works. To address these limitations, we introduce Global Style Transfer 
+
+(GST), an artistic image synthesis paradigm, in a Many-to-One man-ner,that aggregates multiple artworks from a target artist and transfers their shared global style to a single content image. For GST, we propose 
+
+Global Style Guidance (GSG), which learns a residual global style offset 
+
+∆⟨t in the intermediate feature space, or h-space, of a diffusion model under a fixed prompt. By learning artist-level style semantics purely from visual statistics, GSG mitigates text-dependent artistic bias. We further propose Content Alignment Guidance (CAG), a training-free perceptual guidance mechanism that preserves the semantic structure of the content image while allowing artist-specific geometric deformation. Experiments on WikiArt demonstrate that GST achieves superior stylistic fidelity, content preservation, and output diversity compared to existing style transfer and diffusion-based artistic synthesis methods. 
+
+Keywords: Global Style Transfer · Diffusion Models · Artistic Image Synthesis 
+
+1 Introduction 
+
+If the great painters of the past were alive today, how would they perceive and de-pict our modern world on canvas? This question lies at the core of artistic image synthesis, which aims to recreate the expressive visual identity of a target artist. Existing approaches mainly fall into two paradigms: Style Transfer [6, 11, 16] and Text-to-Image (T2I) diffusion-based artistic image synthesis [22, 34]. Con-ventional style transfer methods extract style from a single or a few reference artworks and transfer it to a content image, effectively reproducing the character-istics of specific artworks, called the One-to-One approach. Unfortunately, such instance-level style transfer fails to capture the broader stylistic distribution that defines an artist’s overall visual identity, shown in Fig. 2. On the other hand, T2I diffusion models conditioned on artist names (e.g., ‘ ∼ in the style of Van Gogh ’) offer a more flexible synthesis pipeline but suffer from text-dependent artistic bias. T2I diffusion model often reproduces textures and compositions from a handful of iconic works, collapsing the stylistic diversity of an artist into a narrow, mode-biased distribution. Consequently, neither paradigm reli-ably captures the coherent visual identity that defines an artist’s global style. To overcome these limitations, we introduce Global Style Transfer (GST), a new paradigm that reformulates artistic image synthesis as a Many-to-One ap-Global Style Transfer 3
+
+proach. Instead of relying on a single reference artwork or a text prompt, GST ag-gregates multiple artworks from a target artist and transfers their shared global style to a single content image, as shown in Fig. 12. This formulation naturally mitigates instance-level bias by capturing coherent style representations across the full breadth of an artist’s artworks, and eliminates linguistic dependence by grounding stylistic guidance entirely in visual statistics. As a result, GST enables artist-level style transfer that faithfully reflects the coherent visual identity of the target artist while allowing diverse and expressive content re-rendering. Concretely, we realize Global Style Transfer through two complementary components. First, we propose Global Style Guidance (GSG), which operates in the intermediate h-space of a diffusion U-Net bottleneck. GSG trains a lightweight Style Extraction Function (SEF) to predict a residual global style offset ∆ht
+
+from multiple artworks under a fixed, unified text condition (e.g., ‘ A painting ’), thereby learning purely visual style semantics free from text-induced variance. Second, we propose Content Alignment Guidance (CAG), a training-free mecha-nism that performs DDIM inversion [26] on the content image and applies percep-tual guidance at each diffusion timestep. CAG preserves the abstract structure and semantic composition of the content while allowing style-driven geometric deformations, reflecting the expressive intent characteristic of a target artist. Extensive experiments on WikiArt dataset [28] demonstrate that our frame-work achieves superior stylistic fidelity and content preservation compared to existing style transfer and T2I diffusion-based artistic synthesis methods, while producing diverse outputs that better reflect the global stylistic spectrum of the target artist. Our main contributions are as follows: 
+
+– We introduce Global Style Transfer , a novel many-to-one artistic image synthesis paradigm that learns a unified global style distribution from mul-tiple artworks of a target artist, overcoming the artwork (instance)-level and text-dependent artistic bias of prior methods. 
+
+– We propose Global Style Guidance (GSG), a guidance mechanism oper-ating in h-space that learns artist-level global stylistic semantics only from visual statistics, mitigating linguistic dependence and artistic mode collapse. 
+
+– We propose Content Alignment Guidance (CAG), a training-free per-ceptual guidance that preserves the semantic integrity of the content while enabling artist-specific style-based deformation during the diffusion process. 
+
+2 Related Works 
+
+2.1 Style Transfer (1 content image, 1 style image) 
+
+Style Transfer aims to generate a stylized image by combining the semantic structure of a content image with the visual characteristics (e.g., texture, color, and brushstroke) of a style image, typically in a One-to-One setting (Content image: 1, Style image: 1) [8, 16]. Early Neural Style Transfer (NST) meth-ods [6,15] achieved this by matching feature statistics between content and style 4 J. Lee et al. Style Transfer  (One -to -One)         
+
+> Global Style Transfer (Many -to -One)
+> 𝐼 𝑠 = {𝑖 𝑠 1, 𝑖 𝑠 2,⋅⋅⋅, 𝑖 𝑠 𝐾 }
+> Style Images 𝐼 𝑠 (artist’s artworks)
+> Style Image 𝐼 𝑠 Content Image 𝐼 𝐶
+> Content Image 𝐼 𝐶
+
+# + 
+
+> Artistic Image
+> Texture &
+> Brush touch
+> Instance -level
+> style overfitting
+> Color
+> Focus on
+> an artwork
+> Focus on
+> an artist
+> Artistic Image
+> Style -based deformation
+> of content
+
+Fig. 2: Comparison between conventional style transfer and the proposed Global Style Transfer . (Top) Traditional style transfer applies the style of a single reference artwork to a content image, leading to instance-level overfitting. (Bottom) In contrast, Global Style Transfer leverages various artworks from the same artist to learn unified stylistic features, including color palettes, texture patterns, and brushwork, enabling richer style-based content deformation and more faithful artistic image synthesis. 
+
+images, while later methods improved stylization quality through normaliza-tion [11, 29], attention mechanisms [17, 20]. Recent diffusion-based approaches, such as StyleInjection [2], CSGO [31], InST [35] and Diff-NST [24] further im-prove style fidelity by injecting style features into the denoising process. How-ever, because these methods rely on only one or few style images, they capture instance-level style rather than the broader stylistic distribution of an artist. 
+
+2.2 Style Personalization ( × or 1 content image, Few style image) 
+
+Recent style personalization methods focus on adapting pretrained text-to-image diffusion models to generate images in a customized artistic style, typically using a small number of reference styles and either no content image or a single content image to be stylized (Content: × or 1, Style: few). These approaches fall into two categories. The first fine-tunes the diffusion backbone itself: DreamBooth [23], Custom Diffusion [12], and StyleDrop [25] fine-tune the model, cross-attention projections, or lightweight adapters, respectively, to bind the style to a unique identifier. The second embeds style into the specific module without modifying model weights: Textual Inversion [5] optimizes a word embedding for the target style, while StyleAligned [9] propagates stylistic consistency across generated Global Style Transfer 5𝐂𝐨𝐧𝐭𝐞𝐧𝐭 𝐀𝐥𝐢𝐠𝐧𝐦𝐞𝐧𝐭 𝐆𝐮𝐢𝐝𝐚𝐧𝐜𝐞 (𝐂𝐀𝐆) 𝐆𝐥𝐨𝐛𝐚𝐥 𝐒𝐭𝐲𝐥𝐞 𝐆𝐮𝐢𝐝𝐚𝐧𝐜𝐞 (𝐆𝐒𝐆) 
+
+1) Training 𝑓 𝑡 with various artworks 
+
+2) Diffusion sampling guidance via Global Style Offset Δ𝐡 𝑡 
+
+> Prompt y:
+> “A painting ”
+> Δ𝐡 𝑡 𝑓 𝑡
+
+-    
+
+> 𝜖 𝜃 𝑧 𝑡 , 𝑡, 𝑦 Δℎ 𝑡 − 𝜖 𝑡 22
+> 𝜖 𝑡
+> 𝜖 𝜃 (⋅)
+> Noise Predictior 𝜖 𝜃
+> ℎ𝑡
+
++
+
+> 𝐃𝐃𝐈𝐌 𝐑𝐞𝐯𝐞𝐫𝐬𝐞 𝐏𝐫𝐨𝐜𝐞𝐬𝐬
+> 𝐀𝐬𝐲𝐦𝐦𝐞𝐭𝐫𝐢𝐜 𝐫𝐞𝐯𝐞𝐫𝐬𝐞 𝐩𝐫𝐨𝐜𝐞𝐬𝐬
+> 𝑥 𝑡
+> 𝑥 𝑡−1
+> ෤𝑥 𝑡−1
+> 𝐆𝐥𝐨𝐛𝐚𝐥 𝐒𝐭𝐲𝐥𝐞 𝐆𝐮𝐢𝐝𝐚𝐧𝐜𝐞
+> 𝑥 𝑇
+> 𝑥 𝑇−1
+> 𝑥 0
+> 𝑪𝑨𝑮
+> 𝑪𝑨𝑮
+
+# … Content Image 
+
+ℰ 
+
+> 𝑥 2𝑥 1
+> 𝐃𝐃𝐈𝐌 𝐈𝐧𝐯𝐞𝐫𝐬𝐢𝐨𝐧
+> 𝑥 𝑇
+> ෤𝑥 0
+> 𝜀 CLIP
+> Tweedie ′s formula
+
+𝑧 𝑡 
+
+ǁ𝑧 0
+
+𝒟 
+
+𝒟 
+
+> 𝒕𝒂𝒓𝒈𝒆𝒕
+> 𝒍𝒂𝒚𝒆𝒓 𝒍
+
+-
+
+ǁ𝑧 𝑡    
+
+> ∇𝑧𝑡 ℓ(𝑧 𝑡 )
+> 𝜀 CLIP 𝑙 (𝑥 𝑡 ) − 𝜀 CLIP 𝑙 ( ෤ 𝑥 0)22
+> 𝐂𝐨𝐧𝐭𝐞𝐧𝐭 𝐀𝐥𝐢𝐠𝐧𝐦𝐞𝐧𝐭 𝐆𝐮𝐢𝐝𝐚𝐧𝐜𝐞
+
+Fig. 3: Overall framework of Global Style Transfer (GST). ( Left ) Global Style Guid-ance (GSG) trains a lightweight Style Extraction Function ft on multiple artworks under the fixed prompt ‘ A painting ’, learning a residual global style offset ∆ht that modulates the U-Net bottleneck representation ht in a text-independent manner. Dur-ing reverse diffusion, ∆ht steers the denoising trajectory toward the artist’s global style distribution. ( Right ) Content Alignment Guidance (CAG) first maps the content im-age Ic into a noisy latent via DDIM inversion, then applies CLIP-based perceptual guidance at each timestep to align the semantic structure of the generated image with the content while permitting style-driven deformation, yielding artist-level stylization. 
+
+images via shared attention at inference. However, these methods often memorize dominant visual patterns, limiting stylistic diversity. In contrast to both methods, our Global Style Transfer learns an artist-level global style distribution from multiple artworks and applies it to a content image in Many-to-One manner, enabling faithful artistic synthesis without relying on single-instance style cues or text-dependent supervision. 
+
+3 Methods 
+
+3.1 Preliminary Latent Diffusion Models. Latent Diffusion Models (LDM) [22] operate in a lower-dimensional latent space, enabling cost-efficient and scalable text-conditioned image synthesis. Given an image x0, an autoencoder E : Rk → Rd maps images into the latent vector z0 = E(x0). A forward diffusion process gradually adds Gaussian noise according to a variance schedule βt, yielding: 
+
+zt = √¯αtz0 + √1 − ¯αtϵ, ϵ ∼ N (0 , I ), (1) where ¯αt = Qts=1 (1 − βs). Then, the denoising model ϵθ learns to predict the noise ϵθ (zt, t, c ) given the noisy latent zt at every time step t with text condition 
+
+c encoded by the text encoder τϕ during the sampling process as below: 
+
+zt−1 = √¯αt−1 ˜z0 +
+
+q
+
+1 − ¯αt−1 − σ2
+
+t ϵtθ (zt) + σtϵt, (2) 6 J. Lee et al. T=0  T=10  T=25  T=50 
+
+Fig. 4: Time-step robustness of Global Style Guidance in h-space. ( Top ) Artistic im-ages generated at diffusion timesteps t = {0, 10, 25, 50}, showing increasing noise levels as t grows. ( Bottom ) t-SNE visualizations of 500 ht feature vectors from artworks by Van Gogh (yellow) and Monet (red) at the corresponding t. Despite progressive noise corruption, clusters remain well-separated across all timesteps, validating h-space as a stable domain for artist-level style representation during the diffusion process. 
+
+where σt = ηp(1 − ¯αt−1)/(1 − ¯αt)p1 − ¯αt/¯αt−1. ϵtθ (zt) denotes the model-predicted noise, abbreviated from ϵθ (zt, t, c ), and ˜z0 means the approximation of the clean latent z0 at time step t obtained via Tweedie’s formula. The training objective of the LDM is defined as: 
+
+LLDM := Ez∼E (x),ϵ t,t 
+
+∥ϵθ (zt, t, c ) − ϵt∥22
+
+ , (3) After training, the diffusion process starts from a noisy latent zt and iteratively denoises it to z0. The LDM then decodes z0 into pixel space using the decoder 
+
+D : Rd → Rk, yielding the clean image x0 = D(z0).
+
+Asymmetric Reverse Process for Semantic Guidance. Asyrp [13] discov-ers that the pre-trained diffusion model inherently contains a semantic space, referred to as the h-space, corresponding to the activations of the U-Net bottle-neck layer. To enable controllable generation within LDM, Asyrp reformulates the reverse process by modifying Eq. (2) into an asymmetric form as follows: 
+
+zt−1 = √¯αt−1Pt(ϵtθ (zt|∆ht)) + Dt(ϵtθ (zt)) + σtϵt, (4) where Pt denotes the predicted ˜z0, and Dt represents the denoising direction toward zt. The asymmetric control updates only ϵtθ (zt) via ϵtθ (zt|∆ht), adding 
+
+∆ht as a residual to the U-Net bottleneck features ht, while preserving Dt.This enables semantic manipulation in latent space without compromising re-construction fidelity. Consequently, the h-space exhibits stable and transferable semantics across time steps, supporting consistent, and multi-attribute guidance for latent diffusion models. Global Style Transfer 7
+
+3.2 Global Style Transfer 
+
+We introduce Global Style Transfer , a new paradigm that extends the conven-tional one-to-one style transfer setting to a many-to-one formulation, as illus-trated in Fig. 2. Unlike traditional methods that rely on a single style instance to guide the appearance of a content image, our approach aggregates multiple artworks from a single artist to learn a unified and consistent representation of that artist’s global style. Given a content image Ic and a set of style exemplars Is = {i1
+
+> s
+
+, i 2
+
+> s
+
+, ·· , i Ks }
+
+drawn from an artist’s K artworks, Global Style Guidance (GSG) guides the diffusion model that encapsulates artist-specific semantic and style cues across various artworks. To preserve the semantic integrity of the content, we further introduce Content Alignment Guidance (CAG), which maintains the abstract structure and semantics of Ic while allowing flexible, style-based deformation. Through CAG, the content image is re-rendered with the distinctive visual char-acteristics of the target artworks without compromising its original composition. 
+
+Global Style Transfer offers two key advantages over text-conditioned artistic synthesis. (1) Text-independent Guidance : Rather than relying on textual prompts (e.g., ‘ ∼ in the style of Van Gogh ’), Global Style Transfer extracts visual semantics directly from the aggregated style artworks. (2) Artistic bias mitigation in diffusion-based artistic image synthesis : Vanilla Text-to-Image diffusion models conditioned on artist names tend to exhibit stylistic bias, over-representing textures and compositions from a few iconic works. By guiding a global style prior from multiple style exemplars, our framework regularizes the diffusion process, mitigating such artistic mode bias and yielding diverse yet faithful images that better reflect the full stylistic spectrum of the artist. 
+
+3.3 Global Style Guidance in h-Space Finding Artist’s Global Style. To guide the diffusion model toward the global style of a specific artist, we define the residual global style offset ∆ht,which modulates the U–Net bottleneck representation ht at each timestep t:
+
+ht = ht + w · ∆ht, (5) where w controls the strength of stylistic modulation. The residual global style offset ∆ht captures the global stylistic semantics of the artist, enhancing the U-Net’s intermediate representations with consistent style attributes. To estimate 
+
+∆ht, we define a Style Extraction Function (SEF) ft that transforms the given 
+
+ht into global style–conditioned feature: 
+
+∆ht = ft(ht; θ). (6) 
+
+ft is a lightweight multilayer perceptron (MLP) with one hidden layer param-eterized by θ and conditioned on timestep t. Specifically, we apply the zero-initialization strategy, which initializes the weights of ft to zero [34] to avoid stochastic bias from random initialization. Zero-initialization ensures training 8 J. Lee et al. 
+
+Algorithm 1 Global Style Guidance Algorithm 
+
+Require: Style exemplars (=artworks) Is, Style Extraction Function (SEF) ft,
+
+Model (Latent diffusion model) ϵθ (·, t ), text encoder τϕ, image decoder D, Prompt y
+
+Output: SEF ft
+
+1: y =‘ A painting ’ {All artworks are paired with this prompt} 2: for epoch = 0 to E do 
+
+3: for k = 1 to K do 
+
+4: /*Diffusion Forward Process*/ 5: for t = 0 to T − 1 do 
+
+6: zk 
+
+> 0
+
+= E(Iks ) {instance style image sampling iks ∈ Is}7: ϵt ∼ N (0 , I )
+
+8: zt = √¯αtz0 + √1 − ¯αtϵ
+
+9: end for 
+
+10: /*Diffusion Denoising Process*/ 11: for t = T − 1 to 0 do 
+
+12: LSEF := Ez∼E (x),ϵ t,t 
+
+∥ϵθ (zt, t, τ ϕ(y)|∆ht) − ϵt∥22
+
+
+
+13: // ∆ht = ft(ht; θ) from Eq. (6) 14: ft(ht; θ) ← ft(ht; θ) − η∇ft LSEF 
+
+15: zt−1 = √¯αt−1Pt(ϵtθ (zt|∆ht)) + Dt(ϵtθ (zt)) + σtϵt
+
+16: end for 
+
+17: end for 
+
+18: end for 
+
+19: Return ft(ht; θ)
+
+Algorithm 2 Global Style Transfer Algorithm 
+
+Require: Content Image Ic, Model (Latent diffusion model) ϵθ (·, t ), text encoder τϕ,image decoder D, prompt y, CLIP image encoder ECLIP 
+
+Output: Artistic image x0
+
+1: zT ← DDIM Inversion with respect to the Ic
+
+2: for t = T − 1 to 1 do 
+
+3: ϵt ∼ N (0 , I )
+
+4: //obtain ∆ht from Algorithm 1 5: zt−1 = √¯αt−1Pt(ϵtθ (zt|∆ht)) + Dt(ϵtθ (zt)) + σtϵt
+
+6: //Approximate ˜z0 from Tweedie formula [4] and ˜x0 ≈ D (˜ z0|zt)
+
+7: ℓ(zt) = ∥E l
+
+> CLIP
+
+(˜ x0) − E l
+
+> CLIP
+
+(xt)∥2
+
+8: Content Alignment Guidance 9: ˜zt ← zt − s∇zt ℓ(zt)
+
+10: //Classifier Free Guidance 11: ˜ϵt ← ϵθ (˜ zt, t, ∅) + g(ϵθ (˜ zt, t, τ ϕ(y)) − ϵθ (˜ zt, t, ∅)) 
+
+12: end for 
+
+13: Return x0 = D(˜ z0)
+
+process begins from an unbiased state and learns purely data-driven global style semantics. Then, we train the ft with multiple artworks using the noise recon-struction loss same as Eq. (3): 
+
+LSEF := Ez∼E (x),ϵ t,t 
+
+∥ϵθ (zt, t, τ ϕ(y)|∆ht) − ϵt∥22
+
+ . (7) Global Style Transfer 9
+
+Table 1: Comparison of implicit function learning between Asyrp and our framework.                               
+
+> Difference Asyrp Global Style Transfer (Ours)
+> Goal Instance-conditional attribute manipulation (Image Editing) Distribution-level global style training Supervision signal Text-driven attribute change Only visual statistics across artworks (Text-independent) Text conditioning on training ft
+> Explicit source–target prompts (high variance), e.g., ‘A girl’ (ysource )→‘A smiling girl’ (yref )Fixed prompt (zero variance) e.g., ‘A painting’
+> Training data Single (or few) source images Hundreds of artworks from a single artist Loss function for learning ft
+> CLIP directional editing loss + reconstruction loss:
+> λCLIP Ldirection
+> 
+> Pedit
+> t, y ref ;Psource
+> t, y source
+> 
+> +λrecon xedit
+> t−xsource
+> t2
+> Noise reconstruction loss over artist distribution:
+> Ez∼E (x), ϵ t, t
+> ∥ϵθ(zt, t, τ ϕ(y)|∆h t)−ϵt∥22
+> 
+
+Specifically, to ensure that training focuses purely on visual statistics rather than text conditioning, all artworks images Is are paired with the fixed simple prompt 
+
+y, ‘ A painting ’. By enforcing a unified prompt across all artworks, the variance of text conditioning effectively approaches zero, allowing ft to rely purely on visual cues for capturing global style semantics. Consequently, our SEF learns global stylistic representations directly from the visual semantics of the artworks rather than from linguistic information, resulting in visually grounded and unbi-ased Global Style Guidance . After training, the diffusion process proceeds toward a unified global style distribution, enabling the generation of images that reflect the coherent stylistic identity of the target artist without additional textual con-ditioning. The overall algorithms of GSG is described in Algorithm 1. 
+
+Time-Step Robustness of Global Style Guidance. To motivate our de-sign choice of performing Global Style Guidance (GSG) in the intermediate h-space, we analyze whether h-space provides a stable representation of global style across diffusion timesteps. As shown in Fig. 4, 500 artworks per artist form well-separated clusters in h-space even under Gaussian noise across differ-ent timesteps. This demonstrates that ht remains robust to noise and timestep variation while preserving artist-level semantic global style, allowing GSG to maintain coherent stylization throughout the diffusion generative process. 
+
+Difference between Asyrp and our Global Style Transfer. Although our framework shares the same implicit function architecture as Asyrp [13], the two methods differ fundamentally in objective and supervision, as summarized in Tab. 1. Asyrp uses ft as an instance-level editing operator for single-image manipulation, optimized with a CLIP directional loss between source–reference text prompts (‘ A girl ’ → ‘A smiling girl ’). Consequently, the optimization is inherently text-dependent, aligning ft with semantic attribute directions under highly varying prompt conditions. In contrast, we optimize ft to model the global stylistic distribution of an artist from hundreds of artworks using only visual supervision. By fixing the text condition y to a constant prompt (e.g., ‘ Apainting ’), we eliminate text-induced variance, allowing ft to be learned purely from artwork visual statistics via noise reconstruction. 10 J. Lee et al. 
+
+3.4 Content Alignment Guidance 
+
+Motivated by how artists reinterpret real-world objects, preserving abstract structure while expressing unique artistic style, we propose the training-free 
+
+Content Alignment Guidance (CAG). In Neural Style Transfer (NST) [24, 36], style-based deformation of content can be desirable, as artistic styles often in-volve intentional geometric or structural alterations beyond color and texture changes. Inspired by NST, our CAG aims to preserve the recognizable structure of the original content while allowing controlled, style-driven deformations that reflect the artist’s expressive intent. We first perform DDIM inversion [26] to map the input content image into its noisy latent vector. Then, we measure perceptual similarity using the CLIP image encoder ECLIP within a Stable Diffusion [22] between the generated image 
+
+xt = D(zt) at every timestep t and approximated image ˜x0 ≈ D (˜ z0|zt) via Tweedie’s formula [4]: 
+
+ℓ(zt) = ∥E l
+
+> CLIP
+
+(˜ x0) − E l
+
+> CLIP
+
+(xt)∥2, (8) where El 
+
+> CLIP
+
+extracts high-level semantic features from layer l of CLIP. Since the approximated image ˜x0 preserves the abstract structure of the content image, aligning its feature representation with that of the generated image xt encour-ages structural consistency while allowing style-driven deformation. Following the SDE formulation [27], we incorporate this perceptual loss as the guidance by replacing the unconditional score ∇zt log p(zt) with the conditional score 
+
+∇zt log p(zt|ℓ), decomposed as: 
+
+∇zt log p(zt|ℓ) = ∇zt log p(zt) + s ∇zt log p(ℓ|zt), (9) where s is a parameter controlling the guidance strength. The second term is interpreted as the gradient of the perceptual loss with respect to the image latent 
+
+∇zt ℓ(zt). Formally, the guided image latent is expressed as: 
+
+˜zt = zt − s∇zt ℓ(zt), (10) where s controls the guidance strength. Consequently, CAG refines the latent trajectory in a training-free manner at each timestep to preserve content struc-ture while enabling artist-specific compositional and geometric transformations. The overall algorithm and framework are illustrated in Algorithm 2 and Fig. 3. 
+
+4 Experiments 
+
+Datasets. We define the style reference images in the WikiArt dataset [28], which includes over 80,000 artworks created by more than 1,000 artists across 27 art movements. For content images, we utilize the VanGogh2Photo dataset [37] , which contains real-world photographic scenes paired with artistic counterparts, enabling consistent evaluation of content preservation in artistic synthesis. This dataset combination serves as a standard benchmark for the style transfer. Global Style Transfer 11 StyleInjection                                   
+
+> (CVPR2024)
+> StyTR 2
+> (CVPR2022)
+> Content
+> Image 𝑰 𝒄
+> Artistic
+> image 𝒙 𝟎
+> Artist Style Book (Artworks) = Style Image
+> Artist Name
+> Van gogh
+> +
+> Averaged Image +++++
+> CAST (SIGGRAPH
+> 2022)
+> S2WAT
+> (AAAI 2024)
+> StyleSSP
+> (CVPR2025)
+> Prompt for Content Image
+> (No Content Image )
+> :Ascenic landscape featuring rolling
+> green hills under acloudy sky with avast
+> field of colorful wildflowers in the
+> foreground .
+> StyleAligned
+> (CVPR2024)
+> Global Style Transfer Instance Style Transfer
+> pierre-
+> auguste-
+> renoir
+> Content
+> Image 𝑰 𝒄
+> Artistic
+> image 𝒙 𝟎
+> Artist Style Book (Artworks) = Style Image
+> Artist Name
+> +
+> Averaged Image +++++
+> StyleInjection
+> (CVPR2024)
+> StyTR 2
+> (CVPR2022)
+> CAST
+> (SIGGRAPH 2022)
+> S2WAT (AAAI 2024)
+> StyleSSP (CVPR2025)
+> StyleAligned (CVPR2024)
+> Instance Style Transfer
+> Prompt for Content Image
+> (No Content Image )
+> :The sun sits low on the horizon, casting
+> warm golden and orange light across the sky. In the foreground, a large dark rock
+> stands out sharply against the reflective
+> wet sand and water.
+> Global Style Transfer
+
+… …
+
+> Personalization
+> Personalization
+
+(a)  (b) 
+
+Fig. 5: Comparison of Global Style Transfer (GST) with representative style transfer baselines. We compare GST with instance-level style transfer and style personalization methods, using artworks from the same artist as style exemplars: (a) Van Gogh and (b) Pierre-Auguste Renoir. Since baseline methods utilize only a single style image Is,we perform stylization separately using multiple artworks from the same artist and average the resulting outputs to approximate artist-level style. Baselines preserve only low-level appearance cues and produce inconsistent global styles, whereas GST learns the artist-level style and enables coherent global stylization. 
+
+Evaluation Metrics. We evaluate using five metrics: FID [10] and ArtFID [30] for global style fidelity, CFSD [2] for content preservation, and CLIP-Div [1] and 1-Precision [14,18] for stylistic diversity and memorization, respectively. Detailed definitions are provided in the Appendix. 
+
+4.1 Main Results Sample Visualization. Fig. 12 shows the artistic images produced by the Global Style Transfer. This is achieved as the diffusion model performs Global Style Guidance (GSG) within the intermediate feature space ( h-space), ensuring semantic stability across time steps and producing consistent style transforma-tion throughout the generative process. 
+
+Comparison with Style Transfer Methods. Our method introduces a new paradigm, Global Style Transfer (GST), which fundamentally differs from con-ventional style transfer. Traditional style-transfer methods operate in a one-to-one setting, where a single content image Ic is transferred to an artistic image with only single style image Is through feature injection or attention modulation. While effective for instance-level stylization, such approaches cannot capture an artist-level style distribution spanning hundreds or thousands of artworks. To verify this limitation, we compare our method with representative Style Transfer baselines, including StyleInjection [2], StyTR 2 [3], CAST [36], S2WAT [33], Sty-leSSP [32], as well as the shared-attention personalization method StyleAligned 12 J. Lee et al. 
+
+Table 2: Quantitative comparison across artists. ArtFID measures style and content fidelity, CFSD measures content preserva-tion, CLIP-Div and 1-Prec. assess stylis-tic diversity and memorization-avoidance. CLIP-Div is reported as Ours/Real for di-rect comparison with the real artwork cor-pus. Bold : best; underline: second best. Artist Method FID ( ↓) ArtFID ( ↓) CFSD ( ↓) CLIP-Div ( ↑) 1−Prec ( ↑)Van Gogh S.D 11.97 23.78 0.7428 0.178 0.257 Textual Inversion 7.67 13.68 0.1674 0.220 0.550 Custom Diffusion 9.49 14.71 0.1208 0.289 0.933 LoRA based Fine-tuning 11.01 21.38 0.1886 0.261 0.913 Ours 9.46 19.25 0.2896 0.297 /0.335 0.988                                                   
+
+> Chagall S.D 16.26 32.44 0.3117 0.224 0.844 Textual Inversion 11.72 21.15 0.1683 0.238 0.877 Custom Diffusion 18.06 26.70 0.1108 0.289 0.962 LoRA based Fine-tuning 17.30 32.59 0.1674 0.266 0.928 Ours 13.25 26.39 0.2626 0.311 /0.293 0.977
+> Renoir S.D 16.72 33.70 0.1584 0.225 0.987 Textual Inversion 12.14 21.99 0.1100 0.238 0.895 Custom Diffusion 15.15 22.77 0.1160 0.294 0.987 LoRA based Fine-tuning 15.36 29.23 0.1749 0.279 0.988 Ours 12.27 24.70 0.1566 0.318 /0.313 0.999 C.D
+
+Fig. 6: Visual comparison of previous style personalization methods and vanilla Stable Diffusion. Qualitative results cor-responding to Tab. 2 are shown, demon-strating the comparative performance of each method in terms of style alignment and visual coherence. 
+
+[9], grouped separately in Fig. 5. Since these baselines take a single style image, we run each on the artist’s artworks individually and average the resulting out-puts to approximate an artist-level style. As shown in Fig. 5, this strategy fails to recover coherent artist-level style. Existing methods primarily capture low-level appearance cues such as dominant colors or coarse brush textures from each exemplar, but fail to preserve consistent stylistic characteristics shared across the artist’s full corpus. Even averaging multiple stylized outputs does not meaningfully represent the global style distribution, often producing blurred or inconsistent results. In contrast, our method directly learns the artist-level style manifold from multiple artworks, enabling coherent global stylization while avoiding overfitting to specific exemplars. 
+
+Comparison with Style Personalization Methods. We compare GST with representative personalization methods, including Textual Inversion (TI) [5], which optimizes a token embedding over the full artwork collection, Dream-Booth [23] with LoRA-based fine-tuning, and Custom Diffusion [12], which fine-tunes only the cross-attention layers. We also provide a qualitative comparison with StyleAligned [9] in Fig. 5. For a fair comparison in the GST setting, we train each baseline on the full artwork collection of each artist rather than using the few-shot setting adopted in their original formulations. As shown in Tab. 2, GST achieves consistently strong performance across all three artists, demonstrating effective modeling of artist-level global style. GST achieves competitive ArtFID, indicating strong overall style and content fi-delity without overfitting to content structure. It also achieves the highest CLIP-Diversity across all artists, showing that GST captures a broader stylistic dis-tribution rather than collapsing to a narrow set of visual patterns. Notably, the CLIP-Diversity values of GST are highly consistent with those computed from the real artwork collections (reported as Ours / Real), suggesting that GST Global Style Transfer 13 Van gogh’s artworks Nano banana 2  Ours ChatGPT 5.2 Content Image 𝐼 𝑐 
+
+Fig. 7: Visual comparison with T2I models (Nano Banana 2, ChatGPT 5.2) prompted with ‘ Van Gogh style ’ for a given content image Ic. The rightmost columns display the top three Van Gogh artworks with the lowest CLIP distance to our generated result. 
+
+successfully reproduces the diversity of the true artist-level style distribution. The 1-Precision results further show that GST best avoids memorization while preserving stylistic consistency. In contrast, prior personalization methods often rely on memorized exemplar patterns or overfit to dominant visual motifs, as also observed in Fig. 6. For example, Textual Inversion is limited by its fixed-dimensional token embedding, while fine-tuning methods often collapse toward iconic compositions. Consequently, our method scales effectively with increasing artwork diversity and better captures the full artist-level style distribution. 
+
+4.2 Analysis of Global Style Transfer Analysis of Text-Independence in Global Style Transfer. We analyze whether the learned style representation depends on text prompts. “A painting”  “An artwork”  “An image”  “.” 
+
+Fig. 8: The sensitivity of prompt for train-ing the Style Extraction Function ft.
+
+Since the Style Extraction Function (SEF) is trained using a large col-lection of artworks, we use a fixed prompt, ‘ A painting ’, during train-ing to minimize textual influence and encourage the model to learn style primarily from visual cues. To eval-uate prompt sensitivity, we replace the prompt with alternative generic prompts during training SEF and com-pute the corresponding style offset ∆h .14 J. Lee et al.         
+
+> Table 3: Ablation study on Content Alignment Guidance (CAG). Removing CAG leads to a consistent increase in both FID and ArtFID, demonstrating its cru-cial role in preserving content fidelity un-der global style modulation
+
+Method FID ArtFID 
+
+Ours w/o CAG 11.05 22.45 
+
+Ours 9.46 19.25 Ours Content Image  𝐼 𝑐  Ours without CAG     
+
+> Fig. 9: Qualitative ablation on CAG. Without CAG, the images exhibit content degradation despite strong stylization.
+
+As shown in Fig. 8, the generated images remain nearly identical across prompts, indicating that the learned representation is largely text-independent and pri-marily captures artist-level visual style. 
+
+Analysis of Stylistic Bias in T2I Models. We compare our framework with large-scale text-to-image baselines, Nano Banana 2 [7] and ChatGPT 5.2 [19], using the prompt ‘ Van Gogh style ’. As shown in Fig. 13, these baselines ex-hibit strong stylistic bias, repeatedly generating images dominated by iconic Van Gogh features such as swirling patterns and thick brushstrokes, often re-sembling Starry Night. In contrast, our Global Style Transfer learns a unified artist-level representation, mitigating such bias and producing diverse outputs that better reflect the true global style distribution. 
+
+Effect of the Content Alignment Guidance. To verify the effectiveness of CAG, we compare the full methods with a variant without CAG. As shown in Fig. 9 and Tab. 3, removing CAG leads to noticeable content degradation, reflected by a significant increase in ArtFID, which measures both style and content fidelity. These results demonstrate that CAG plays a crucial role in preserving content under strong global style modulation. Additional ablations on the embedding layer selection and training epochs are provided in Figs. 11 and 14. 
+
+Effect of Layer Level for Content Alignment Guidance. We examine how applying Content Alignment Guidance (CAG) at different layers of the CLIP image encoder affects the preservation of content structure during global style transfer. As shown in Fig. 14, applying CAG at lower or mid-level layers (1–9) produces unintended artifacts, such as house-like structures absent from the content image Ic, indicating poor preservation of global composition. This occurs because lower layers mainly encode low-level features such as edges, color and textures. In contrast, applying CAG at Layer 11 preserves the original scene structure and yields semantically consistent results, showing that higher-level semantic features provide more reliable content alignment. Global Style Transfer 15 Content Image  𝐼 𝐶 
+
+> Layer=11 Layer=7
+> Layer=5 Layer=3 Layer=1
+> Layer=9
+
+Fig. 10: Effect of layer level of CLIP encoder in Content Alignment Guid-ance for content preservation. Epoch      
+
+> 10 20 50 100 200
+> Vincent Van Gogh Claude Monet Pierre -Auguste Renoir
+> Content
+> Image 𝐼 𝑐
+
+Fig. 11: Effect of training epochs on Style Extraction Function : higher epochs yield stronger artist-specific characteristics. 
+
+Effect of Training Epochs on Style Extraction Function. We investigate the effect of training epochs on the Style Extraction Function (SEF) ft to eval-uate how training duration influences global style learning. We train SEF with five epoch settings (10, 20, 50, 100, 200) using artworks from three representative artists: Van Gogh, Monet, and Renoir. As shown in Fig. 11, models trained for only 10 or 20 epochs fail to capture distinctive stylistic characteristics, producing visually similar results across artists. As training progresses, the model gradu-ally learns artist-specific brushwork, composition, and color distributions. At 200 epochs, the generated images exhibit clear stylistic separation, indicating that sufficient training is essential for learning a stable global style representation. 
+
+5 Conclusion 
+
+We propose Global Style Transfer , a novel artistic image synthesis paradigm that represents the global artistic style of a target artist from multiple artworks. Through Global Style Guidance and Content Alignment Guidance , our method captures artist-level stylistic semantics while preserving the content structure and allowing style-driven geometric deformation. By moving beyond instance-level style transfer and text-dependent artistic synthesis, GST provides a more faithful and unbiased way to model an artist’s coherent visual identity. 
+
+Acknowledgment 
+
+This work was partly supported by Institute of Information & Communica-tions Technology Planning & Evaluation (IITP) grant funded by the Korea government (RS-2026-25516375), the Korea Institute of Science and Technol-ogy (KIST) Institutional Program (No. 26E0212). This work was supported by the IITP(Institute of Information & Communications Technology Planning & Evaluation)-ITRC(Information Technology Research Center) grant funded by the Korea government(Ministry of Science and ICT)(IITP-2026-RS-2023-00258649,33%). 16 J. Lee et al. 
+
+References 
+
+1. Alanov, A., Titov, V., Nakhodnov, M., Vetrov, D.: Styledomain: Efficient and lightweight parameterizations of stylegan for one-shot and few-shot domain adap-tation. In: Proceedings of the IEEE/CVF International Conference on Computer Vision. pp. 2184–2194 (2023) 2. Chung, J., Hyun, S., Heo, J.P.: Style injection in diffusion: A training-free approach for adapting large-scale diffusion models for style transfer. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 8795–8805 (2024) 3. Deng, Y., Tang, F., Dong, W., Ma, C., Pan, X., Wang, L., Xu, C.: Stytr2: Image style transfer with transformers. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 11326–11336 (2022) 4. Efron, B.: Tweedie’s formula and selection bias. Journal of the American Statistical Association 106 (496), 1602–1614 (2011) 5. Gal, R., Alaluf, Y., Atzmon, Y., Patashnik, O., Bermano, A.H., Chechik, G., Cohen-Or, D.: An image is worth one word: Personalizing text-to-image gener-ation using textual inversion. arXiv preprint arXiv:2208.01618 (2022) 6. Gatys, L.A., Ecker, A.S., Bethge, M.: Image style transfer using convolutional neural networks. In: Proceedings of the IEEE conference on computer vision and pattern recognition. pp. 2414–2423 (2016) 7. Google: Gemini image generation: Create images with gemini. https://gemini. google/overview/image-generation/ (2026), accessed: 2026-01-22 8. Gu, S., Chen, C., Liao, J., Yuan, L.: Arbitrary style transfer with deep feature reshuffle. In: Proceedings of the IEEE conference on computer vision and pattern recognition. pp. 8222–8231 (2018) 9. Hertz, A., Voynov, A., Fruchter, S., Cohen-Or, D.: Style aligned image generation via shared attention. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 4775–4785 (2024) 10. Heusel, M., Ramsauer, H., Unterthiner, T., Nessler, B., Hochreiter, S.: Gans trained by a two time-scale update rule converge to a local nash equilibrium. Advances in neural information processing systems 30 (2017) 11. Huang, X., Belongie, S.: Arbitrary style transfer in real-time with adaptive instance normalization. In: Proceedings of the IEEE international conference on computer vision. pp. 1501–1510 (2017) 12. Kumari, N., Zhang, B., Zhang, R., Shechtman, E., Zhu, J.Y.: Multi-concept cus-tomization of text-to-image diffusion. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 1931–1941 (2023) 13. Kwon, M., Jeong, J., Uh, Y.: Diffusion models already have a semantic latent space. arXiv preprint arXiv:2210.10960 (2022) 14. Kynkäänniemi, T., Karras, T., Laine, S., Lehtinen, J., Aila, T.: Improved precision and recall metric for assessing generative models. Advances in neural information processing systems 32 (2019) 15. Li, Y., Wang, N., Liu, J., Hou, X.: Demystifying neural style transfer. arXiv preprint arXiv:1701.01036 (2017) 16. Li, Y., Fang, C., Yang, J., Wang, Z., Lu, X., Yang, M.H.: Universal style transfer via feature transforms. Advances in neural information processing systems 30 (2017) 17. Liu, S., Lin, T., He, D., Li, F., Wang, M., Li, X., Sun, Z., Li, Q., Ding, E.: Adaattn: Revisit attention mechanism in arbitrary neural style transfer. In: Proceedings of the IEEE/CVF international conference on computer vision. pp. 6649–6658 (2021) Global Style Transfer 17 18. Naeem, M.F., Oh, S.J., Uh, Y., Choi, Y., Yoo, J.: Reliable fidelity and diversity metrics for generative models. In: International conference on machine learning. pp. 7176–7185. PMLR (2020) 19. OpenAI: Chatgpt: Get answers. find inspiration. be productive. https://openai. com/ko-KR/index/chatgpt/ (2026), accessed: 2026-01-22 20. Park, D.Y., Lee, K.H.: Arbitrary style transfer with style-attentional networks. In: proceedings of the IEEE/CVF conference on computer vision and pattern recog-nition. pp. 5880–5888 (2019) 21. Radford, A., Kim, J.W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., et al.: Learning transferable visual models from natural language supervision. In: International conference on machine learning. pp. 8748–8763. PmLR (2021) 22. Rombach, R., Blattmann, A., Lorenz, D., Esser, P., Ommer, B.: High-resolution image synthesis with latent diffusion models. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 10684–10695 (2022) 23. Ruiz, N., Li, Y., Jampani, V., Pritch, Y., Rubinstein, M., Aberman, K.: Dream-booth: Fine tuning text-to-image diffusion models for subject-driven generation. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recog-nition. pp. 22500–22510 (2023) 24. Ruta, D., Tarrés, G.C., Gilbert, A., Shechtman, E., Kolkin, N., Collomosse, J.: Diff-nst: Diffusion interleaving for deformable neural style transfer. In: European Conference on Computer Vision. pp. 50–66. Springer (2024) 25. Sohn, K., Ruiz, N., Lee, K., Chin, D.C., Blok, I., Chang, H., Barber, J., Jiang, L., Entis, G., Li, Y., et al.: Styledrop: Text-to-image generation in any style. arXiv preprint arXiv:2306.00983 (2023) 26. Song, J., Meng, C., Ermon, S.: Denoising diffusion implicit models. arXiv preprint arXiv:2010.02502 (2020) 27. Song, Y., Sohl-Dickstein, J., Kingma, D.P., Kumar, A., Ermon, S., Poole, B.: Score-based generative modeling through stochastic differential equations. arXiv preprint arXiv:2011.13456 (2020) 28. Tan, W.R., Chan, C.S., Aguirre, H.E., Tanaka, K.: Improved artgan for conditional synthesis of natural image and artwork. IEEE Transactions on Image Processing 
+
+28 (1), 394–409 (2018) 29. Ulyanov, D., Vedaldi, A., Lempitsky, V.: Instance normalization: The missing in-gredient for fast stylization. arXiv preprint arXiv:1607.08022 (2016) 30. Wright, M., Ommer, B.: Artfid: Quantitative evaluation of neural style transfer. In: DAGM German Conference on Pattern Recognition. pp. 560–576. Springer (2022) 31. Xing, P., Wang, H., Sun, Y., Wang, Q., Bai, X., Ai, H., Huang, R., Li, Z.: Csgo: Content-style composition in text-to-image generation. arXiv preprint arXiv:2408.16766 (2024) 32. Xu, R., Xi, W., Wang, X., Mao, Y., Cheng, Z.: Stylessp: Sampling startpoint en-hancement for training-free diffusion-based method for style transfer. In: Proceed-ings of the Computer Vision and Pattern Recognition Conference. pp. 18260–18269 (2025) 33. Zhang, C., Xu, X., Wang, L., Dai, Z., Yang, J.: S2wat: Image style transfer via hierarchical vision transformer using strips window attention. In: Proceedings of the AAAI conference on artificial intelligence. vol. 38, pp. 7024–7032 (2024) 34. Zhang, L., Rao, A., Agrawala, M.: Adding conditional control to text-to-image diffusion models. In: Proceedings of the IEEE/CVF international conference on computer vision. pp. 3836–3847 (2023) 18 J. Lee et al. 35. Zhang, Y., Huang, N., Tang, F., Huang, H., Ma, C., Dong, W., Xu, C.: Inversion-based style transfer with diffusion models. In: Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition. pp. 10146–10156 (2023) 36. Zhang, Y., Tang, F., Dong, W., Huang, H., Ma, C., Lee, T.Y., Xu, C.: Domain enhanced arbitrary image style transfer via contrastive learning. In: ACM SIG-GRAPH 2022 conference proceedings. pp. 1–8 (2022) 37. Zhu, J.Y., Park, T., Isola, P., Efros, A.A.: Unpaired image-to-image translation using cycle-consistent adversarial networks. In: Proceedings of the IEEE interna-tional conference on computer vision. pp. 2223–2232 (2017) Global Style Transfer 19 
+
+A Experiment Settings 
+
+Model. We use Stable Diffusion v1.4 [22] as the default base generator for our Global Style Transfer experiments unless otherwise specified. To implement our proposed Content Alignment Guidance (CAG), we use CLIP [21] as the image encoder, specifically the ViT-L/14 model, to extract high-fidelity content features. 
+
+Hyper Parameter Settings. To produce our proposed Global Style Guidance 
+
+(GSG) on Text-to-Image latent diffusion model, we train the Style Extraction Function (SEF) ft on the WikiArt dataset [28], using between 500 and 1800 artworks per artist. Our proposed Style Extraction Function is implemented as an MLP with a single hidden layer (1280×1280). Training is conducted with a batch size of 8 during 200 training epochs. We use a learning rate of 0.1 with an Adam optimizer with (β1, β 2)=(0.9, 0.999), weight decay is 0, and Adam epsilon is 1e-8. The impact of training epochs is presented in Fig. 7 of the main paper. Furthermore, we control the magnitude of the global style offset ∆ht using a scaling factor w in Eq. (5), for which we utilize values {1.0, 1.25, 1.5}, and we set the CAG guidance scale to s= 50.0. Fig. 14 illustrates the qualitative effect of jointly varying both scales over a broader range ( w from 0.1 to 2.0 and s
+
+from 1 to 80); within this range, our main experiments use w ∈ { 1.0, 1.25 , 1.5}
+
+and s= 50. We recommend that selecting an appropriate scale is essential, as it reflects the trade-off between the proposed Global Style Guidance and Content Alignment Guidance. 
+
+Computation Overhead. On a single NVIDIA RTX 3090 GPU, training the Style Extraction Function for one epoch takes approximately 216 seconds. The total training time scales with the number of artworks used per artist. After training, generating a 512 ×512 image on the same GPU takes roughly 20 seconds. 
+
+Evaluation Metrics. To comprehensively evaluate the quality of our syn-thesized images, we employ five complementary metrics: FID, ArtFID, CFSD, CLIP-Div, and 1-Precision, each capturing a different aspect of style and content fidelity. First, we measure Frechet Inception Distance (FID) [10] between the generated images and the full set of artworks for each artist. This allows us to assess stylistic bias by quantifying how closely the synthesized samples align with the overall style distribution of the original artworks. Second, we report ArtFID [30], a metric designed to evaluate style-transfer performance by jointly considering content and style preservation. ArtFID reflects both resemblance to the artwork distribution and consistency with the content-image distribution, and is known to strongly correlate with human perceptual judgment. Following prior work, ArtFID is computed as ArtF ID = (1 + LP IP S ) · (1 + F ID ). Third, to isolate content fidelity from stylistic influence, we compute the Content Feature Struc-tural Distance (CFSD) [2]. CFSD measures structural similarity by capturing 20 J. Lee et al. Van  
+
+> Gogh
+> Salvador
+> Dali
+> Content
+> Image 𝐼 𝑐
+> Paul
+> Cezanne
+> Nicholas
+> Roerich
+> Claude
+> Monet
+> Ivan
+> Shishkin
+> Boris
+> Kustodiev
+> Pierre -Auguste
+> Renoir
+
+Fig. 12: Global Style Transfer results across multiple artists for the same content image. Given the same content images Ic, our framework transfers the images into the global styles of eight different painters. All images are generated using a text-independent prompt (“ A painting ”) to eliminate stylistic bias in the diffusion model. For each content image Ic (left column), our framework applies Global Style Guidance (GSG) to capture artist-specific global semantics and Content Alignment Guidance (CAG) to preserve flexible, style-based deformation of content. The results show that a single content image is rendered into distinctly different artistic styles across various artists, demonstrating our framework’s ability to synthesize artist-faithful images. 
+
+only the spatial correlations between local image patches, independent of stylis-tic appearance. Fourth, we measure CLIP-Diversity (CLIP-Div) to assess the stylistic spread of the generated images. Following [1], it is computed as the mean pairwise cosine distance between the CLIP image embeddings (ViT-L/14) of a generated set; higher values indicate greater stylistic diversity. In Tab. 2 of the main paper, we report it as (Ours/Real) to enable direct comparison with the real artwork corpus. Finally, we report 1-Precision to quantify memorization avoidance. Precision is the improved precision metric [14], measuring the frac-tion of generated samples that fall within the real-artwork manifold, computed with the prdc implementation (k=5) [18]. A higher 1-Precision indicates less memorization of the training corpus. 
+
+B Further Analysis 
+
+Global Style Transfer Results of Multiple Artists for the Same Content Image. We extend Fig. 1 of the main paper by visualizing stylization results Global Style Transfer 21 Content   
+
+> Image 𝐼 𝑐
+> Stable Diffusion  Ours Van Gogh’s artworks
+> A painting
+> A painting
+> of
+> van gogh
+> style
+> Prompt
+
+Fig. 13: Comparison of stylistic bias between vanilla Stable Diffusion (SD) and our Global Style Transfer. Given the same content images, vanilla SD conditioned on the prompt ‘ A painting of van gogh style’ tends to bias toward a few iconic patterns (e.g., ‘ Starry Night ’-like swirls), often distorting the original structure and semantic content. In contrast, our method generates diverse stylizations while preserving the underlying content structure by learning a global stylistic representation from the full corpus of Van Gogh’s artworks. The bottom panel shows the real Van Gogh artwork distribution. 
+
+across multiple artists for the same content image. Fig. 12 illustrates the results of applying our Global Style Transfer framework to the same content image Ic,where the image is stylized using the global styles of eight different painters. For each artist, we generate 1,500 artistic images by applying the correspond-ing global style to the same set of content images. Fig. 12 shows representative examples from these results, where a randomly selected content image is styl-ized according to each artist’s global style. Despite sharing the same content image, the generated artistic images clearly reflect the distinctive global stylistic characteristics of each artist. 
+
+Further Analysis of Stylistic Bias on Stable Diffusion. Extending the ex-perimental results of Fig. 7 of the main paper, we further examine whether stylis-tic bias also appears in vanilla Stable Diffusion [22]. Since our Global Style Trans-fer framework is built upon Stable Diffusion, we further compare our method with vanilla Stable Diffusion to investigate whether artistic stylistic bias also 22 J. Lee et al. S     
+
+> Content Alignment Guidance
+> Global Style Guidance
+> Content
+> Image 𝐼 𝑐
+> 0.1
+> 1 10  30  50  80
+> 0.5 1.0 1.5 2.0
+> Fig. 14: Effect of guidance strength on the style–content balance, illustrating how Global Style and Content Alignment Guidance jointly control stylistic expressiveness and content preservation.
+
+emerges in the original diffusion model. To conduct this analysis, we gener-ate artistic images using both vanilla Stable Diffusion and our proposed Global Style Transfer framework. We use 1,500 photographs from the Vangogh2photo dataset [37] as content images Ic and obtain their latent representations via DDIM inversion. Our method produces stylized outputs from these latents us-ing the prompt ‘ A painting ’, whereas vanilla Stable Diffusion generates images conditioned on the prompt ‘ A painting of {artist} style ’. Our analysis reveals that vanilla Stable Diffusion frequently collapses toward a small subset of iconic artworks. Furthermore, in many cases, the generated images lose the original content structure and semantic information, while being transformed into compositions that resemble specific well-known paintings by the artist. This phenomenon indicates that the model overemphasizes a few domi-nant stylistic patterns rather than capturing the broader stylistic distribution of the artist. To quantitatively evaluate this effect, we compute ArtFID between the generated images and the full artwork corpus for each artist, as reported in Tab. 2 in the main paper. Our method consistently achieves lower ArtFID for most artists, demonstrating improved alignment with the global artistic distri-bution. To further illustrate this phenomenon, Fig. 13 visualizes representative samples from the Van Gogh experiments, where the stylistic bias of vanilla Stable Diffusion becomes particularly evident. These results confirm that our method effectively mitigates stylistic bias and better preserves stylistic diversity across the artist’s corpus. Global Style Transfer 23 SDXL SD-2-1 SD-1-4  
+
+> Fig. 15: Backbone generalization. Global Style Transfer applied on different T2I diffu-sion backbones (SD-1.4, SD-2.1, SDXL) for the same content image, showing that our framework transfers consistently across backbones.
+
+Effect of Guidance Scales on Style-Content Trade Off. We qualitatively analyze the interplay between the Global Style Guidance (GSG) and the Content Alignment Guidance (CAG) in our framework. As shown in Fig. 14, increas-ing the Global Style Guidance enhances stylistic expressiveness, yielding richer color saturation and brushstroke abstraction, while excessive strength may dis-tort the geometric structure of the content. Conversely, stronger Content Align-ment Guidance preserves the semantic integrity and spatial layout of the content but limits stylistic diversity. A balanced configuration of both guidance scales produces the most harmonious results, maintaining recognizable content struc-ture while expressing vivid stylistic characteristics. This trade-off highlights that proper coordination between style and content guidance is essential for generat-ing perceptually coherent and semantically consistent images. 
+
+Sample Visualization with Different T2I Diffusion Backbones. To verify that Global Style Transfer is not tied to a specific base generator, we apply our framework on three different text-to-image diffusion backbones: Stable Diffusion v1.4, Stable Diffusion v2.1, and SDXL. Since the U-Net bottleneck (h-space) di-mensionality differs across these backbones, we train a separate Style Extraction Function on the corresponding h-space for each backbone. As shown in Fig. 15, given the same content image, GST produces coherent artist-level stylization across all three backbones, indicating that our framework is applicable across different diffusion architectures rather than being tied to a specific one. 
+
+C Limitation 
+
+Our method relies on the visual diversity of an artist’s training data. When an artist’s works mostly depict limited subjects, such as natural scenes, the model struggles to generalize to unseen content like humans or vehicles, as shown in Fig. 16. Thus, the effectiveness of style transfer depends on whether the artist’s dataset includes the target content type. 
+
+D Broader Impact 
+
+Our Global Style Transfer framework enables artist-level style synthesis from large artwork collections, offering new possibilities for artistic creation, digital 24 J. Lee et al. Content Image  𝐼 𝐶  Ours  Wikiart_Datasets 
+
+Fig. 16: Failure case of Global Style Transfer when the artist’s dataset contains highly biased content. As shown in Nicholas Roerich, whose works predominantly depict mountains, our framework fails to generalize to non-mountain content. When a tree-field landscape is provided as input, the model still reconstructs mountain-like shapes, reflecting the strong content bias encoded in the artist’s dataset. 
+
+heritage preservation, and accessible content generation. It can support cultural institutions, educators, and creators by providing faithful stylistic reinterpre-tations without extensive generative AI model training. However, reproducing artistic styles at scale also raises concerns regarding authorship, cultural in-tegrity, and responsible use of copyrighted material. We encourage the deploy-ment of this technology in ways that respect artistic ownership and contribute positively to creative and cultural domains.

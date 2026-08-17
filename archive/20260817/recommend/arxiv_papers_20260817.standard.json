@@ -1,0 +1,354 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-17T19:52:28.055075+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2608.13929v1",
+      "source": "arxiv",
+      "title": "RGBX-Next: Towards Realistic Generative Rendering from G-Buffers",
+      "abstract": "Diffusion models have achieved impressive results in image, video, and streaming generation. However, compared to traditional 3D rendering, they still lack precise control over the generated output. We believe a viable path forward is to use generative models as learned renderers conditioned on traditionally rendered G-buffers. We introduce RGBX-Next, a unified generative framework for forward and inverse rendering, which allows estimating G-buffers from images, videos, and streams, and rendering realistic images, videos, and streams from G-buffers. Our key contribution is a general recipe for finetuning diffusion transformer (DiT) models into generative forward and inverse renderers. We show that the resulting models achieve high quality in both realistic generative rendering and intrinsic decomposition. We will make all our models publicly available. We believe that the design principles presented in this paper will benefit future research on controllable generative forward and inverse rendering.",
+      "authors": [
+        "Zheng Zeng",
+        "Marco Salvi",
+        "Lifan Wu",
+        "Jan Novák",
+        "Daqi Lin",
+        "Saeed Hadadan",
+        "Yichen Sheng",
+        "Robert Pottorff",
+        "Shiqiu Liu",
+        "Ravi Ramamoorthi",
+        "Ling-Qi Yan",
+        "Miloš Hašan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.GR"
+      ],
+      "published": "2026-08-14T03:57:52+00:00",
+      "link": "https://arxiv.org/pdf/2608.13929v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "unified diffusion transformer framework for realistic generation of images, videos, and streams from G-buffers",
+      "llm_evidence_cn": "基于扩散Transformer的统一生成框架，可从G-buffer生成真实图像、视频和流",
+      "llm_evidence": "基于扩散Transformer的统一生成框架，可从G-buffer生成真实图像、视频和流",
+      "canonical_evidence": "基于扩散Transformer的统一生成框架，可从G-buffer生成真实图像、视频和流",
+      "llm_tldr_en": "RGBX-Next turns diffusion transformers into generative forward and inverse renderers conditioned on G-buffers, enabling high-quality image, video, and stream generation.",
+      "llm_tldr_cn": "扩散模型在图像、视频和流生成上虽效果显著，但缺乏精确控制。本文提出RGBX-Next，将扩散Transformer微调为生成式正逆渲染器，以传统渲染的G-buffer为条件，既可以从图像、视频、流估计G-buffer，也可以从G-buffer渲染出真实的图像、视频和流。实验表明该框架在现实生成渲染上达到了高质量。",
+      "llm_tldr": "扩散模型在图像、视频和流生成上虽效果显著，但缺乏精确控制。本文提出RGBX-Next，将扩散Transformer微调为生成式正逆渲染器，以传统渲染的G-buffer为条件，既可以从图像、视频、流估计G-buffer，也可以从G-buffer渲染出真实的图像、视频和流。实验表明该框架在现实生成渲染上达到了高质量。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.14043v1",
+      "source": "arxiv",
+      "title": "Beyond Text Conditioning: A Systematic Study of MLLM-DiT Fusion for Video Generation",
+      "abstract": "Diffusion Transformers (DiTs) have become the dominant paradigm for high-fidelity video generation, yet their ability to perform high-level semantic planning remains limited. While hybrid architectures integrating MLLMs with diffusion backbones have shown strong advantages in image synthesis, such designs remain underexplored in video generation, where existing approaches often treat MLLMs primarily as frozen feature encoders rather than semantic generators. To fill this gap, we systematically study how an MLLM should be integrated with a DiT for video generation by answering three questions: what intermediate representation should bridge the MLLM and DiT, how the MLLM should generate it, and how the DiT should incorporate it during diffusion rendering. Our analysis reveals three key findings: (1) discrete semantic visual tokens produced by an EMA-based tokenizer provide a stable and expressive interface, (2) autoregressive causal modeling is effective for generating these tokens, and (3) explicit visual-token conditioning is more effective than prompt refinement or latent bridging. Based on these findings, we propose BiVidGen, a hybrid framework where an MLLM first generates semantic visual tokens and a DiT renders videos conditioned on both text and these tokens via multi-layer cross-attention. Extensive experiments show that BiVidGen improves semantic alignment and temporal coherence over a fine-tuned DiT baseline, achieving stronger performance on VBench-Long. These results demonstrate that explicit MLLM-based visual planning provides an effective intermediate interface for text-to-video generation beyond text-only conditioning.",
+      "authors": [
+        "Yanbo Ding",
+        "Yijia Fan",
+        "Caihua Shan",
+        "Yifan Yang",
+        "Yifei Shen",
+        "Weijie Wang",
+        "Xirui Hu",
+        "Dongsheng Li",
+        "Lili Qiu",
+        "Yuqing Yang",
+        "Yali Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-14T07:40:41+00:00",
+      "link": "https://arxiv.org/pdf/2608.14043v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Systematic study on MLLM-DiT fusion for video generation",
+      "llm_evidence_cn": "针对MLLM-DiT融合用于视频生成开展系统研究",
+      "llm_evidence": "针对MLLM-DiT融合用于视频生成开展系统研究",
+      "canonical_evidence": "针对MLLM-DiT融合用于视频生成开展系统研究",
+      "llm_tldr_en": "This paper systematically studies MLLM-DiT fusion for video generation, addressing what intermediate representation to use, how the MLLM generates it, and how the DiT incorporates it during diffusion. Treating MLLM as a semantic generator improves high-level planning in video generation.",
+      "llm_tldr_cn": "视频扩散Transformer生成保真度高但高层语义规划能力受限，MLLM融合在视频生成中尚未被充分探索。本文围绕MLLM与DiT融合的中间表示、生成方式和扩散注入方式三个问题开展系统研究。结果表明，将MLLM视为真正的语义生成器而非冻结特征编码器，能显著增强DiT的条件控制。实验验证了该融合设计在高质量视频生成中的优势。",
+      "llm_tldr": "视频扩散Transformer生成保真度高但高层语义规划能力受限，MLLM融合在视频生成中尚未被充分探索。本文围绕MLLM与DiT融合的中间表示、生成方式和扩散注入方式三个问题开展系统研究。结果表明，将MLLM视为真正的语义生成器而非冻结特征编码器，能显著增强DiT的条件控制。实验验证了该融合设计在高质量视频生成中的优势。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.11546v2",
+      "source": "arxiv",
+      "title": "Through Van Gogh's Eyes: Global Style Transfer with Diffusion Model",
+      "abstract": "Artistic image synthesis aims to recreate the expressive visual identity of a target artist, yet existing methods often fail to capture an artist's global style. Conventional style transfer methods transfer the style of one or a few reference artworks to a content image in a One-to-One manner, making them effective for artwork-level stylization but limited in representing the broader stylistic distribution of an artist. Text-to-image diffusion models conditioned on artist names, such as '~ in Van Gogh style', offer greater flexibility, but they often suffer from text-induced bias and reproduce patterns from only a few iconic works. To address these limitations, we introduce Global Style Transfer (GST), an artistic image synthesis paradigm, in a Many-to-One manner, that aggregates multiple artworks from a target artist and transfers their shared global style to a single content image. For GST, we propose Global Style Guidance (GSG), which learns a residual global style offset in the intermediate feature space, or h-space, of a diffusion model under a fixed prompt. By learning artist-level style semantics purely from visual statistics, GSG mitigates text-dependent artistic bias. We further propose Content Alignment Guidance (CAG), a training-free perceptual guidance mechanism that preserves the semantic structure of the content image while allowing artist-specific geometric deformation. Experiments on WikiArt demonstrate that GST achieves superior stylistic fidelity, content preservation, and output diversity compared to existing style transfer and diffusion-based artistic synthesis methods.",
+      "authors": [
+        "Jeongha Lee",
+        "Yujin Kim",
+        "Ghazanfar Ali",
+        "Suhyun Kim",
+        "Jae-In Hwang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-12T01:29:43+00:00",
+      "link": "https://arxiv.org/pdf/2608.11546v2",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "text-to-image diffusion model for artistic style transfer",
+      "llm_evidence_cn": "文本到图像扩散模型实现艺术风格迁移",
+      "llm_evidence": "文本到图像扩散模型实现艺术风格迁移",
+      "canonical_evidence": "文本到图像扩散模型实现艺术风格迁移",
+      "llm_tldr_en": "Introduces Global Style Transfer (GST), an artistic image synthesis paradigm that uses text-to-image diffusion models to capture an artist's global style beyond single artworks, addressing text-induced bias and limited style coverage.",
+      "llm_tldr_cn": "现有风格迁移多基于单幅参考作品，难以表示艺术家的整体风格。本文提出全球风格迁移（GST）范式，利用文本到图像扩散模型以“许多作品到一种风格”的方式学习艺术家的全局风格。该方法缓解了文本偏见和只复现个别代表作的问题，实现更灵活的整体风格迁移。通过扩散模型的条件生成能力，GST还能根据用户提示定制不同情境下的风格化图像。",
+      "llm_tldr": "现有风格迁移多基于单幅参考作品，难以表示艺术家的整体风格。本文提出全球风格迁移（GST）范式，利用文本到图像扩散模型以“许多作品到一种风格”的方式学习艺术家的全局风格。该方法缓解了文本偏见和只复现个别代表作的问题，实现更灵活的整体风格迁移。通过扩散模型的条件生成能力，GST还能根据用户提示定制不同情境下的风格化图像。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.14430v1",
+      "source": "arxiv",
+      "title": "Designing Reinforcement Learning for Diffusion Models: A Unified Path-Space View",
+      "abstract": "Reinforcement learning (RL) post-training provides a direct way to align diffusion models with human preferences and task-specific rewards. However, current RL algorithms for diffusion models remain fragmented: reverse-trajectory methods rely on discretized likelihood ratios, whereas forward-matching methods train on reward-labeled noising versions of the rollout samples. This paper shows that these seemingly different losses arise from a single path-space principle. Starting from the regularized diffusion-RL objective, we use importance sampling between sampling SDEs to obtain an explicit policy-gradient estimator on trajectory space. The estimator contains the stochastic Itô integral underlying Flow-GRPO-type updates; we derive an equivalent variance-reduced value-gradient form that recovers the forward-matching structure of AWM and DiffusionNFT. This identifies the empirical gap between these method families as a variance-reduction effect rather than a difference in RL principle. The derivation yields a unified design space organized by value-gradient estimation, weight functions, and sampling choices. Within this space, we propose a multi-sample KDE value-gradient estimator that reuses rollout groups, together with scale-bounded weight families that retain stable existing recipes while excluding singular ones. Experiments on SD3.5-M and Qwen-Image models validate the variance-reduction explanation and show that the resulting recipe improves over prior diffusion-RL baselines.",
+      "authors": [
+        "Yixian Xu",
+        "Yuanrui Zhang",
+        "Shengjie Luo",
+        "Liwei Wang",
+        "Di He"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV",
+        "stat.ML"
+      ],
+      "published": "2026-08-14T16:11:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.14430v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "unified path-space RL framework for diffusion and flow-matching models",
+      "llm_evidence_cn": "面向扩散与流匹配模型的统一路径空间强化学习框架",
+      "llm_evidence": "面向扩散与流匹配模型的统一路径空间强化学习框架",
+      "canonical_evidence": "面向扩散与流匹配模型的统一路径空间强化学习框架",
+      "llm_tldr_en": "Unifies RL post-training algorithms for diffusion models via path-space importance sampling, deriving policy-gradient estimators that include Flow-GRPO updates and connecting reverse-trajectory and forward-matching methods.",
+      "llm_tldr_cn": "当前面向扩散模型的强化学习算法较为碎片化，反向轨迹法与正向匹配法看似无关。本文从正则化扩散RL目标出发，利用采样SDE间的重要性采样得到轨迹空间上的显式策略梯度估计，并证明其包含Flow-GRPO型更新所依据的随机伊藤积分。该统一路径空间视角为扩散模型对齐提供了理论基础，有望指导更鲁棒的RL后训练算法设计。",
+      "llm_tldr": "当前面向扩散模型的强化学习算法较为碎片化，反向轨迹法与正向匹配法看似无关。本文从正则化扩散RL目标出发，利用采样SDE间的重要性采样得到轨迹空间上的显式策略梯度估计，并证明其包含Flow-GRPO型更新所依据的随机伊藤积分。该统一路径空间视角为扩散模型对齐提供了理论基础，有望指导更鲁棒的RL后训练算法设计。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.08982v1",
+      "source": "arxiv",
+      "title": "Twin Rollouts: Noise-Coupled Counterfactual Branching in Interactive Video World Models",
+      "abstract": "Interactive video world models generate rollouts autoregressively under an action stream, yet they are trained and evaluated almost exclusively on factual prediction. We study counterfactual generation inside the rollout: given a trajectory the model has itself generated, what would have happened had the actions differed from step t* onward? We formalize noise-coupled twin rollouts --- a factual and a counterfactual branch sharing the generated prefix and the future exogenous noise sequence, diverging only in the action stream at an intervention point. Because the factual branch is self-generated, its exogenous noise is known exactly: the abduction step of Pearl's counterfactual procedure is exact by construction, sidestepping the approximate-inversion problem faced by editing-based pipelines. Noise coupling further turns the minimal-change principle into a per-sample verifiable property: we define a spatiotemporal locality metric that penalizes divergence outside the causal descendants of the intervention, computable against simulator ground truth without a learned judge. Forking the simulator state at t* yields ground-truth counterfactual re-renders, which we use as verifiable rewards for post-training. This note establishes the formal framework, metric definitions, and positioning; experiments are forthcoming.",
+      "authors": [
+        "Yu Ma",
+        "Hongli Shi",
+        "Xinran Xu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-10T00:57:48+00:00",
+      "link": "https://arxiv.org/pdf/2608.08982v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "noise-coupled counterfactual branching for counterfactual generation in interactive video world models",
+      "llm_evidence_cn": "在交互式视频世界模型中用噪声耦合反事实分支进行反事实生成",
+      "llm_evidence": "在交互式视频世界模型中用噪声耦合反事实分支进行反事实生成",
+      "canonical_evidence": "在交互式视频世界模型中用噪声耦合反事实分支进行反事实生成",
+      "llm_tldr_en": "Twin Rollouts formalizes noise-coupled factual and counterfactual branches in interactive video world models, enabling exact counterfactual generation by sharing exogenous noise.",
+      "llm_tldr_cn": "交互式视频世界模型可以基于动作流自回归生成轨迹，但反事实生成尚未被充分研究。本文提出噪声耦合双子轨迹，令事实分支与反事实分支共享前缀和未来外生噪声，仅在干预点之后动作不同，从而精确构造反事实。由于事实分支是自生成的，其外生噪声精确已知，使得Pearl反事实中的溯因步骤变为精确操作。该方法为视频世界模型提供了新的评估与生成维度。",
+      "llm_tldr": "交互式视频世界模型可以基于动作流自回归生成轨迹，但反事实生成尚未被充分研究。本文提出噪声耦合双子轨迹，令事实分支与反事实分支共享前缀和未来外生噪声，仅在干预点之后动作不同，从而精确构造反事实。由于事实分支是自生成的，其外生噪声精确已知，使得Pearl反事实中的溯因步骤变为精确操作。该方法为视频世界模型提供了新的评估与生成维度。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "video generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.11562v1",
+      "source": "arxiv",
+      "title": "From Synthesis to Removal: Physics-Grounded Reflection Simulation and Diffusion-Based Video Dereflection",
+      "abstract": "Videos captured through glass often contain reflections that degrade visual quality and interfere with downstream vision tasks. Although single-image reflection removal has been extensively studied, video reflection removal remains largely underexplored due to the lack of paired video data, temporally coherent removal models, and dedicated evaluation benchmarks. We present a closed-loop framework that unifies physics-grounded reflection simulation, diffusion-based video dereflection, and benchmark evaluation. Our S2R-Synthesis pipeline generates paired reflected and reflection-free videos by performing physics-grounded augmentation in the structure space and rendering realistic reflected videos with a trained video diffusion renderer; the augmentation models key glass-related effects including roughness-induced blur, thickness-induced ghosting, and reflectance variation. Based on the synthesized data, we introduce S2R-Removal, the first diffusion-based video reflection removal model, which adapts a pretrained video diffusion prior through reflection-aware latent adaptation and one-step pixel-geometric refinement, recovering the clean transmission in a single denoising step. We further build S2R-Bench, the first benchmark for video reflection removal, supporting both full-reference evaluation and real-world human perceptual assessment. Experiments on S2R-Bench and multiple public image benchmarks demonstrate state-of-the-art performance and faster inference than even non-diffusion baselines, and validate the effectiveness of S2R-Synthesis. Project page: https://codingwzp.github.io/VideoDereflection_S2R.",
+      "authors": [
+        "Zepeng Wang",
+        "Jiagao Hu",
+        "Fuhao Li",
+        "Yuxuan Chen",
+        "Fei Wang",
+        "Daiguo Zhou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "eess.IV"
+      ],
+      "published": "2026-08-12T01:59:05+00:00",
+      "link": "https://arxiv.org/pdf/2608.11562v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Diffusion-based video dereflection, a video restoration task using diffusion models",
+      "llm_evidence_cn": "基于扩散模型的视频去反射，是扩散模型在视频恢复任务中的应用",
+      "llm_evidence": "基于扩散模型的视频去反射，是扩散模型在视频恢复任务中的应用",
+      "canonical_evidence": "基于扩散模型的视频去反射，是扩散模型在视频恢复任务中的应用",
+      "llm_tldr_en": "This work presents a closed-loop framework that combines physics-grounded reflection simulation, diffusion-based video dereflection, and benchmark evaluation. The S2R-Synthesis pipeline produces paired data, enabling temporally coherent reflection removal and new evaluation benchmarks.",
+      "llm_tldr_cn": "视频反射去除因缺乏配对数据、时序模型与评测基准而进展缓慢。本文提出闭环框架，在结构空间进行物理增强并渲染含反射视频，再用扩散模型实现视频去反射。合成数据与去反射模型在同一流程中互相促进，并配套基准评测。该工作从合成到去除的统一范式为该方向提供了数据和模型支撑。",
+      "llm_tldr": "视频反射去除因缺乏配对数据、时序模型与评测基准而进展缓慢。本文提出闭环框架，在结构空间进行物理增强并渲染含反射视频，再用扩散模型实现视频去反射。合成数据与去反射模型在同一流程中互相促进，并配套基准评测。该工作从合成到去除的统一范式为该方向提供了数据和模型支撑。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models for video generation and synthesis",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.13729v1",
+      "source": "arxiv",
+      "title": "Limitations of Synthetic Data Generation in Specialized Data-Scarce Domains",
+      "abstract": "Advances in diffusion-based generative models have motivated the use of synthetic image generation to alleviate data scarcity in vision tasks. While this strategy has shown promise in natural image benchmarks such as ImageNet, its effectiveness in sparse, high-variance real-world domains remains unclear. In this work, we focus on domains where images differ substantially from common image datasets and additional data are expensive to obtain. Against non-generative data augmentation baselines, we evaluate the downstream classifier performance improvements yielded by two schools of generative sparse data extension: distribution modeling and sample perturbation. Across five trauma classification tasks using subject-wise train--validation splits, no generative approach consistently outperforms a strong non-generative baseline. Feature-space analysis reveals recurring failure modes: memorization or collapse, distributional drift, and generation of visually plausible but simplified canonical instances that are easier to classify than real data.",
+      "authors": [
+        "Edward Zhang",
+        "Marcel Hussing",
+        "Tanay Tandon",
+        "Shenbagaraj Kannapiran",
+        "Jason Hughes",
+        "Youkang Wang",
+        "Joshua Caswell",
+        "Agelos Kratimenos",
+        "Yi Fan Li",
+        "Milan Manoj",
+        "Ethan Sanchez",
+        "Sumukh Shrote",
+        "Camillo Jose Taylor",
+        "Daniel A. Hashimoto",
+        "Eric Eaton"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-13T19:43:31+00:00",
+      "link": "https://arxiv.org/pdf/2608.13729v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "evaluates diffusion-based synthetic image generation for data augmentation",
+      "llm_evidence_cn": "评估基于扩散的合成图像生成用于数据增强",
+      "llm_evidence": "评估基于扩散的合成图像生成用于数据增强",
+      "canonical_evidence": "评估基于扩散的合成图像生成用于数据增强",
+      "llm_tldr_en": "Analyzes the effectiveness of diffusion-based synthetic image generation for sparse, high-variance domains, showing no consistent downstream classifier improvement over non-generative augmentation across five trauma classification tasks.",
+      "llm_tldr_cn": "基于扩散的合成图像生成在自然图像基准上有效，但在特殊数据稀缺领域效果未知。本文在五个创伤分类任务上比较了分布建模和样本扰动两种生成式数据增强策略。结果显示，在主题独立的划分下，这些生成方法相比非生成式基线没有带来稳定的分类性能提升，表明其适用性有限。作者还分析了潜在原因并给出实践建议。",
+      "llm_tldr": "基于扩散的合成图像生成在自然图像基准上有效，但在特殊数据稀缺领域效果未知。本文在五个创伤分类任务上比较了分布建模和样本扰动两种生成式数据增强策略。结果显示，在主题独立的划分下，这些生成方法相比非生成式基线没有带来稳定的分类性能提升，表明其适用性有限。作者还分析了潜在原因并给出实践建议。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.14172v1",
+      "source": "arxiv",
+      "title": "Concept Guidance: Precise, Training-Free Latent Control for Text-to-Image Generation",
+      "abstract": "Text-to-image diffusion models have two major drawbacks that severely limit their practical utility: (1) standard models lack an intrinsic mechanism for continuous, concept-specific guidance (e.g., for precisely controlling how aesthetically pleasing an image looks), and (2) they lack reliability for tasks requiring high local coherence (e.g., generating text or human hands). To tackle these issues, we introduce a novel notion of concept-wise mutual information and find large, concept-dependent differences between individual layers, demonstrating that the generation of specific structures is localized in distinct parts of the network. We exploit this insight by reinforcing the impact of concept-relevant layers in Concept Guidance (CoG), a precise, target-specific guidance method that works for models out-of-the-box without additional training, external models, gradients, or prompt engineering. CoG first quantifies each layer's concept-specific impact and then guides denoising using a weighted combination of predictions generated with concept-relevant layers skipped. We demonstrate performance increases across various targets and popular models like PixArt-alpha, SD3, SD3.5, and FLUX.1-dev. Code is available at https://github.com/CompVis/concept_guidance",
+      "authors": [
+        "Nikolai Röhrich",
+        "Isabell Hans",
+        "Felix Krause",
+        "Björn Ommer"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-08-14T10:35:34+00:00",
+      "link": "https://arxiv.org/pdf/2608.14172v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "training-free latent control for text-to-image diffusion models",
+      "llm_evidence_cn": "文本到图像扩散模型的免训练潜在控制",
+      "llm_evidence": "文本到图像扩散模型的免训练潜在控制",
+      "canonical_evidence": "文本到图像扩散模型的免训练潜在控制",
+      "llm_tldr_en": "Introduces Concept Guidance (CoG), a training-free method that identifies concept-relevant layers via concept-wise mutual information and reinforces them for precise local control in T2I diffusion.",
+      "llm_tldr_cn": "针对文本到图像扩散模型缺乏连续概念控制且局部一致性不足的问题，论文提出概念引导。基于概念互信息发现不同层对特定结构的生成有区域化作用，并通过增强概念相关层的影响实现无需训练的精确控制。该方法在保持全局生成质量的同时改善文字、人手等局部一致性，为扩散生成提供了轻量可控手段。",
+      "llm_tldr": "针对文本到图像扩散模型缺乏连续概念控制且局部一致性不足的问题，论文提出概念引导。基于概念互信息发现不同层对特定结构的生成有区域化作用，并通过增强概念相关层的影响实现无需训练的精确控制。该方法在保持全局生成质量的同时改善文字、人手等局部一致性，为扩散生成提供了轻量可控手段。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

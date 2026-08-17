@@ -41,17 +41,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-08-16</span>
+      <span class="dpr-home-dashboard-kicker">2026-08-17</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 4 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 8 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
     <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>2</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>2</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>4</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>4</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-08-16 19:48:24 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-08-17 19:58:52 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -62,9 +62,7 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日精选4篇论文，精读聚焦交通未来帧预测与手物交互生成两大方向。</p>
-<p>最值得看：GeoRoute用几何感知混合推理提升预测精度，MAD-HOI实现文本到手物交互动画生成，均获8.0高分。</p>
-<p>建议优先精读这两篇高价值工作，速读的语义擦除与世界模型可作为扩展了解。</p>
+<p>今日8篇推荐中4篇精读，聚焦生成式渲染与视频生成两大前沿方向。最值得关注《RGBX-Next》实现G-Buffer到真实感渲染的突破，以及《Beyond Text Conditioning》系统探究多模态大模型与DiT融合的视频生成。若想快速入门，建议优先精读这两篇，速读可跳过合成数据局限性等应用类讨论。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -73,12 +71,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">精读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">2 篇</strong>
+    <strong class="dpr-home-dashboard-count">4 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="GeoRoute: Geometry-Aware Hybrid Inference for Traffic Future-Frame Prediction">GeoRoute: Geometry-Aware Hybrid Inference for Traffic Future-Frame Prediction</span></li><li><span class="dpr-home-dashboard-paper-title" title="MAD-HOI: Masked Autoregressive Diffusion for Generating Articulated Hand Object Interactions from Text">MAD-HOI: Masked Autoregressive Diffusion for Generating Articulated Hand Object Interactions from Text</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="RGBX-Next: Towards Realistic Generative Rendering from G-Buffers">RGBX-Next: Towards Realistic Generative Rendering from G-Buffers</span></li><li><span class="dpr-home-dashboard-paper-title" title="Beyond Text Conditioning: A Systematic Study of MLLM-DiT Fusion for Video Generation">Beyond Text Conditioning: A Systematic Study of MLLM-DiT Fusion for Video Generation</span></li><li><span class="dpr-home-dashboard-paper-title" title="Through Van Gogh&#x27;s Eyes: Global Style Transfer with Diffusion Model">Through Van Gogh&#x27;s Eyes: Global Style Transfer with Diffusion Model</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>2</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>4</strong></span></div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-skim-card">
   <div class="dpr-home-dashboard-header">
@@ -86,12 +84,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">2 篇</strong>
+    <strong class="dpr-home-dashboard-count">4 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Semantic Steering for Controllable Generation: Tuning-Free Concept Erasure in Multimodal Diffusion Transformers">Semantic Steering for Controllable Generation: Tuning-Free Concept Erasure in Multimodal Diffusion Transformers</span></li><li><span class="dpr-home-dashboard-paper-title" title="AlayaWorld: Interactive Long-Horizon World Modeling - Full Technical Report (v1.1)">AlayaWorld: Interactive Long-Horizon World Modeling - Full Technical Report (v1.1)</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Twin Rollouts: Noise-Coupled Counterfactual Branching in Interactive Video World Models">Twin Rollouts: Noise-Coupled Counterfactual Branching in Interactive Video World Models</span></li><li><span class="dpr-home-dashboard-paper-title" title="Limitations of Synthetic Data Generation in Specialized Data-Scarce Domains">Limitations of Synthetic Data Generation in Specialized Data-Scarce Domains</span></li><li><span class="dpr-home-dashboard-paper-title" title="Concept Guidance: Precise, Training-Free Latent Control for Text-to-Image Generation">Concept Guidance: Precise, Training-Free Latent Control for Text-to-Image Generation</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>2</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">diff-video <strong>4</strong></span></div>
 </section>
 </div>
 
