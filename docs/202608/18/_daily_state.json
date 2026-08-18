@@ -1,0 +1,265 @@
+{
+  "date": "20260818",
+  "date_label": "",
+  "generated_at": "2026-08-18 20:44:25 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.14706v1",
+      "route": "202608/18/2608.14706v1-equilibrium-forcing-adaptive-video-generation-without-noise-conditioning",
+      "title": "Equilibrium Forcing: Adaptive Video Generation Without Noise Conditioning",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "基于扩散与流匹配的自回归视频生成，提出无噪声条件去噪框架",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.15818v1",
+      "route": "202608/18/2608.15818v1-flowdance-music-driven-dance-video-generation-with-parallel-pose-and-rgb-streams",
+      "title": "FlowDance: Music-Driven Dance Video Generation with Parallel Pose and RGB Streams",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "音乐驱动舞蹈视频生成，并行姿态与RGB流",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.16513v1",
+      "route": "202608/18/2608.16513v1-mllm-guided-semantic-correction-for-text-to-video-generation",
+      "title": "MLLM-Guided Semantic Correction for Text-to-Video Generation",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "扩散模型用于文本到视频生成并在生成中实现语义校正",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.16585v1",
+      "route": "202608/18/2608.16585v1-squad-sub-quadratic-attention-distillation-for-efficient-video-generation",
+      "title": "SQuad: Sub-Quadratic Attention Distillation for Efficient Video Generation",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "针对视频扩散Transformer的高效视频生成注意力蒸馏方法",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.16887v1",
+      "route": "202608/18/2608.16887v1-an-empirical-study-of-training-pixel-space-text-to-image-diffusion-models",
+      "title": "An Empirical Study of Training Pixel-Space Text-to-Image Diffusion Models",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "关于像素空间文本到图像扩散模型训练的实证研究，直接涉及扩散模型作为生成模型。",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.14740v1",
+      "route": "202608/18/2608.14740v1-from-dense-prediction-to-visual-editing-structured-supervision-for-unified-image-and-video-creation",
+      "title": "From Dense Prediction to Visual Editing: Structured Supervision for Unified Image and Video Creation",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "统一图像与视频生成，基于多模态扩散Transformer",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.14790v1",
+      "route": "202608/18/2608.14790v1-qwen-video-edit-instruction-based-video-editing-by-repurposing-an-image-editing-model",
+      "title": "Qwen-Video-Edit: Instruction-Based Video Editing by Repurposing an Image Editing Model",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "基于视频VAE潜在空间复用图像编辑模型进行视频编辑；扩散相关",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.15452v1",
+      "route": "202608/18/2608.15452v1-spatially-grounded-flow-matching-structured-source-distributions-for-image-generation",
+      "title": "Spatially-Grounded Flow Matching: Structured Source Distributions for Image Generation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "提出带结构化源分布的流匹配模型用于图像生成",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.15522v1",
+      "route": "202608/18/2608.15522v1-efficient-audio-visual-generation-via-synchrony-aware-cross-modal-sparse-attention",
+      "title": "Efficient Audio-Visual Generation via Synchrony-Aware Cross-Modal Sparse Attention",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "统一扩散过程用于音视频生成并含加速框架",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.16104v1",
+      "route": "202608/18/2608.16104v1-nexus-structured-synergy-for-efficient-text-to-image-generation-using-rectified-flow-model",
+      "title": "Nexus: Structured Synergy for Efficient Text-to-Image Generation using Rectified Flow Model",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "使用修正流模型进行高效文生图，结合稀疏架构、线性注意力和低比特量化",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.16354v1",
+      "route": "202608/18/2608.16354v1-drivecache-action-aware-caching-for-driving-world-model-inference",
+      "title": "DriveCache: Action-Aware Caching for Driving World Model Inference",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "提出动作感知的缓存策略，加速基于扩散的驾驶视频生成模型推理",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.15555v1",
+      "route": "202608/18/2608.15555v1-rigidbench-evaluating-rigid-body-physics-in-video-generation-models",
+      "title": "RigidBench: Evaluating Rigid-Body Physics in Video Generation Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "用于评测视频生成模型物理正确性的基准",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.16786v1",
+      "route": "202608/18/2608.16786v1-revisiting-classifier-free-guidance-methods-in-latent-diffusion-models",
+      "title": "Revisiting Classifier-Free Guidance Methods in Latent Diffusion Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "重访潜在扩散模型中的无分类器引导",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.14226v1",
+      "route": "202608/18/2608.14226v1-rankt2i-a-submodular-framework-for-discovering-interpretable-and-diverse-semantics-in-text-to-image-models",
+      "title": "RankT2I: A Submodular Framework for Discovering Interpretable and Diverse Semantics in Text-to-Image Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "发现文本到图像扩散模型中的可编辑语义",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.15103v1",
+      "route": "202608/18/2608.15103v1-forward-evolution-error-analysis-and-adaptive-design-for-matrix-valued-diffusion-models",
+      "title": "Forward-Evolution Error Analysis and Adaptive Design for Matrix-Valued Diffusion Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "扩散模型误差分析与自适应调度设计",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    },
+    {
+      "paper_id": "2608.15583v1",
+      "route": "202608/18/2608.15583v1-poseadapter-dual-stream-25d-controllable-image-generation-for-complex-multi-object-scenes",
+      "title": "PoseAdapter: Dual-Stream 2.5D Controllable Image Generation for Complex Multi-Object Scenes",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "基于扩散的可控图像生成，支持空间角度控制",
+      "first_seen_at": "2026-08-18 20:44:25 UTC",
+      "updated_at": "2026-08-18 20:44:25 UTC"
+    }
+  ]
+}

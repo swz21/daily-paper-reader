@@ -1,0 +1,413 @@
+Title: FlowDance: Music-Driven Dance Video Generation with Parallel Pose and RGB Streams
+
+URL Source: https://arxiv.org/pdf/2608.15818v1
+
+Published Time: Tue, 18 Aug 2026 01:37:04 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# FlowDance: Music-Driven Dance Video Generation with Parallel Pose and RGB Streams 
+
+## Genying Li 1,2 ∗, Boda Lin 1∗, Jiachen Li 1, Zijian Jia 1,2 , Haojie Zheng 2,3 , Yiming Wang 1,Shuchen Weng 2†, Si Li 1†
+
+> 1
+
+School of Artificial Intelligence, Beijing University of Posts and Telecommunications 
+
+> 2
+
+Beijing Academy of Artificial Intelligence 
+
+> 3
+
+School of Software and Microelectronics, Peking University Music  Reference Pose  Reference Image 
+
+> Pose
+> Extract
+> Pose Generation
+> Model
+
+FlowDance 
+
+> cascaded  Pipeline  End-to-End FlowDance (Ours)
+> Video Generation
+> Model
+
+Figure 1: Comparison with end-to-end and cascaded music-driven dance video synthesis. FlowDance generates pose and RGB videos in parallel, enabling continuous structural guidance without explicit 3D-to-2D pose conversion. 
+
+Abstract 
+
+Music-driven dance video synthesis aims to animate a ref-erence person according to a given music clip. The task is challenging because it requires a model to jointly learn music-to-motion correspondence, identity-preserving human anima-tion, temporal coherence, and visually realistic video genera-tion. We present FlowDance, a music-driven dance video gen-eration framework that integrates explicit motion modeling with reference-preserving visual synthesis through parallel pose and RGB streams. We further introduce timestep-aware pose injection to adapt structural guidance across denoising steps and persistent identity injection to preserve the reference appearance over long video. To support this task, we further build a popularity-curated, high-resolution in-the-wild dance video dataset with synchronized music, RGB videos, 3D body motion, camera parameters, and projected 2D pose annota-tions. Extensive experiments show that FlowDance achieves strong performance in both dance motion generation and music-driven dance video synthesis. The project page is avail-able at https://ghost-love-you.github.io/Projects/FlowDance. 
+
+> ∗
+
+These authors contributed equally. 
+
+> †
+
+Corresponding author. 
+
+## Introduction 
+
+Music and dance are deeply intertwined forms of human ex-pression, where musical cues such as rhythm, melody, inten-sity, and style strongly influence the characteristics of dance movements. This correspondence between music and motion has motivated a growing body of research on music-driven dance generation (Li et al. 2021; Siyao et al. 2022; Tseng, Castellon, and Liu 2023; Li et al. 2024; Zhang et al. 2025b), where existing approaches primarily focus on synthesizing 3D human motion sequences conditioned on audio (Loper et al. 2015; Pavlakos et al. 2019). However, such 3D motion sequences only describe the underlying body dynamics and inevitably omit crucial visual factors such as dancer identity, appearance, and scene context, thereby limiting their direct applicability to real-world video content creation. Therefore, generating realistic dance videos in which specific individ-uals dance naturally in synchronization with music remains an important yet challenging problem. Moving from dance motion generation to dance video generation introduces two additional challenges: preserving the identity and appearance of a reference person, including clothing, body shape, background, and fine visual details, arXiv:2608.15818v1 [cs.CV] 16 Aug 2026 and maintaining motion temporal coherence throughout the generated video. Thanks to advances in pose-guided human image animation, synthesizing a target person from a refer-ence image and a 2D pose video has been extensively ex-plored (Zhou et al. 2019; Hu et al. 2023; Xu et al. 2024; Zhu et al. 2024; Pang et al. 2025). This progress enables a prevalent decoupled pipeline for music-driven dance video generation (Chen et al. 2025; Wang, Wang, and Cai 2025; Yang et al. 2026): a music-to-motion model first predicts 3D body motion, often parameterized by SMPL or SMPL-X; a projector then maps these parameters into a 2D pose video, which drives an image animation model. Notably, by sepa-rating choreography from visual rendering, this formulation reduces the learning burden of each stage and has achieved promising generation quality. However, errors can accumu-late across the pipeline, particularly during the projection from SMPL parameters to 2D poses, thereby propagating and amplifying inaccuracies downstream. How the projector should adapt its mapping to the target person’s body shape, including stature, build, and body proportions, as well as the person’s location in the reference image, remains insuffi-ciently explored. The resulting pose misalignment may dis-tort body structure, introduce visual artifacts, or move parts of the subject outside the video frame. Because the animation model only receives the projected pose sequence, it cannot correct these upstream errors, which consequently remain visible in the final synthesized output. End-to-end methods instead map music and a reference image directly to RGB video (Dong et al. 2025). They avoid explicit motion projection and allow choreography and ren-dering to be learned jointly, but require a single model to perform motion planning, identity preservation, tempo-ral modeling, and photorealistic video synthesis in a high-dimensional visual space. This coupling makes optimization difficult and can weaken motion fidelity. These limitations suggest that motion should be modeled explicitly, but with-out reintroducing the cross-modal conversion and stage-wise isolation of cascaded pipelines. In this paper, we propose FlowDance , a music-driven dance video generation framework with parallel pose and RGB streams. As illustrated in Figure 1, given a reference im-age and a music track, FlowDance generates a music-aligned 2D pose video and a reference-preserving dance video in parallel. By allowing the pose stream to continuously guide RGB stream throughout denoising, FlowDance integrates ex-plicit motion modeling with reference-aware visual synthesis within a unified diffusion model. We build our framework upon the pretrained Wan2.2 (Wan Team et al. 2025) video diffusion model to leverage its strong spatio-temporal priors and native video generation capabil-ities. To eliminate explicit SMPL-to-2D projection and its associated representation gap, we introduce a pose stream that directly generates a DWPose-style pose video. Specif-ically, the pose stream utilizes the pose extracted from the reference image as the initial frame of the pose sequence, an-choring subsequent motion generation to the target subject’s body shape and image-space location. A dedicated audio cross-attention module further condition the pose stream on the input music, enabling the generated motion to follow its rhythmic and stylistic cues. Alongside the pose stream, a parallel RGB stream progressively denoises the target dance video using intermediate features from the corresponding pose-stream blocks as structural guidance. This block-wise interaction enables motion generation and visual synthesis to be jointly refined throughout denoising, allowing the RGB stream to receive progressively updated motion guidance, avoiding the stage-wise handoff and error accumulation in cascaded pipelines. Since pose features vary in reliability across denoising timesteps, a fixed injection strength is suboptimal. We there-fore introduce a timestep-aware pose injection mechanism to adaptively modulate their contribution over the denoising trajectory without a predefined schedule. To mitigate identity and appearance drift in long videos, we further propose per-sistent identity injection, which repeatedly injects comple-mentary reference features into multiple RGB-stream blocks to improve motion fidelity and long-term visual consistency. To promote research in this field, we introduce Flow-DanceSet , a popularity-curated, high-resolution, in-the-wild dance video dataset collected from online videos. Flow-DanceSet provides synchronized music and RGB videos to-gether with 3D body motion, camera parameters, and 2D pose annotations, supporting both music-to-motion gener-ation and music-driven dance video synthesis. Extensive experiments demonstrate that FlowDance achieves superior performance in both motion generation and video generation. Our contributions are summarized as follows: 
+
+• We propose FlowDance, a music-driven dance video gen-eration framework with parallel streams for explicit mo-tion modeling and reference-preserving video synthesis. 
+
+• We introduce timestep-aware pose injection for robust and adaptive structural guidance and persistent identity injection for long-term appearance consistency. 
+
+• We construct FlowDanceSet, a popularity-curated high-resolution in-the-wild dataset with music, RGB video, 3D motion, rich camera parameters, and 2D poses. 
+
+## Related Work 
+
+Music-Driven Dance Generation 
+
+Music-driven dance generation has predominantly targeted audio-conditioned motion rather than RGB video. Early sys-tems composed reusable motion units or encoded choreog-raphy constraints (Lee et al. 2019; Chen et al. 2021), and AIST++ established a popular benchmark with a cross-modal transformer baseline (Li et al. 2021). Later work improved long-horizon choreography and controllability with para-metric transformers, choreographic memories, posture con-straints, and coarse-to-fine diffusion architectures (Li et al. 2022; Siyao et al. 2022; Gao et al. 2022; Li et al. 2024). Diffusion and multimodal formulations expanded editability and music-text control (Tseng, Castellon, and Liu 2023; Qi et al. 2023; Li et al. 2024; Gong et al. 2023). Fine-grained data and contrastive or reward-guided objectives further im-proved full-body motion, diversity, and beat alignment (Li et al. 2023; Bhattacharya et al. 2024; Wang et al. 2024b). K-Pop 
+
+> Raw Video
+> KeyWord-based Search
+> 3D Pose
+> 2D Pose
+> Audio
+> Dance Genre
+> >=500
+> Manually
+> selecting
+
+Qualified Source 
+
+Videos 
+
+Curated Dance 
+
+Videos 
+
+Our 
+
+Datas et               
+
+> Data Collection Basic Data Filtering LLM Assisted Filtering Curated Data and Annotation
+> No Audio Wrong Resolution Low FPS Posing Talking Singing
+> Group Dance Mirror Shot Bystanders
+> Video Inset Stickers Poor Quality
+> Extreme Angle Fisheye Lens Large Motion
+> 5s later
+> Dance Creator Search
+> Multiple People
+> Metadata Issues
+> Visual Defects
+> Non-Dance
+> Camera Issues
+
+Figure 2: FlowDanceSet construction pipeline. Collected dance videos are filtered for quality and annotated with synchronized RGB, audio, 3D motion, camera parameters, 2D poses, and dance labels. Tokenized, popularity-oriented, large-scale, and editable for-mulations expanded control and data coverage (Wang, Mao, and Liu 2023; Luo et al. 2024; Zhang et al. 2025b,a). Most of these methods output joints, skeletons, or SMPL-family parameters (Loper et al. 2015; Pavlakos et al. 2019), which re-main intermediate representations for person-specific video synthesis. Music-driven video methods either generate appearance-conditioned RGB videos more directly (Wang et al. 2025; Dong et al. 2025) or separate choreography and render-ing through predicted skeletons and pose/body intermedi-ates (Ren et al. 2020; Chen et al. 2025; Wang, Wang, and Cai 2025). Direct formulations avoid an external motion-to-video stack but concentrate motion planning and photorealis-tic rendering in one generator; staged formulations simplify the rendering problem but depend on the accuracy and com-patibility of the intermediate control. 
+
+Pose-Guided Human Image Animation 
+
+Pose-guided human image animation renders a reference person under an externally supplied motion signal. Ear-lier motion-transfer work used driving videos (Zhou et al. 2019); diffusion-based methods later combined reference-image conditioning with pose, expression, or disentangled controls to improve identity preservation and temporal con-sistency (Karras et al. 2023; Wang et al. 2024a; Chang et al. 2024; Xu et al. 2024; Hu et al. 2023). ControlNet pro-vides a general mechanism for injecting spatial conditions into pretrained diffusion models (Zhang, Rao, and Agrawala 2023), while whole-body keypoints and richer 3D guidance strengthen structural control (Yang et al. 2023; Zhu et al. 2024; Pang et al. 2025). Pose-text and hybrid-guidance sys-tems further broaden motion, character, and background han-dling (Qin et al. 2023; Tan et al. 2025; Luo et al. 2025). Because these methods generally assume a driving pose se-quence from a video, estimator, or upstream generator (Xu et al. 2024; Hu et al. 2023; Zhu et al. 2024; Pang et al. 2025), they primarily address animation fidelity rather than music-conditioned choreography. 
+
+## Dataset 
+
+Data collection. Figure 2 summarizes the construction of FlowDanceSet. We select six dance categories with visu-ally and stylistically distinct movement patterns: kpop , jazz ,
+
+chinese_dance , otaku , street_dance , and contemporary . For each category, we use ChatGPT to construct a large set of related search keywords, including alternative names and platform-specific tags, and download only videos with at least 500 likes. This threshold provides an initial preference for videos that have been well received by viewers. However, popularity is also influenced by the performer’s appearance, video editing techniques, and the choice of topics that cater to mainstream taste, rather than dance quality alone. We therefore complement keyword-based collection by manu-ally selecting creators who consistently publish high-quality dance performances and downloading all of their videos. 
+
+Data filtering. We first apply a lightweight automatic fil-ter, retaining videos that contain audio, have a resolution of 720 × 1280 , have a frame rate of at least 16 FPS, and contain a single person according to MMPose. We then use Gemini 3 Flash for fine-grained visual screening based on three criteria: (1) minimal editing traces , requiring a clear human contour without subtitles, stickers, picture-in-picture overlays, or other conspicuous editing elements; (2) dance validity , requiring sustained dance movements rather than sexually suggestive posing, speaking, or singing; and (3) 
+
+camera stability , excluding strong camera movement, fisheye lenses, and extremely oblique viewpoints that impede motion assessment. Videos that fail any criterion are discarded. 
+
+Data annotation. Each case in the final dataset contains Feature Extraction  FlowDance  
+
+> Face Token
+> RGB Text Token
+> Motion Text Token
+> A person is dancing.
+> A full -body stick figure
+> performs a Chinese
+> dance routine.
+
+Arcface  MLP 
+
+> Face
+> Encoder
+
+Dino v2 
+
+CLIP 
+
+> T5
+> Encoder
+
+Ⓒ 
+
+> Sample MLP Wav2Vec
+> Visual Embedding
+> Face Loss
+> M2V Aligner M2V Aligner
+
+Timestep  Flow Matching 
+
+> Loss
+
+Pose Stream 
+
+> Pose Block
+> Pose Block
+
+. . .  . . . 
+
+> AdaLN
+> Self Attn
+> Cross Attn
+> Audio Attn
+> FFN
+> Motion Feature
+> Motion Feature
+> 2D Motion Token
+> RGB Token
+> noised
+> noised
+> visual Embedding
+
+(a)Face Encode 
+
+FFN 
+
+> ID Embedding
+
+FFN 
+
+> Audio Token
+> VAE Decoder
+
+RGB Stream 
+
+> AdaLN
+> Self Attn
+> Cross Attn
+> Face Attn
+> FFN
+> RGB Block
+> RGB Block
+
+..  ..  ..  .. 
+
+> VAE Decoder
+> VAE Decoder
+
+(b) M2V Aligner  
+
+> Motion
+> Feature Timestep
+> Zero
+> Linear
+> Timestep
+> Embedding
+> Timestep
+> MLP
+> 1+tan(h)
+> Motion
+> Residual
+
+⊙
+
+> 2D
+> Motion
+> Token
+> RGB
+> Token
+> RGB
+> Text
+> Token
+> Motion
+> Text Token
+> ID Embedding
+> Motion Residual
+> Motion Residual
+
+⊕
+
+> Audio
+> Token
+> Face Token
+> Tuned Parameters
+
+⊕
+
+> Concatenate Operation
+
+Ⓒ Element -wise Addition ⊕ ⊙ Element -wise Multiplication 
+
+Pose Stream 
+
+⊕
+
+Cross Attn 
+
+Pose Block 
+
+RGB Block Figure 3: Illustration of our FlowDance framework. Left: Feature extraction provides multimodal conditioning for the RGB and pose streams. Right: FlowDance comprises parallel yet coupled pose and RGB streams. The pose stream predicts music-aligned 2D motion, whose intermediate features guide RGB generation through timestep-aware M2V Aligners. Face-token injection and face-masked reconstruction further preserve identity. Insets: Details of (a) the Face Encoder and (b) the M2V Aligner. the original RGB video and audio, a dance-category label, 3D body-motion annotations with camera parameters, and a projected 2D pose video. During crawling, we also store the title, description, and tags of each source video. When these metadata explicitly identify one of the six dance cate-gories, we directly use that label; for example, an otaku tag provides an explicit category assignment. Gemini 3 Flash classifies the remaining videos, and samples that cannot be reliably assigned to the six predefined categories are labeled as other . We use SAM-Body4D (Gao, Miao, and Han 2025) to recover temporally consistent 3D body motion and the as-sociated camera parameters from the full video. The 2D pose video is then obtained by projecting the recovered 3D motion with these camera parameters. We avoid directly using a 2D pose estimator because the fast movement and frequent self-occlusion in dance videos often cause missing leg keypoints and noticeable hand-keypoint drift. Before clip extraction, we annotate scene-transition timestamps in each full video and randomly reserve 100 source videos for evaluation. All extracted clips span five seconds (81 frames at 16 FPS) and avoid annotated transitions. We extract one clip from each held-out video to form a 100-case test set and exclude those source videos entirely from training. From the remaining videos, we extract clips with a two-second overlap. The RGB frames, 3D motion, and projected 2D annotations of every clip are aligned frame by frame. This process produces ap-proximately 165K clips in total. 
+
+## Method 
+
+Given a reference image Iref , a music clip A, and a dance-category label c, FlowDance synthesizes an RGB video 
+
+V = {It}Tt=1 of the reference person performing a category-consistent dance synchronized with the music. The model comprises two parallel latent video diffusion streams ini-tialized from Wan2.2-TI2V-5B (Wan Team et al. 2025). The pose stream generates an auxiliary DWPose-style video 
+
+P = {Pt}Tt=1 , while the RGB stream renders the refer-ence person under its evolving structure. Both streams retain the image-to-video formulation of the pretrained model: the clean first-frame conditions are Iref for the RGB stream and the pose extracted from Iref for the pose stream, whereas the remaining frames are represented by noisy video latents. At diffusion timestep t, we denote the pose and RGB latents by 
+
+zpt and zrt , and their features at transformer block l by hpl
+
+and hrl , respectively. Rather than completing the pose video before RGB synthesis, the two streams predict their flow ve-locities in parallel, and the intermediate output of each pose block guides the corresponding RGB block. The pose stream thereby organizes the dance in a simplified visual space, while the RGB stream resolves appearance under continuous structural guidance. Figure 3 overviews feature extraction, dual-stream denoising, and cross-stream interaction. 
+
+Music-Conditioned Pose Video Generation 
+
+The pose stream starts from the target person rather than from a canonical skeleton. We apply a whole-body pose estimator to Iref and render the detected keypoints in the same DWPose representation used for the training videos (Yang et al. 2023). This pose image becomes P1, the clean first-frame condition of the pose branch. The reference-derived initial skeleton establishes the generated dancer’s body proportions, scale, and image-space location before motion unfolds, without requiring a separately parameterized 3D-to-2D projection. The dance category and music describe different aspects of the trajectory. We instantiate the category prompt as “A full-body stick figure performs a c dance routine.” and feed its text encoding to the pretrained cross-attention layers, providing a clip-level description of dance style. The music, by contrast, enters every pose block as a temporally aligned signal. We first resample the waveform to 16 kHz and encode it with a frozen Wav2Vec2 model (Baevski et al. 2020). Features from its transformer layers are retained and linearly interpolated to the temporal length of the video latent. Audio injection is local in time. For a pose token belonging to latent frame f , the keys and values are drawn from the audio features of a five-frame sliding window 
+
+W(f ) = {max(1 , f − 2) , . . . , min( F, f + 2) },
+
+where F is the number of latent frames and indices out-side the sequence are clamped to its boundary. Consequently, each pose frame can follow the nearby musical context more selectively without attending indiscriminately to the full clip. The resulting cross-attention output is passed through a zero-initialized projection before it is added to the pose features, thereby preserving the pretrained video computation un-changed at the start of training. 
+
+Reference-Preserving RGB Video Synthesis 
+
+The RGB stream receives global reference information through its main cross-attention context. We encode the fixed prompt “A person is dancing.” with the pretrained T5 text encoder and concatenate its text features with full-image features extracted from Iref by a frozen CLIP image en-coder (Radford et al. 2021). The resulting RGB condition-ing tokens provide both a generic action description and reference-specific cues for appearance and scene content. Structural information arrives from the pose stream at the transformer-block level. After pose block l, we project hpl
+
+and add it to the input of the corresponding RGB block. Pose features do not have the same reliability at all noise levels, so the current timestep embedding et also controls the transferred residual: 
+
+ehrl = hrl + Wl(hpl ) ⊙ [1 + tanh ( Gl(et))] ,
+
+where Wl projects pose features, Gl is a two-layer timestep projection, and its output is broadcast over the video tokens. The RGB block then processes ehrl . We zero initialize Wl
+
+and the final layer of Gl, allowing the interaction to grow from the original RGB backbone during training rather than perturbing it at initialization. A compact ArcFace embedding (Deng et al. 2019) identi-fies the reference person but provides limited visual detail for faithful rendering. Therefore, we use a Perceiver-style Face Encoder to combine the normalized ArcFace embedding with DINOv2 features from Iref (Oquab et al. 2024), producing four complementary face tokens. Dedicated face-attention adapters inject these tokens into selected RGB blocks, while zero-initialized output projections preserve the pretrained computation at initialization. For the RGB stream, flow matching constructs zrt = (1 −
+
+σt)zr 
+
+> 0
+
++ σtϵ with target velocity vrt = ϵ − zr 
+
+> 0
+
+. Excluding the conditioned first frame, the primary RGB objective is 
+
+Lrgb = E 
+
+> zr
+> 0,ϵ,t
+
+h
+
+w(σt) ∥bvrt − vrt ∥22
+
+i
+
+,
+
+where w(σt) denotes the timestep-dependent loss weight-ing. To place additional supervision on facial reconstruction, we estimate the clean latent as bzr 
+
+> 0
+
+= zrt − σtbvrt . With a face mask Mface downsampled to latent resolution, we define 
+
+Lface =
+
+P Mface ⊙ (bzr 
+
+> 0
+
+− zr 
+
+> 0
+
+)2
+
+C P Mface + ε ,
+
+where C is the latent channel count. The conditioned first frame is excluded from the sum. This masked term is added to the RGB flow-matching objective and does not alter the reconstruction weighting outside the detected face. 
+
+Training and Inference 
+
+Training proceeds in two stages because the pose and RGB streams solve problems of different complexity. The first stage adapts the copied video backbone to pose videos us-ing only the pose flow-matching objective. It begins with a low-resolution warm-up and then continues at full resolution. During this stage, only the pose stream and its audio-injection modules are optimized. Once the pose stream has learned the music-conditioned motion space, its parameters are frozen. The second stage trains the RGB stream, the pose-to-RGB projections, and the reference and face conditioning modules with L = Lrgb + λface Lface . The pretrained Wav2Vec2, T5, CLIP, DINOv2, and ArcFace encoders remain frozen in both stages. Music longer than the training clip is handled with overlap-window inference. Specifically, we divide the audio and con-ditioning sequence into fixed-length windows and generate them sequentially with a short temporal overlap. Frames pro-duced in the overlap of the previous window condition the next one, after which the two predictions are linearly blended over their shared interval, thereby reducing visible disconti-nuities across adjacent windows. The same model can thus extend generation without increasing the temporal memory used by a single denoising run. 
+
+## Experiments 
+
+Implementation Details 
+
+We initialize both streams from Wan2.2-TI2V-5B. Audio is resampled to 16 kHz, and each training sample pairs a five-second, 81-frame video clip at 16 FPS with its temporally aligned audio. The Face Encoder produces four face tokens, which are injected into RGB blocks 4, 12, 20, and 28, and we set λface = 0 .3. Training is performed on eight NVIDIA A100 GPUs. In Stage 1, we train the pose stream for 30K warm-up steps at 352 × 640 and then for 6K steps at 704 ×
+
+1280 ; Stage 2 is trained for 20K steps at 704 × 1280 . We use AdamW in both stages with a learning rate of 2 × 10 −5, a weight decay of 0.03, and 100 learning-rate warm-up steps followed by a constant schedule. The per-GPU batch size is 1, with gradient accumulation over four iterations, giving an effective batch size of 32. At inference, we use the UniPC sampler with 50 sampling steps and a classifier-free guidance scale of 6.0. Wan-s2v   
+
+> MACE-Dance
+> MEGADance
+> Echomimic
+> FlowDance
+> (Ours)
+> Case 1. (K-Pop Dance) Case 2 (Otaku Dance)
+> Reference Reference
+
+Figure 4: Qualitative comparison on unseen K-pop and otaku examples. Red boxes mark weak motion, deformation, identity drift, or implausible structure. FlowDance preserves appearance while producing larger, coherent movements. 
+
+Evaluation Protocol 
+
+Baselines. We compare against two cascaded motion-to-video pipelines and two end-to-end audio-to-video systems. For the cascaded setting, we use the Motion Expert of MACE-Dance (Yang et al. 2026) 1 and MEGADance (Yang et al. 2025) to generate 3D motion. To render a pose video for a target identity, we use SAM-Body4D to recover the body shape, image-space location, and camera parameters from the reference image, keep these quantities fixed, and animate the recovered body with the generated motion. The resulting pose sequence drives One-to-All Animation (Shi et al. 2026), whose alignment-robust design is intended to reduce reference–pose mismatch. The end-to-end base-lines are Wan-S2V (Gao et al. 2025) and EchoMimic (Chen et al. 2024). We fine-tune Wan-S2V and MEGADance on the FlowDanceSet training split using their released train-ing code; MACE-Dance and EchoMimic release no training code, so we evaluate them zero-shot with their official check-points. We evaluate all methods on the 100-case, source-video-held-out test set described above. 
+
+Metrics. We measure distribution-level video quality us-ing Fr’echet Video Distance (FVD) (Ge et al. 2024). We additionally report six VBench dimensions (Huang et al. 2024): imaging quality (IQ), aesthetic quality (AQ), sub-
+
+> 1We do not evaluate the MACE-Dance Appearance Expert since its released implementation cannot yield stable inference in our tests.
+
+ject consistency (SC), background consistency (BC), motion smoothness (MS), and dynamic degree (DD). For direct com-parability, motion evaluation is performed on the final RGB output of every method rather than on an internal motion representation. Specifically, SAM-Body4D extracts a 3D se-quence from each generated video, after which evaluation is restricted to the same 24 body joints for all methods. Fol-lowing common music-to-dance evaluation (Li et al. 2021; Yang et al. 2026), we report kinetic and geometric Fr’echet distances (FID k/FID g ), their corresponding diversity scores (Div k/Div g ), and Beat Alignment Score (BAS). 
+
+Quantitative Results 
+
+Table 1 shows that FlowDance obtains the lowest FVD (243.3741), 25.8% below Wan-S2V, and the best imaging quality, motion smoothness, and dynamic degree among gen-erated methods. EchoMimic has slightly higher subject and background consistency, but its DD of 0.008 indicates an almost static solution; its large FID g and Div g show that structural artifacts can inflate feature dispersion. FlowDance instead combines SC of 0.951 with DD of 0.983. Recovered-motion metrics separate geometric plausibility from audio responsiveness. MEGADance obtains the lowest FID k (9.271) through direct 3D-motion optimization, while FlowDance ranks second (10.884) and achieves the best FID g
+
+(7.501) and BAS (0.2450). Wan-S2V remains competitive elsewhere, but its FID g is 70.7% higher. These results support Table 1: Quantitative comparison on the test set. Arrows indicate preferred directions. The best and second-best generated results in each column are highlighted in bold and underlined, respectively. GT is an unranked reference.                                                                             
+
+> Video quality Motion quality User preference (%) Method FVD ↓IQ ↑AQ ↑SC ↑BC ↑MS ↑DD ↑FID k↓FID g↓Div k↑Div g↑BAS ↑VQ ↑ID ↑MN ↑M–A ↑
+> GT –0.700 0.539 0.926 0.931 0.983 0.991 ––6.357 7.329 0.2331 ––––MACE-Dance (Yang et al. 2026) 662.4355 0.689 0.522 0.948 0.952 0.991 0.347 51.466 92.749 6.673 8.267 0.2176 5.4 3.6 5.0 5.9 MEGADance (Yang et al. 2025) 409.5303 0.668 0.524 0.940 0.941 0.988 0.906 9.271 13.243 6.132 7.444 0.2160 3.6 3.8 5.3 13.8 EchoMimic (Chen et al. 2024) 571.0114 0.693 0.510 0.954 0.954 0.991 0.008 38.699 1087.053 3.757 27.625 0.2088 11.0 20.8 1.0 0.9 Wan-S2V (Gao et al. 2025) 328.0243 0.671 0.537 0.924 0.936 0.980 0.979 16.069 12.8056 7.386 7.829 0.2411 15.0 12.3 24.5 9.9 FlowDance (ours) 243.3741 0.694 0.526 0.951 0.952 0.993 0.983 10.884 7.501 6.685 8.304 0.2450 65.0 59.6 64.3 69.6
+
+Table 2: Component ablation. Bold and underline denote the best and second-best results. 
+
+Variant FVD ↓ SC ↑ MS ↑ FID g ↓ BAS ↑
+
+w/o pose stream 387.06 0.876 0.962 34.166 0.2081 fixed pose injection 278.63 0.946 0.983 8.943 0.2321 ArcFace only 249.86 0.937 0.990 7.616 0.2436 w/o face reconstruction loss 254.45 0.931 0.991 7.998 0.2402 Full model (ours) 243.37 0.951 0.993 7.501 0.2450 
+
+an explicit low-complexity motion stream coupled to RGB synthesis rather than an isolated cascaded renderer. 
+
+Qualitative Results 
+
+Figure 4 compares two visually distinct identities and dance categories. EchoMimic largely preserves the source com-position but produces limited body displacement, consistent with its near-zero DD. Wan-S2V generates larger motion and strong image quality, yet exhibits local face and limb distor-tions in challenging frames. The cascaded baselines produce recognizable choreography, but errors introduced by 3D mo-tion projection and subsequent rendering appear as abrupt changes in body scale, local deformation, and weaker identity fidelity. FlowDance follows the music with clear full-body articulation while maintaining clothing, facial appearance, and scene structure across the sampled frames. The benefit is particularly visible in Case 2, where the loose clothing and large limb motion make reference–pose mismatch difficult for a cascaded pipeline. Figure 5 further shows a 12-second generated sequence. This example indicates that repeated identity injection and overlap conditioning can limit cross-window appearance drift. 
+
+User Study 
+
+In a blinded user study, 40 participants evaluate the same 20 random test cases. Five anonymized outputs per case are randomized under identical audio, reference, resolution, and playback settings. Selecting the best visual quality (VQ), identity fidelity (ID), motion naturalness (MN), and music– motion alignment (M–A) yields 800 selections per criterion. FlowDance leads all four, with 65.0% VQ, 59.6% ID, 64.3% MN, and 69.6% M–A preference. A full-body stick figure performs a Jazz 
+
+> dance
+> routine.
+> Reference
+> 12s 9s 6s 3s
+
+Figure 5: A 12-second sequence generated by overlap-window inference. Identity, costume, and scene remain stable as the pose evolves. 
+
+Ablation Study 
+
+We isolate four design choices: removing the pose stream adds audio cross-attention directly to RGB; fixed residual injection tests the M2V Aligner; ArcFace-only conditioning removes the DINOv2–Face Encoder pathway; and removing 
+
+Lface tests local facial supervision. All variants share the full model’s data, backbone, optimization, and inference settings. Table 2 shows that removing the pose stream causes the largest degradation, increasing FVD from 243.37 to 387.06 and FID g from 7.501 to 34.166 while reducing BAS from 0.2450 to 0.2081. Fixed injection also underperforms, con-firming the benefit of timestep awareness. ArcFace-only con-ditioning or removing face reconstruction degrades FVD and subject consistency; the full model leads all five metrics. 
+
+## Conclusion 
+
+We introduced FlowDance, a parallel pose-video generation framework that models choreography in a simplified pose stream while rendering the target person in an RGB stream. Timestep-aware pose injection couples motion and appear-ance generation, while persistent identity injection improves appearance consistency over extended sequences. Together with FlowDanceSet, experiments demonstrate strong motion quality, video quality, and music alignment. Future work will explore adapting the parallel two-stream architecture for streaming, real-time dance video generation. References 
+
+Baevski, A.; Zhou, Y.; Mohamed, A.; and Auli, M. 2020. wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations. In Advances in Neural Information Processing Systems , volume 33, 12449–12460. Bhattacharya, A.; Paranjape, M.; Bhattacharya, U.; and Bera, A. 2024. DanceAnyWay: Synthesizing Beat-Guided 3D Dances with Randomized Temporal Contrastive Learning. 
+
+Proceedings of the AAAI Conference on Artificial Intelli-gence , 38(2): 783–791. Chang, D.; Shi, Y.; Gao, Q.; Xu, H.; Fu, J.; Song, G.; Yan, Q.; Zhu, Y.; Yang, X.; and Soleymani, M. 2024. MagicPose: Realistic Human Poses and Facial Expressions Retargeting with Identity-Aware Diffusion. In Proceedings of the 41st International Conference on Machine Learning , volume 235 of Proceedings of Machine Learning Research , 6263–6285. Chen, K.; Tan, Z.; Lei, J.; Zhang, S.-H.; Guo, Y.-C.; Zhang, W.; and Hu, S.-M. 2021. ChoreoMaster: Choreography-Oriented Music-Driven Dance Synthesis. ACM Transactions on Graphics , 40(4): 1–13. Chen, Z.; Cao, J.; Chen, Z.; Li, Y.; and Ma, C. 2024. EchoMimic: Lifelike Audio-Driven Portrait Animations through Editable Landmark Conditions. arXiv:2407.08136. Chen, Z.; Xu, H.; Song, G.; Xie, Y.; Zhang, C.; Chen, X.; Wang, C.; Chang, D.; and Luo, L. 2025. X-Dancer: Expres-sive Music to Human Dance Video Generation. In Proceed-ings of the IEEE/CVF International Conference on Computer Vision , 10602–10611. Deng, J.; Guo, J.; Xue, N.; and Zafeiriou, S. 2019. ArcFace: Additive Angular Margin Loss for Deep Face Recognition. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 4690–4699. Dong, Z.; Hao, W.; Wang, J.-C.; Zhang, P.; and Polak, P. 2025. Every Image Listens, Every Image Dances: Music-Driven Image Animation. arXiv:2501.18801. Gao, J.; Pu, J.; Zhang, H.; Shan, Y.; and Zheng, W.-S. 2022. PC-Dance: Posture-Controllable Music-Driven Dance Syn-thesis. In Proceedings of the 30th ACM International Con-ference on Multimedia , 1261–1269. Gao, M.; Miao, Y.; and Han, J. 2025. SAM-Body4D: Training-Free 4D Human Body Mesh Recovery from Videos. arXiv:2512.08406. Gao, X.; Hu, L.; Hu, S.; Huang, M.; Ji, C.; Meng, D.; Qi, J.; Qiao, P.; Shen, Z.; Song, Y.; Sun, K.; Tian, L.; Wang, G.; Wang, Q.; Wang, Z.; Xiao, J.; Xu, S.; Zhang, B.; Zhang, P.; Zhang, X.; Zhang, Z.; Zhou, J.; and Zhuo, L. 2025. Wan-S2V: Audio-Driven Cinematic Video Genera-tion. arXiv:2508.18621. Ge, S.; Mahapatra, A.; Parmar, G.; Zhu, J.-Y.; and Huang, J.-B. 2024. On the Content Bias in Fréchet Video Distance. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 7277–7288. Gong, K.; Lian, D.; Chang, H.; Guo, C.; Jiang, Z.; Zuo, X.; Mi, M. B.; and Wang, X. 2023. TM2D: Bimodality Driven 3D Dance Generation via Music-Text Integration. In 
+
+Proceedings of the IEEE/CVF International Conference on Computer Vision , 9908–9918. Hu, L.; Gao, X.; Zhang, P.; Sun, K.; Zhang, B.; and Bo, L. 2023. Animate Anyone: Consistent and Control-lable Image-to-Video Synthesis for Character Animation. arXiv:2311.17117. Huang, Z.; He, Y.; Yu, J.; Zhang, F.; Si, C.; Jiang, Y.; Zhang, Y.; Wu, T.; Jin, Q.; Chanpaisit, N.; Wang, Y.; Chen, X.; Wang, L.; Lin, D.; Qiao, Y.; and Liu, Z. 2024. VBench: Compre-hensive Benchmark Suite for Video Generative Models. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vi-sion and Pattern Recognition , 21807–21818. Karras, J.; Holynski, A.; Wang, T.-C.; and Kemelmacher-Shlizerman, I. 2023. DreamPose: Fashion Image-to-Video Synthesis via Stable Diffusion. arXiv:2304.06025. Lee, H.-Y.; Yang, X.; Liu, M.-Y.; Wang, T.-C.; Lu, Y.-D.; Yang, M.-H.; and Kautz, J. 2019. Dancing to Music. In 
+
+Advances in Neural Information Processing Systems , vol-ume 32. Li, B.; Zhao, Y.; Shi, Z.; and Sheng, L. 2022. DanceFormer: Music Conditioned 3D Dance Generation with Parametric Motion Transformer. Proceedings of the AAAI Conference on Artificial Intelligence , 36(2): 1272–1279. Li, R.; Yang, S.; Ross, D. A.; and Kanazawa, A. 2021. AI Choreographer: Music Conditioned 3D Dance Generation with AIST++. In Proceedings of the IEEE/CVF International Conference on Computer Vision , 13401–13412. Li, R.; Zhang, Y.; Zhang, Y.; Zhang, H.; Guo, J.; Zhang, Y.; Liu, Y.; and Li, X. 2024. Lodge: A Coarse to Fine Diffusion Network for Long Dance Generation Guided by the Charac-teristic Dance Primitives. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,1524–1534. Li, R.; Zhao, J.; Zhang, Y.; Su, M.; Ren, Z.; Zhang, H.; Tang, Y.; and Li, X. 2023. FineDance: A Fine-grained Chore-ography Dataset for 3D Full Body Dance Generation. In 
+
+Proceedings of the IEEE/CVF International Conference on Computer Vision , 10234–10243. Loper, M.; Mahmood, N.; Romero, J.; Pons-Moll, G.; and Black, M. J. 2015. SMPL: A Skinned Multi-Person Lin-ear Model. ACM Transactions on Graphics , 34(6): 248:1– 248:16. Luo, Y.; Rong, Z.; Wang, L.; Zhang, L.; and Hu, T. 2025. DreamActor-M1: Holistic, Expressive and Robust Human Image Animation with Hybrid Guidance. In Proceedings of the IEEE/CVF International Conference on Computer Vi-sion , 11036–11046. Luo, Z.; Ren, M.; Hu, X.; Huang, Y.; and Yao, L. 2024. POPDG: Popular 3D Dance Generation with PopDanceSet. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 26984–26993. Oquab, M.; Darcet, T.; Moutakanni, T.; Vo, H. V.; Szafraniec, M.; Khalidov, V.; Fernandez, P.; Haziza, D.; Massa, F.; El-Nouby, A.; et al. 2024. DINOv2: Learning Robust Visual Features without Supervision. Transactions on Machine Learning Research .Pang, Y.; Zhu, B.; Lin, B.; Zheng, M.; Tay, F. E. H.; Lim, S.-N.; Yang, H.; and Yuan, L. 2025. DreamDance: Animat-ing Human Images by Enriching 3D Geometry Cues from 2D Poses. In Proceedings of the IEEE/CVF International Conference on Computer Vision , 14039–14050. Pavlakos, G.; Choutas, V.; Ghorbani, N.; Bolkart, T.; Osman, A. A. A.; Tzionas, D.; and Black, M. J. 2019. Expressive Body Capture: 3D Hands, Face, and Body from a Single Image. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 10975–10985. Qi, Q.; Zhuo, L.; Zhang, A.; Liao, Y.; Fang, F.; Liu, S.; and Yan, S. 2023. DiffDance: Cascaded Human Motion Diffusion Model for Dance Generation. In Proceedings of the 31st ACM International Conference on Multimedia , 1374–1382. Qin, B.; Ye, W.; Yu, Q.; Tang, S.; and Zhuang, Y. 2023. Danc-ing Avatar: Pose and Text-Guided Human Motion Videos Synthesis with Image Diffusion Model. arXiv:2308.07749. Radford, A.; Kim, J. W.; Hallacy, C.; Ramesh, A.; Goh, G.; Agarwal, S.; Sastry, G.; Askell, A.; Mishkin, P.; Clark, J.; Krueger, G.; and Sutskever, I. 2021. Learning Transferable Visual Models from Natural Language Supervision. In Pro-ceedings of the 38th International Conference on Machine Learning , volume 139, 8748–8763. Ren, X.; Li, H.; Huang, Z.; and Chen, Q. 2020. Self-Supervised Dance Video Synthesis Conditioned on Music. In Proceedings of the 28th ACM International Conference on Multimedia , 46–54. Shi, S.; Xu, J.; Li, Z.; Peng, C.; Yang, X.; Lu, L.; Hu, K.; and Zhang, J. 2026. One-to-All Animation: Alignment-Free Character Animation and Image Pose Transfer. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 4011–4021. Siyao, L.; Yu, W.; Gu, T.; Lin, C.; Wang, Q.; Qian, C.; Loy, C. C.; and Liu, Z. 2022. Bailando: 3D Dance Generation by Actor-Critic GPT with Choreographic Memory. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 11050–11059. Tan, S.; Gong, B.; Liu, Z.; Wang, Y.; Chen, X.; Feng, Y.; and Zhao, H. 2025. Animate-X++: Universal Character Image Animation with Dynamic Backgrounds. arXiv:2508.09454. Tseng, J.; Castellon, R.; and Liu, C. K. 2023. EDGE: Ed-itable Dance Generation From Music. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 448–458. Wan Team; Wang, A.; Ai, B.; Wen, B.; Mao, C.; Xie, C.-W.; Chen, D.; Yu, F.; Zhao, H.; Yang, J.; et al. 2025. Wan: Open and Advanced Large-Scale Video Generative Models. arXiv:2503.20314. Wang, J.; Mao, W.; and Liu, M. 2023. MIDGET: Music Conditioned 3D Dance Generation. In AI 2023: Advances in Artificial Intelligence , 277–288. Springer Nature Singapore. Wang, T.; Li, L.; Lin, K.; Zhai, Y.; Lin, C.-C.; Yang, Z.; Zhang, H.; Liu, Z.; and Wang, L. 2024a. DisCo: Disen-tangled Control for Realistic Human Dance Generation. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vi-sion and Pattern Recognition , 9326–9336. Wang, X.; Wang, H.; and Cai, W. 2025. ChoreoMuse: Robust Music-to-Dance Video Generation with Style Transfer and Beat-Adherent Motion. In Proceedings of the 33rd ACM International Conference on Multimedia , 7912–7921. Wang, X.; Wang, H.; Liu, D.; and Cai, W. 2025. Dance Any Beat: Blending Beats with Visuals in Dance Video Genera-tion. In Proceedings of the Winter Conference on Applica-tions of Computer Vision , 5136–5146. Wang, Z.; Zhuang, H.; Li, L.; Zhang, Y.; Zhong, J.; Chen, J.; Yang, Y.; Tang, B.; and Wu, Z. 2024b. Explore 3D Dance Generation via Reward Model from Automatically-Ranked Demonstrations. Proceedings of the AAAI Conference on Artificial Intelligence , 38(1): 301–309. Xu, Z.; Zhang, J.; Liew, J. H.; Yan, H.; Liu, J.-W.; Zhang, C.; Feng, J.; and Shou, M. Z. 2024. MagicAnimate: Temporally Consistent Human Image Animation using Diffusion Model. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 1481–1490. Yang, K.; Tang, X.; Peng, Z.; Hu, Y.; He, J.; and Liu, H. 2025. MEGADance: Mixture-of-Experts Architecture for Genre-Aware 3D Dance Generation. In Advances in Neural Information Processing Systems , volume 38. Yang, K.; Zhu, J.; Tang, X.; Peng, Z.; Zhang, X.; Wang, P.; Wu, J.; Chu, X.; Liu, H.; and He, J. 2026. MACE-Dance: Motion-Appearance Cascaded Experts for Music-Driven Dance Video Generation. In Proceedings of the Spe-cial Interest Group on Computer Graphics and Interactive Techniques Conference Conference Papers , 1–12. Yang, Z.; Zeng, A.; Yuan, C.; and Li, Y. 2023. Effective Whole-body Pose Estimation with Two-stages Distillation. arXiv:2307.15880. Zhang, H.; Li, Z.; Qi, X.; Li, M.; Sun, M.; Wang, S.; Zhang, M.; and Han, S. 2025a. DanceEditor: Towards It-erative Editable Music-driven Dance Generation with Open-Vocabulary Descriptions. In Proceedings of the IEEE/CVF International Conference on Computer Vision , 12158– 12168. Zhang, J.; Kang, Z.; Liu, L.; Chang, J.; Tian, Q.; Gao, F.; and Wang, Y. 2025b. OpenDance: Multimodal Control-lable 3D Dance Generation with Large-scale Internet Data. arXiv:2506.07565. Zhang, L.; Rao, A.; and Agrawala, M. 2023. Adding Con-ditional Control to Text-to-Image Diffusion Models. In Pro-ceedings of the IEEE/CVF International Conference on Com-puter Vision , 3836–3847. Zhou, Y.; Wang, Z.; Fang, C.; Bui, T.; and Berg, T. L. 2019. Dance Dance Generation: Motion Transfer for Internet Videos. arXiv:1904.00129. Zhu, S.; Chen, J. L.; Dai, Z.; Su, Q.; Xu, Y.; Cao, X.; Yao, Y.; Zhu, H.; and Zhu, S. 2024. Champ: Controllable and Consistent Human Image Animation with 3D Parametric Guidance. arXiv:2403.14781.

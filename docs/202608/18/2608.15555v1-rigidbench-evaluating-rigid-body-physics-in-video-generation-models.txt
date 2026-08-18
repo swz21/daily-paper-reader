@@ -1,0 +1,942 @@
+Title: RigidBench: Evaluating Rigid-Body Physics in Video Generation Models
+
+URL Source: https://arxiv.org/pdf/2608.15555v1
+
+Published Time: Tue, 18 Aug 2026 00:58:54 GMT
+
+Number of Pages: 30
+
+Markdown Content:
+# RigidBench : Evaluating Rigid-Body Physics in Video Generation Models 
+
+Swarnim Jain ∗, Shangzhe Wu University of Cambridge 
+
+Abstract 
+
+Video models are increasingly used to predict what happens next in a scene, yet the metrics commonly used to compare their outputs say little about whether the predicted objects move correctly. Motion, geometry, identity, background stability, and visual similarity can fail inde-pendently, but whole-frame scores often mix these errors together. We introduce RigidBench , a simulator-grounded benchmark that compares a generated continuation with a reference rollout from the same initial frame and motion description. Its five rigid-body tasks vary objects, materi-als, viewpoints, and indoor and outdoor scenes, with per-frame masks, depth, 6-DoF trajectories, and contacts available for scoring. We evaluate eight models on the same 100 examples with ten measurements that keep these aspects separate. The resulting rankings depend strongly on what is measured: no model leads on all ten, and across model means, higher SSIM accompanies larger 3D trajectory error ( r = 0 .89). RigidBench also includes 5,000 training videos with exact simulator state, which we use to fine-tune and analyze Wan 2.2 TI2V-5B. Full fine-tuning reduces 3D trajectory error by about 20% with almost no change in SSIM, while teacher-forced probes and targeted interventions show that object position is represented throughout Wan’s di ff usion transformer and used by its denoising computation. 
+
+# 1 Introduction 
+
+Video models increasingly supply rollouts for robot control, synthetic demonstrations, policy evaluation, and rare driving scenarios [13, 20, 24, 26]. When generated frames guide an action or become a training example, the motion they depict matters independently of their visual quality, since a missed surface or an incorrect collision can change the downstream result even when the video looks clean. Evaluating these rollouts is di ffi cult because a generated video can depart from its reference in several ways at once. An object may follow the wrong path, change shape or identity, or move against a drifting background, and a whole-frame score may respond to all of these changes without identifying any one of them. Existing benchmarks approach the problem through human and vision-language-model judgments [2, 12, 14], recorded experiments and conservation laws [15, 27], or controlled simulation [11]. These evaluations reveal broad physical failures, but most report a clip-level judgment or image-space agreement rather than the 3D motion of each object. 
+
+RigidBench 1 controls the comparison by generating a reference rollout in simulation, then giving the video model only its first frame and a short motion description. Since both continuations begin from the same rendered state, the generated video can be compared with aligned masks, depth, 6-DoF trajectories, and contacts rather than with an uninstrumented recording. The five tasks cover free fall, bouncing, a ramp collision, a ball chain, and a drop into a cluster, rendered with  
+
+> ∗Correspondence to: swarnimjain004@gmail.com .
+> 1https://github.com/swarnim-j/RigidBench
+
+1arXiv:2608.15555v1 [cs.CV] 16 Aug 2026 varied objects and photorealistic scenes. Together they provide 5,000 training examples and a fixed 100-example evaluation set with held-out scenes and objects. For each generated video, the evaluator recovers actor masks, point tracks, and depth before applying seven established measurements of mask overlap and shape, image-space motion, depth, and full-frame appearance. We add ATE-3D for world-space trajectories, IdDrift for object appearance along corresponding tracks, and BGDrift for local background deformation after coherent camera motion has been removed. Rather than combine these measurements into one score, we retain them separately so that disagreements between di ff erent parts of the prediction remain visible. Across the eight audited models, visual similarity and trajectory accuracy give markedly di ff erent orderings, with higher SSIM accompanying larger 3D trajectory error and no model leading on all ten measurements. Task di ffi culty also does not follow the number of objects or contacts: free fall produces the largest trajectory error for every model, even though it contains only one moving object, because an early error can persist through most of the rollout. The same simulator state supports a closer study of Wan 2.2 TI2V-5B. Full fine-tuning lowers ATE-3D by about one fifth while leaving SSIM nearly unchanged, which separates the change in reference motion from the usual measure of frame similarity. Under teacher forcing, linear probes recover position and contact throughout the di ff usion transformer, while velocity, orientation, and angular velocity remain weak. Removing the position-aligned directions raises the flow-matching loss far more than matched controls, linking the decoded position signal to Wan’s denoising computation. 
+
+# 2 Related Work 
+
+Plausibility judgments. Many benchmarks ask whether a generated clip looks physically plausible. VideoPhy-2 tests action-centric physical commonsense, WorldModelBench trains a vision-language model to judge generated videos, and PhyGround combines law-specific questions with controlled human annotation [2, 12, 14]. This form of evaluation covers many actions and physical phenomena without requiring instrumented scenes, although its scores identify the implausible event or violated rule rather than tracing each object’s motion against a reference. 
+
+Recorded motion and physical laws. Physics-IQ compares generated continuations with repeated recordings of real experiments using motion masks and pixel error [15]. Morpheus instead estimates physical quantities from controlled experiments and tests generated motion against fitted dynamics and conservation laws, allowing a plausible trajectory to score well without matching one recording exactly [27]. Both benchmarks ground their evaluation in real motion, which also means that the masks, trajectories, and physical quantities needed for scoring must be recovered from video. 
+
+Simulator-grounded evaluation. Simulation provides exact state and repeatable initial conditions. PhyWorld uses deterministic 2D mechanics to study scaling and generalization, finding that strong in-distribution prediction does not transfer reliably to unseen physical settings [9], while World-Bench isolates individual concepts and tests whether models recover parameters such as friction and viscosity [23]. PISA is closest to our evaluation and training setup, since it measures mask and 2D trajectory agreement for falling objects before post-training a video model on simulated drops [11]. RigidBench extends this approach to object-level 3D motion across five rigid-body tasks, photorealistic scenes, and held-out objects and environments, while reporting appearance and reference motion separately. 
+
+Physical information inside video models. Recent work uses layerwise probes to recover speed, acceleration, and direction from large video encoders, then applies targeted attention ablations 2to locate components that support those signals [8]. We study Wan’s di ff usion transformer using simulator state aligned to each object and time slot, and compare the representations of the base and fine-tuned models. Since a successful probe establishes only that a signal can be decoded, we also remove the position-aligned subspace with Iterative Nullspace Projection and compare the resulting loss change with rank- and variance-matched controls [6, 18]. 
+
+# 3 RigidBench 
+
+## 3.1 What We Measure 
+
+Each RigidBench example pairs a controlled simulator rollout with a video-continuation problem: the model receives the first rendered frame and a short description of the motion, then generates the rest of the clip without seeing the remaining simulator frames used for scoring. Ten measurements describe object motion, geometry, identity, background stability, and full-frame similarity, and remain separate so that their disagreements are not hidden inside an aggregate score. Since each input has one simulated continuation, the trajectory measurements report fidelity to that reference rather than physical plausibility in general. 
+
+## 3.2 Tasks and Ground Truth 
+
+The five tasks cover free flight, restitution, rolling, pairwise collision, and contact cascades, with representative initial frames in Figure 1 and the corresponding setups in Table 1. Samples draw from 24 everyday objects, 12 photorealistic indoor and outdoor scenes, and four ramp materials, while varying drop heights, ramp dimensions, material properties, and camera azimuth. These choices vary between examples, but the camera remains fixed within each clip.                       
+
+> Free fall Bounce Ramp collision Drop into cluster Ball chain
+> Figure 1. The five RigidBench tasks. Each image is the first frame of an example in the fixed evaluation set. Objects, scenes, surfaces, dimensions, and materials vary between examples. Task Setup Main interaction Free fall One object drops toward a support Free flight Bounce A high-restitution object drops onto a surface Restitution Ramp collision Two objects roll down opposing ramps and collide Rolling collision Ball chain A rolling object strikes a row of three objects Contact chain Drop into cluster One object falls onto a three-object cluster Multi-body impact Table 1. The five RigidBench tasks. Each is instantiated with di ff erent objects, geometry, materials, viewpoints, and scenes.
+
+Each clip contains 49 frames at 1280 × 704 and 24 frames per second. Blender’s Bullet simulator advances the rigid bodies before Cycles renders RGB, a separate mask for each actor, and metric depth from the resulting scene, which keeps all three outputs pixel-aligned. The simulator addition-ally records each actor’s position and orientation, finite-di ff erence linear and angular velocities, and 3per-frame mesh contacts with their points and normals. A single example seed fixes the sampled assets, physical setup, camera, and render. 
+
+## 3.3 Training and Evaluation Partitions 
+
+The training manifest contains 5,000 clips across the five tasks, balanced over eight scenes and drawn from 16 objects. The fixed evaluation manifest crosses each task with the four conditions in Table 2, each of which contains five examples per task and therefore 25 examples overall. Four additional scenes and eight additional objects appear only in the evaluation partitions that mark them as held out. Every model is tested on the same frames, prompts, and examples, with the complete task configurations, asset partitions, rendering settings, and ground-truth construction given in Section A.                
+
+> Condition Scenes Objects Examples In-distribution training training 25 OOD-scene held out training 25 OOD-object training held out 25 OOD-both held out held out 25 Table 2. Evaluation conditions. Every row contains five examples from each task.
+
+## 3.4 Metrics and Evaluation 
+
+All models receive the reference first frame, the task description, and the same su ffi x requesting a locked camera, natural-speed motion, and a continuous take. Before scoring, each output is resized to the reference resolution and aligned to its 24 Hz timestamps, using temporal interpolation for continuous quantities and nearest-neighbor sampling for masks. If a generated clip ends early, scoring stops at its last frame instead of extrapolating it. Three pretrained models recover the quantities needed for scoring, using the shared first frame to establish the initial actor correspondence. SAM 2 propagates the ground-truth actor masks from that frame [19], CoTracker3 follows 20 points sampled inside each mask [10], and Video Depth Anything estimates disparity for every generated frame [3]. Seeding masks and tracks in this way avoids adding a separate object-detection and matching problem to the evaluation. We adapt PISA’s mask IoU, height-normalized centroid error, and bidirectional Chamfer dis-tance [11], and additionally report 2D Absolute Trajectory Error (ATE), scale-invariant depth error (SI-MSE) [5], SSIM [25], and LPIPS [28]. These seven measurements cover mask overlap and shape, image-space motion, depth, and whole-frame appearance, while the remaining three address errors that they do not isolate. 
+
+ATE-3D. Image-space tracks cannot measure motion along the camera axis on their own, so we fit one scale and shift per clip from predicted disparity to reference disparity before unprojecting each tracked point through the known camera. The geometric median of an actor’s visible points gives its reconstructed world position bpa,t . For the valid actor-frame pairs V , ATE-3D is ATE-3D = 
+
+q 1
+
+> |V |
+
+P(a,t )∈V ∥bpa,t − pa,t ∥221
+
+> |A m|
+
+Pa∈A m ∥pa,T −1 − pa, 0∥2
+
+, (1) Here pa,t is the simulator position and Am contains the actors with non-trivial reference motion, whose mean start-to-end displacement places tasks with di ff erent motion ranges on a common scale. 4IdDrift. For each actor a, let Pa contain the point-frame pairs that are visible in both clips and yield valid 64 × 64 patches. We center cref  
+
+> a,p,t
+
+and cgen  
+
+> a,p,t
+
+on the corresponding reference and generated tracks, and embed both with a frozen DINOv2 ViT-L encoder f [17]. Then 
+
+sa,p,t = cos f (cref  
+
+> a,p,t
+
+), f (cgen  
+
+> a,p,t
+
+) ,
+
+IdDrift = 1 − 1
+
+|A v |
+
+X
+
+> a∈A v
+
+1
+
+|P a|
+
+X
+
+> (p,t )∈P a
+
+sa,p,t , (2) Here Av contains actors with at least one valid patch pair. Each actor receives equal weight so that long or highly visible tracks do not dominate the score, and following corresponding points limits the influence of changes elsewhere in the frame. 
+
+BGDrift. We track up to 200 corners outside the first-frame actor masks. Let x(t) 
+
+> i
+
+be corner i at frame t, and let wi,t be the product of its CoTracker3 confidences at frames 0 and t. For each frame, a RANSAC similarity transform At maps the frame-zero corners to their current positions. BGDrift is BGDrift = 1
+
+H
+
+PT −1
+
+> t=1
+
+Pi∈C t wi,t At (x(0)  
+
+> i
+
+) − x(t) 
+
+> i2
+
+PT −1
+
+> t=1
+
+Pi∈C t wi,t 
+
+, (3) Here H is the image height and Ct contains corners tracked at both endpoints. Since the fitted transform absorbs coherent translation, rotation, and scale, BGDrift measures the local background motion left in the residual. 
+
+# 4 Video Models on RigidBench 
+
+Our audit covers eight image-to-video models. We run Wan 2.2 TI2V-5B and Cosmos Predict 2.5-2B locally [16, 22], while Veo 3.1, Veo 3.1 Fast, Kling 3.0, Seedance 2.0, Seedance 2.0 Fast, and Grok Imagine are queried through hosted APIs. Every model is scored on all 100 examples, with the exact identifiers and generation settings recorded in Section B and further uncertainty analyses reported in Section C. Since every model sees the same examples, comparisons remain paired until the final average. Model means use 95% bootstrap intervals from resampled examples, while the cross-model correlation resamples models [4]. Pairwise results report the fraction of matched examples on which one model performs better, following the probability-of-improvement view of evaluation [1]. 
+
+## 4.1 Model Comparison 
+
+SSIM and ATE-3D produce almost opposite orderings in the left panel of Figure 2. Across the eight model means, the Pearson correlation between SSIM and negative ATE-3D is −0.89, with a bootstrap interval of [ −0.99 , −0.43], and the Spearman rank correlation is −0.88. Wan has the highest SSIM, while the two Seedance variants have both the lowest ATE-3D and the lowest SSIM. The same reversal holds within matched examples: Seedance 2.0 Fast has lower ATE-3D than every non-Seedance model on at least 65% of examples, yet both Seedance variants have lower SSIM than every other model on at least 91%. Because this pattern appears across most individual comparisons, it is not driven by a few unusual clips. Within this audit, full-frame similarity does not identify the models whose objects follow the reference most closely. The other measurements do not restore a single ordering (Table 3). Wan leads SSIM and LPIPS, Seedance 2.0 Fast leads ATE-3D, IdDrift, and BGDrift, and Veo 3.1 has the lowest scale-invariant 50.70 0.75 0.80 0.85 0.90 0.95         
+
+> SSIM (higher is better)
+> 1.8 2.0 2.2 2.4 2.6 2.8 3.0
+> ATE-3D (lower is better)
+> Pearson r= − 0.89 [−0.99, − 0.43]
+> Spearman ρ= − 0.88
+> 0246
+> Mean ATE-3D
+> Free fall Bounce Drop into cluster Ramp collision Ball chain
+> Wan 2.2 Seedance 2.0 Cosmos 2.5 Seedance Fast Grok Imagine Veo 3.1 Kling 3.0 Veo Fast
+
+Figure 2. Model and task results. Left: model means on SSIM and ATE-3D. The ATE-3D axis is reversed, and the correlation is computed against negative ATE-3D. Right: mean ATE-3D for each model and task, with one horizontal bar per model. Bars within each task follow the order shown in the key. 
+
+Object motion and geometry Visual similarity and stability Model IoU ↑ L2 ↓ Cham. ↓ ATE ↓ ATE-3D ↓ SI-MSE ↓ SSIM ↑ LPIPS ↓ IdDrift ↓ BGDrift ↓
+
+Wan 2.2 .183 .220 .370 .200 2.64 .0288 .925 .056 .501 .739 Cosmos 2.5 .171 .300 .527 .282 2.84 .0331 .909 .095 .484 1.094 Veo 3.1 .153 .230 .380 .203 2.47 .0283 .879 .112 .516 2.368 Veo 3.1 Fast .157 .229 .382 .204 2.63 .0352 .902 .100 .517 1.491 Kling 3.0 .169 .230 .387 .186 2.76 .0364 .912 .130 .553 1.632 Seedance 2.0 .196 .200 .332 .188 2.02 .0337 .735 .145 .445 .845 Seedance 2.0 Fast .191 .203 .337 .187 1.98 .0323 .722 .157 .444 .579 
+
+Grok Imagine .169 .224 .373 .189 2.30 .0362 .901 .081 .459 1.365 
+
+Table 3. Full model comparison. Means over the 100-example evaluation set, omitting non-finite mea-surements. ATE denotes 2D ATE. BGDrift is multiplied by 10 3. Best and second-best values are bold and underlined. 
+
+depth error. Since no model leads on all ten, an overall average would hide the tradeo ff s shown by the table. 
+
+## 4.2 Task Breakdown 
+
+Free fall has the largest mean ATE-3D for every model, followed by bounce, as shown in the right panel of Figure 2. The ordering cannot be explained by the number of objects or contacts, because free fall contains one moving object while the collision tasks contain several. Its distinguishing feature is sustained motion: an early error during an uninterrupted fall changes many later positions, whereas errors in the collision tasks are concentrated around shorter events. 64.3 Metric Validation 
+
+Controlled perturbations test whether the three new metrics respond to their intended errors. ATE-3D rises equally for displacements along and perpendicular to the camera ray even though 2D ATE misses motion along that ray, while BGDrift removes a coherent image translation but retains independent point jitter with the same mean displacement. IdDrift is 6 .3× more sensitive to an identity swap than to a gamma change, compared with 1 .3× for pixel L2. The complete curves appear in Section B. 
+
+# 5 Fine-tuning and Probing Wan 2.2 
+
+## 5.1 LoRA and Full Fine-tuning 
+
+The separate training split lets us ask whether simulator supervision can change the generated motion without substantially changing the video’s appearance. We fine-tune Wan 2.2 TI2V-5B on the 5,000 training videos, which are disjoint from the 100 evaluation examples, comparing a rank-32 LoRA run with full DiT fine-tuning. Every saved checkpoint is scored, with the optimization details given in Section D. 0.5 1.0 1.5 2.0 2.5 3.0       
+
+> Training step (thousands)
+> −0.75 −0.50 −0.25 0.00
+> ATE-3D (lower is better)
+> 0.5 1.0 1.5 2.0 2.5 3.0
+> Training step (thousands)
+> −0.005 0.000 0.005
+> SSIM (higher is better)
+> Mean paired change from base  LoRA Full fine-tuning
+
+Figure 3. Fine-tuning across checkpoints. Mean paired change from base Wan with bootstrap 95% confidence intervals. Filled points mark the checkpoint with the lowest ATE-3D in each sweep on this evaluation set. 
+
+LoRA improves early before losing much of that gain as training continues, whereas full fine-tuning changes more gradually and reaches an ATE-3D about one fifth below base Wan. Both selected checkpoints improve on the base model, although these examples do not establish an ordering between the two approaches, and the improvement also appears in the image-space trajectory and mask measurements. Appearance scores change little, IdDrift rises slightly under full fine-tuning, and free fall improves most, with the complete sweeps and metric breakdowns reported in Section D. 
+
+## 5.2 Teacher-forced Probes of Physical State 
+
+The simulator records physical state for every actor and frame, which lets us attach a precise target to Wan’s internal features. Following earlier work on di ff usion features [21], we pass noised reference latents through Wan at five noise levels and record the residual stream after every DiT block. Simulator masks identify the tokens belonging to one actor and latent time slot, whose average becomes the hidden vector for that actor at that time. We repeat this extraction for base Wan, the selected full fine-tuning checkpoint, and a random initialization of the same DiT, fitting linear and MLP probes separately at every layer and noise level with splits made by video. Following the logic of control tasks [7], we repeat each fit after shu ffl ing its training labels. 7Probe physical state Intervene on position      
+
+> reference video VAE + noise Wan blocks, tap ℓ
+> actor–time mean linear / MLP probe ̂
+> ya,s
+> actor masks state ya,s
+> hℓ,t
+> remove fitted subspace
+> ˜hℓ,t
+> later blocks + head head only
+> ∆Lfull ∆Ldirect
+> INLP / PC / random choose B, α
+
+Figure 4. Probing and intervention. Left: actor-aligned hidden states are probed for simulator state. Right: a fitted subspace is removed and Wan’s flow-matching loss is measured through two readouts. 
+
+Position and contact can be read linearly from the first block, with both signals becoming stronger after fine-tuning. The randomly initialized DiT still scores above chance because its input latent and token layout already contain spatial structure, and an MLP can recover enough of this structure to narrow the di ff erence between all three backbones. The e ff ect of learned features is therefore clearest under a linear readout. 0 5 10 15 20 25 29         
+
+> DiT block
+> 0.0 0.2 0.4 0.6 0.8
+> Position ( R2)
+> 0510 15 20 25 29
+> DiT block
+> 0.5 0.6 0.7 0.8 0.9
+> Contact (AUC)
+> Linear-probe test score Random init Base Wan Full fine-tuning
+
+Figure 5. Physical state is accessible throughout Wan. Linear-probe scores by block, averaged over noise levels, with shading spanning their range. 
+
+Among the continuous state variables, only position is recovered strongly across layers and noise levels. Orientation, velocity, angular velocity, and contact normal remain weak, while the accel-eration and isolated velocity signals found by nonlinear probes do not persist across the sweep. Wan’s residual stream therefore makes current position and contact much easier to recover than instantaneous motion. A successful probe establishes that a signal can be decoded, but not that Wan uses it in its own computation. We therefore fit an Iterative Nullspace Projection position subspace at each layer and noise level [6, 18], then intervene as 
+
+eh = h − αBB ⊤h, ∆L = L(eh) − L (h). (4) Here B contains the INLP directions and α = 1. The first control removes a random subspace of the same rank, while the second removes principal components scaled to match the centered activation variance removed by the position subspace. 80 5 10 15 20 25 29         
+
+> DiT block
+> −10 −2
+> 010 −2
+> 10 −1
+> 10 0
+> Full-model loss
+> 0510 15 20 25 29
+> DiT block
+> −10 −2
+> 010 −2
+> 10 −1
+> 10 0
+> Direct head readout
+> Mean  Δ loss Position (INLP) Variance-matched PC Random subspace
+
+Figure 6. Wan depends on position-aligned directions. Mean loss increase after subspace removal, with bootstrap 95% confidence intervals. The symmetric-log axis is linear between −0.01 and 0 .01. 
+
+Removing the position-aligned subspace raises the loss far more than either control, both across blocks and after averaging within each sample. This ordering remains unchanged when the modified state passes through the remaining blocks or is read directly by Wan’s output head, so neither subspace rank nor removed activation variance accounts for the di ff erence. Probes of V-JEPA 2 and VideoMAE-v2 recover speed and acceleration early, while motion direction appears around an intermediate-depth transition [8]. Wan has a di ff erent profile, with position and contact available from its first block while velocity remains weak, although the experiments also use di ff erent units of analysis. That work pools encoder features over a single-object clip, whereas we extract a separate state for each actor and time slot from a generative DiT, then define the removed subspace from the corresponding simulator positions. 
+
+# 6 Limitations 
+
+Each RigidBench input has one controlled reference rollout, although the first frame and prompt do not reveal every state variable or physical parameter. A di ff erent continuation may therefore be physically valid without following the same trajectory, so the benchmark measures fidelity to the matched reference rather than every possible future. Its object-level measurements also depend on SAM 2, CoTracker3, Video Depth Anything, and DINOv2. Ground-truth masks and tracks at frame zero establish the initial correspondence, but later segmentation, tracking, or depth errors still limit measurement accuracy. The current tasks cover rigid bodies in photorealistic synthetic scenes, so real-video evaluation would require separate calibration, while deformable bodies, fluids, and articulated motion would require di ff erent state variables and metrics. The audit includes eight related systems, including fast and full variants of the same model families, so its cross-model correlation describes this set rather than video models in general. 
+
+# 7 Conclusion 
+
+RigidBench shows why video prediction cannot be reduced to one leaderboard: the model that best preserves the frame need not reproduce object motion, and one falling object can accumulate more trajectory error than scenes with several contacts. The Wan 2.2 study carries this distinction inside the model: simulator fine-tuning improves trajectories with little change in SSIM, while the same ground truth identifies a position signal used by denoising, connecting a change in the output to physical information available within the model. 9References 
+
+[1] Rishabh Agarwal, Max Schwarzer, Pablo Samuel Castro, Aaron C. Courville, and Marc G. Bellemare. Deep reinforcement learning at the edge of the statistical precipice. In Advances in Neural Information Processing Systems , volume 34, 2021. [2] Hritik Bansal, Clark Peng, Yonatan Bitton, Roman Goldenberg, Aditya Grover, and Kai-Wei Chang. VideoPhy-2: A challenging action-centric physical commonsense evaluation in video generation. In 
+
+International Conference on Learning Representations , 2026. [3] Sili Chen, Hengkai Guo, Shengnan Zhu, Feihu Zhang, Zilong Huang, Jiashi Feng, and Bingyi Kang. Video depth anything: Consistent depth estimation for super-long videos. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 22831–22840, 2025. [4] Bradley Efron. Bootstrap methods: Another look at the jackknife. The Annals of Statistics , 7(1):1–26, 1979. [5] David Eigen, Christian Puhrsch, and Rob Fergus. Depth map prediction from a single image using a multi-scale deep network. In Advances in Neural Information Processing Systems , 2014. [6] Yanai Elazar, Shauli Ravfogel, Alon Jacovi, and Yoav Goldberg. Amnesic probing: Behavioral explanation with amnesic counterfactuals. Transactions of the Association for Computational Linguistics , 9:160–175, 2021. [7] John Hewitt and Percy Liang. Designing and interpreting probes with control tasks. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing , pages 2733–2743, 2019. [8] Sonia Joseph, Quentin Garrido, Randall Balestriero, Matthew Kowal, Thomas Fel, Shahab Bakhtiari, Blake Richards, and Mike Rabbat. Interpreting physics in video world models. arXiv preprint arXiv:2602.07050 ,2026. [9] Bingyi Kang, Yang Yue, Rui Lu, Zhijie Lin, Yang Zhao, Kaixin Wang, Gao Huang, and Jiashi Feng. How far is video generation from world model: A physical law perspective. In Proceedings of the 42nd International Conference on Machine Learning , volume 267 of Proceedings of Machine Learning Research ,pages 28991–29017, 2025. [10] Nikita Karaev, Yuri Makarov, Jianyuan Wang, Natalia Neverova, Andrea Vedaldi, and Christian Rupprecht. CoTracker3: Simpler and better point tracking by pseudo-labelling real videos. In IEEE/CVF International Conference on Computer Vision , pages 6013–6022, 2025. [11] Chenyu Li, Oscar Michel, Xichen Pan, Sainan Liu, Mike Roberts, and Saining Xie. PISA experiments: Exploring physics post-training for video di ff usion models by watching stu ff drop. In Proceedings of the 42nd International Conference on Machine Learning , volume 267 of Proceedings of Machine Learning Research ,pages 35685–35709, 2025. [12] Dacheng Li, Yunhao Fang, Yukang Chen, Shuo Yang, Shiyi Cao, Justin Wong, Michael Luo, Xiaolong Wang, Hongxu Yin, Joseph E. Gonzalez, Ion Stoica, Song Han, and Yao Lu. WorldModelBench: Judging video generation models as world models. In Advances in Neural Information Processing Systems , volume 38, 2025. [13] Sizhe Lester Li, Evan Kim, Xingjian Bai, Tong Zhao, Tao Pang, Max Simchowitz, and Vincent Sitzmann. Turning video models into generalist robot policies. arXiv preprint arXiv:2605.27817 , 2026. [14] Juyi Lin, Arash Akbari, Yumei He, Lin Zhao, Haichao Zhang, Arman Akbari, Xingchen Xu, Zoe Y. Lu, Enfu Nan, Hokin Deng, Edmund Yeh, Sarah Ostadabbas, Yun Fu, Jennifer Dy, Pu Zhao, and Yanzhi Wang. PhyGround: Benchmarking physical reasoning in generative world models. arXiv preprint arXiv:2605.10806 , 2026. [15] Saman Motamed, Laura Culp, Kevin Swersky, Priyank Jaini, and Robert Geirhos. Do generative video models understand physical principles? In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , pages 948–958, 2026. 
+
+10 [16] NVIDIA. World simulation with video foundation models for physical ai. arXiv preprint arXiv:2511.00062 ,2025. [17] Maxime Oquab, Timothée Darcet, Théo Moutakanni, Huy V. Vo, Marc Szafraniec, Vasil Khalidov, Pierre Fernandez, Daniel Haziza, Francisco Massa, Alaaeldin El-Nouby, et al. DINOv2: Learning robust visual features without supervision. Transactions on Machine Learning Research , 2024. [18] Shauli Ravfogel, Yanai Elazar, Hila Gonen, Michael Twiton, and Yoav Goldberg. Null it out: Guarding protected attributes by iterative nullspace projection. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics , pages 7237–7256, 2020. [19] Nikhila Ravi, Valentin Gabeur, Yuan-Ting Hu, Ronghang Hu, Chaitanya Ryali, Tengyu Ma, Haitham Khedr, Roman Rädle, Chloé Rolland, Laura Gustafson, Eric Mintun, Junting Pan, Kalyan Vasudev Alwala, Nicolas Carion, Chao-Yuan Wu, Ross Girshick, Piotr Dollár, and Christoph Feichtenhofer. SAM 2: Segment anything in images and videos. In International Conference on Learning Representations , 2025. [20] Ansh Kumar Sharma, Yixiang Sun, Ninghao Lu, Yunzhe Zhang, Jiarao Liu, and Sherry Yang. World-Gymnast: Training robots with reinforcement learning in a world model. arXiv preprint arXiv:2602.02454 ,2026. [21] Luming Tang, Menglin Jia, Qianqian Wang, Cheng Perng Phoo, and Bharath Hariharan. Emergent correspondence from image di ff usion. In Advances in Neural Information Processing Systems , volume 36, 2023. [22] Team Wan. Wan: Open and advanced large-scale video generative models. arXiv preprint arXiv:2503.20314 ,2025. [23] Rishi Upadhyay, Howard Zhang, Jim Solomon, Ayush Agrawal, Pranay Boreddy, Shruti Satya Narayana, Yunhao Ba, Alex Wong, Celso M. de Melo, and Achuta Kadambi. WorldBench: Disambiguating physics for diagnostic evaluation of world models. arXiv preprint arXiv:2601.21282 , 2026. [24] Yixuan Wang, Rhythm Syed, Fangyu Wu, Mengchao Zhang, Aykut Onol, Jose Barreiros, Hooshang Nayyeri, Tony Dear, Huan Zhang, and Yunzhu Li. Interactive world simulator for robot policy training and evaluation. arXiv preprint arXiv:2603.08546 , 2026. [25] Zhou Wang, Alan C. Bovik, Hamid R. Sheikh, and Eero P. Simoncelli. Image quality assessment: From error visibility to structural similarity. IEEE Transactions on Image Processing , 13(4):600–612, 2004. [26] Wayve. GAIA-3: Scaling world models to power safety and evaluation. https://wayve.ai/thinking/ gaia-3/ , 2025. Technical blog, 2 December 2025. [27] Chenyu Zhang, Daniil Cherniavskii, Andrii Zadaianchuk, Antonios Tragoudaras, Antonios Vozikis, Thijmen Nijdam, Derck W. E. Prinzhorn, Mark Bodracska, Nicu Sebe, and Efstratios Gavves. Morpheus: Benchmarking physical reasoning of video generative models with real physical experiments. arXiv preprint arXiv:2504.02918v1 , 2025. [28] Richard Zhang, Phillip Isola, Alexei A. Efros, Eli Shechtman, and Oliver Wang. The unreasonable eff ectiveness of deep features as a perceptual metric. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 586–595, 2018. 
+
+11 A Benchmark Construction and Ground Truth 
+
+RigidBench samples are generated from declarative files that describe the tasks, scenes, objects, materials, and renderer. This section records the configuration used for the released 5,000-example training set and 100-example evaluation set, whose manifests are fixed before rendering so that a sample identifier determines the task, scene, support surface, allowed objects, and random seed. 
+
+## A.1 Tasks 
+
+Each task defines a sequence of placements, a prompt template, the allowed camera directions, and any change to the support surface. Numeric values are sampled uniformly from the stated intervals, while object tags are resolved against the set named by the manifest row. Table 4 summarizes the five definitions, and Figure 1 shows representative evaluation frames. 
+
+Task Physical setup Prompt and camera direction Free fall One object is placed 0 .50–0 .70 m above the support. “{object} is dropping.” Any azimuth. Bounce One object tagged bouncy is placed 0 .50–0 .70 m above the support. The support restitution is 0 .6 and its friction is 0 .3. “{object} is dropping.” Any azimuth. Ramp collision Two opposing ramps each have length 0 .35–0 .45 m, height 0 .15–0 .25 m, and width 0 .20–0 .30 m. Their gap is 0 .10–0 .15 m, with one rolling object placed on each ramp. “{object} and {object} are rolling down two ramps facing each other.” Relative azimuth 70–110 ◦ or 250–290 ◦.Drop into cluster Three stackable objects form a cluster with gap 0.003–0 .008 m. A fourth object is placed 0 .50–0 .70 m above the support. “{object} is dropping onto a cluster of objects.” Any azimuth. Ball chain A ramp has length 0 .50–0 .70 m, height 0 .30–0 .45 m, and width 0 .30–0 .40 m. One object rolls toward a line of three objects, placed 0 .08–0 .12 m beyond the ramp with gaps of 0 .02–0 .04 m. “{object} is rolling down the ramp toward a row of objects.” Relative azimuth 60–150 ◦ or 210–300 ◦.Table 4. Task configurations. Camera directions are measured relative to the resolved task rotation. Ramp material is sampled from light wood, dark wood, polished white marble, and rough gray concrete. Prompt placeholders expand to the selected object’s name with an indefinite article. 
+
+The task builder uses four placement operations. It can place an object on a support or at a sampled height above it, create a passive five-face ramp, arrange objects in a line using their bounding boxes, or form a cluster. A cluster places n objects on a ring of radius 
+
+R = r + g/ 2sin( π/n ) , (5) where r is the largest selected object radius and g is the sampled gap. After placement, a two-dimensional Pymunk simulation runs for 80 steps at 1 /60 s with zero gravity. Circular footprints repel one another when they overlap, while damped springs keep them near their sampled positions. This short adjustment removes initial intersections before Blender attaches the rigid bodies. 
+
+## A.2 Training and Evaluation Partitions 
+
+The asset registry contains 12 scenes, 24 objects, and four ramp materials. The training set uses eight scenes and 16 objects, with the remaining four scenes and eight objects reserved for the held-out 12 evaluation conditions. Table 5 lists the exact identifiers, while each object file specifies its BlenderKit asset, scale, mass, friction, restitution, collision shape, and task tags. 
+
+Subset Configuration identifiers Training scenes hallway_interior , modern_loft , modern_luxury_kitchen ,
+
+> minimal_white_kitchen
+
+, modern_japandi_dining , dining_room_set ,
+
+> modular_flat
+
+, coastal_living_room 
+
+Held-out scenes beach_gazebo , butterfly_mural_room , cozy_living_room ,
+
+> modern_warm_kitchen
+
+Training objects apple , orange , lemon , kiwi , pomegranate , pear , mango , banana , watermelon ,
+
+> baseball
+
+, bouncy_ball , rugby_ball , red_bull_can , plastic_bottle ,
+
+> large_dice
+
+, food_can 
+
+Held-out objects peach , tomato , coconut , tennis_ball , toy_duck , cricket_ball , rubiks_cube ,
+
+> soda_can
+
+Table 5. Scene and object partitions. The identifiers correspond directly to the released YAML files. 
+
+The fixed training manifest contains 5,000 examples, with 625 in each training scene. Its task counts are 1,047 free-fall, 1,000 bounce, 953 ball-chain, 1,000 drop-into-cluster, and 1,000 ramp-collision examples. The evaluation manifest crosses the training and held-out scene and object sets, as shown in Table 6. Each of its four partitions contains five examples from every task, giving 20 examples per task and 100 in total. 
+
+Partition Scene set Object set Examples Training Training Training 5,000 In-distribution Training Training 25 OOD scene Held-out Training 25 OOD object Training Held-out 25 OOD both Held-out Held-out 25 Table 6. Data partitions. Each evaluation partition contains five examples from each task. Training examples and evaluation examples are disjoint. 
+
+Each manifest row stores the sample identifier, task, scene, support surface, seed, partition, and allowed object identifiers. The seed initializes Python, NumPy, and Cycles, fixing the sampled dimensions, assets, materials, layout adjustment, task rotation, and camera selection. 
+
+## A.3 Scene Layout and Camera Selection 
+
+Each scene configuration names one or more planar support surfaces by center, size, and long-axis orientation. Once the task has been assembled, its axis-aligned footprint ( LT , W T ) must fit a support of size ( LS , W S ). For a rotation ψ, the condition is 
+
+LT |cos ψ| + WT |sin ψ| ≤ LS , (6) 
+
+LT |sin ψ| + WT |cos ψ| ≤ WS . (7) The implementation solves these inequalities over the first quadrant, tiles the valid intervals using the rectangle’s symmetries, rotates them into the support’s coordinate frame, and samples an angle in proportion to interval length. 13 A layout that fits the support may still be hidden by furniture or other scene geometry. The camera search therefore tests azimuths every 15 ◦ within the range allowed by the task. It samples approximately 16 surface points from each target mesh and casts a ray from the candidate camera to every point. The first task rotation with at least 50% visibility is accepted. If none of eight rotations reaches that threshold, the search uses the pair with the highest visible fraction. The camera looks at the padded joint bounding box of the actors and support. It uses a 35 mm lens, 10 ◦ elevation, and a distance equal to 1 .4 times the largest framed extent, with a minimum of 1 .4 m. Depth of field is disabled. 
+
+## A.4 Simulation, Rendering, and Stored State 
+
+Table 7 gives the settings shared by every sample. Blender’s Bullet solver advances the rigid bodies before a single Cycles render produces RGB, object index, and depth from the same camera, with the latter two passes written as 32-bit EXR files before conversion to compressed arrays. 
+
+Component Setting Video 1280 × 704, 49 frames, 24 frames per second, PNG frames and H.264 video Simulation Blender 4.5.9, 30 Bullet substeps per frame, 20 solver iterations Rigid bodies Per-object mass, friction, and restitution, with convex-hull active collisions, linear damping 0 .1, angular damping 0 .5, and collision margin 0 .001 m Passive geometry Mesh collisions with margin 0 .0001 m, default friction 0 .4, and restitution 0 .3, unless a task overrides the support Cycles 32 adaptive samples with threshold 0 .05, OptiX denoising, six maximum bounces, and at most three di ff use, glossy, or transmission bounces Camera 35 mm lens, 10 ◦ elevation, 1 .4 m minimum distance, framing multiplier 1 .4, bounding-box padding 0 .2 m Image formation Motion blur and depth of field disabled, with persistent render data enabled Table 7. Simulation and rendering configuration. These values come from the released render configuration, container image, and Blender setup code. 
+
+One rendered sample contains the files listed in Table 8. Its masks, depth, poses, contacts, and RGB frames all come from the same simulated scene. 14 Artifact Contents 
+
+> frames/
+
+, video.mp4 The 49 rendered RGB frames and their encoded video EXR pass streams Per-frame 32-bit object-index and Z passes under masks/ and depth/ , written by the Cycles compositor  
+
+> masks.npz
+
+Boolean array of shape ( T , N , H, W ) obtained by thresholding the object-index render pass, together with actor names  
+
+> depth.npz
+
+Float32 array of shape ( T , H, W ) containing the Cycles Z pass used by the trajectory code  
+
+> trajectories.npz
+
+Per-frame world positions, Blender-order quaternions, and finite di ff erences of position and rotation for every actor  
+
+> contacts.json
+
+Per-frame mesh-overlap events for actor pairs and passive geometry, with up to five contact points and normals per pair  
+
+> metadata.json
+
+Task, scene, surface, seed, partition, task and camera angles, footprint, actors and roles, camera intrinsics and extrinsics, resolution, frame rate, and prompt  
+
+> prompt.txt
+
+The instantiated task prompt Table 8. Per-sample artifact bundle. Here T = 49, H = 704, W = 1280, and N is the number of task actors, including passive task geometry such as ramps. 
+
+## A.5 Ground-truth Point Trajectories 
+
+Image-space trajectories are derived from the frame-zero depth pass and the simulated pose of each rigid body. For a query pixel ¯ u = [ u, v, 1] ⊤ with depth d0(u, v ), let K be the camera intrinsic matrix and S = diag(1 , −1, −1) convert computer-vision camera coordinates to Blender camera coordinates. The camera pose ( Rc, tc) and the actor pose ( Ra, 0, ta, 0) give the body-fixed point 
+
+pb = R⊤
+
+> a, 0
+
+RcS d 0(u, v )K−1 ¯u + tc − ta, 0
+
+ . (8) At frame t, the simulator pose carries this point back into the world, after which it is projected through the fixed camera: 
+
+pwt = Ra,t pb + ta,t , ut = πKSR ⊤ 
+
+> c
+
+(pwt − tc) , (9) where π([ X, Y , Z ]⊤) = [ X/Z, Y /Z ]⊤. Twenty query points are sampled without replacement from a three-pixel erosion of each actor’s frame-zero mask. A point remains visible only if it projects in front of the camera, lies inside the actor mask, and its camera depth is no more than 1 .01 times the rendered depth at that pixel. This removes points that later pass behind another object or the task geometry. 
+
+# B Evaluation Details and Metric Validation 
+
+Every model is evaluated on the same fixed manifest of 100 examples, using the rendered first frame and instantiated task prompt for generation. The same segmentation, tracking, and depth models process every output before the ten metrics are computed, and object-level averages include only actors marked as active in the metadata, excluding ramps and support surfaces. 
+
+## B.1 Model Generation and Temporal Alignment 
+
+Table 9 records the exact model identifiers and generation settings used for the audit. The two local models run for 50 inference steps in bfloat16, while hosted models are called through Replicate 15 with the first frame resized to 1280 × 720. OpenCV decodes the returned videos, which are then resized with Lanczos interpolation to 1280 × 704. 
+
+Model Identifier Generation and scoring configuration Wan 2.2 TI2V-5B Wan-AI/Wan2.2-TI2V-5B , local Di ff Synth 1280 × 704, 49 frames at 24 Hz, 50 steps Cosmos Predict 2.5-2B 
+
+> nvidia/Cosmos-Predict2.5-2B
+
+,revision 
+
+> diffusers/base/post-trained
+
+,local Di ff users 1280 × 704, 33 frames at 16 Hz, 50 steps Veo 3.1 / Fast google/veo-3.1 ,
+
+> google/veo-3.1-fast
+
+4 s, 720p, 16:9, audio disabled, scored as 24 Hz Kling 3.0 kwaivgi/kling-v3-video 3 s, pro mode, 16:9, audio disabled, scored as 24 Hz Seedance 2.0 / Fast bytedance/seedance-2.0 ,
+
+> bytedance/seedance-2.0-fast
+
+4 s, 720p, 16:9, audio disabled, scored as 24 Hz Grok Imagine xai/grok-imagine-video 4 s, 720p, automatic aspect ratio, scored as 24 Hz Table 9. Generation settings. Model identifiers are shown verbatim. Wan, Cosmos, Veo, and Kling receive a negative prompt. The Seedance and Grok calls do not. 
+
+We append the following su ffi x to the task prompt for every model: 
+
+“Static shot, locked-o ff camera, fixed tripod, stationary framing. No camera movement, no pan, no tilt, no zoom, no dolly, no drift, no handheld shake. Real-time playback at natural speed, 24 fps, no slow motion, no time-lapse. Realistic rigid-body physics: gravity, momentum, friction, and collisions consistent with reality. Photorealistic, continuous single take, no cuts. Motion begins on the first frame.” 
+
+Models that accept a negative prompt receive: 
+
+“camera motion, camera shake, pan, tilt, zoom, dolly, parallax, handheld, tracking shot, slow motion, slo-mo, time-lapse, sped-up, motion blur, static start, frozen start, hesitation, delayed action, pause at beginning, floating object, levitation, hovering, teleportation, morphing, warping, deformed geometry, scene cut, jump cut, montage, transition, multiple shots, text, watermark, low quality, low resolution” 
+
+Scoring keeps the reference timestamps tk = k/ 24 rather than changing the reference video to match each generator. RGB frames, track coordinates, and predicted disparity are linearly interpolated in physical time, while masks and visibility flags use nearest-neighbor sampling. Timestamps beyond the end of a generated video are discarded so that each comparison stops at the shorter sequence. Cosmos is resampled from 16 to 24 Hz, whereas the hosted clips already run at 24 Hz and contribute their first 49 frames. 
+
+## B.2 Perception and Feature Extraction 
+
+The reference and generated clips share their first frame, so the initial actor correspondence is known and can be used directly by SAM 2 and CoTracker3, as detailed in Table 10. This removes the need for a separate object detector or matching stage. 16 Quantity Model Input and settings Actor masks SAM 2.1 Hiera Large, facebook/ sam2.1-hiera-large 
+
+One frame-zero mask for each active actor. Propagated logits are thresholded at zero. Point tracks CoTracker3 o ffl ine Twenty points per active actor, sampled without replacement from a three-pixel erosion of its reference mask. Generated and reference visibility must both be true. Disparity Video Depth Anything Large, 
+
+> depth-anything/ Video-Depth-Anything-Large
+
+ViT-L encoder, input size 384, target rate 24 Hz. The saved output is disparity. Identity features DINOv2 ViT-L/14 64 × 64 track-centered patches resized to 224 × 224, ImageNet normalization, bfloat16 inference in batches of 256, and L2-normalized features. Full-frame features LPIPS with AlexNet Reference and generated RGB mapped from [0 , 255] to [ −1, 1]. Background tracks CoTracker3 o ffl ine At most 200 Shi-Tomasi corners with quality threshold 0 .01 and minimum separation 10 pixels, sampled within the background after a 15-pixel erosion. Table 10. Perception and feature settings. Each generated clip is processed independently. The corresponding reference sample supplies the frame-zero inputs. 
+
+## B.3 Metric Computation 
+
+Table 11 summarizes the calculation for one sample, while the equations below give the averaging order and validity conditions. Mask metrics first average active actors within a frame and then average the frames, as do the per-frame values of SSIM, LPIPS, and SI-MSE. ATE instead gives equal weight to every point-frame pair visible in both clips, and non-finite values are omitted from the corresponding mean. 
+
+Metric Per-sample calculation IoU ↑ Per-actor mask intersection over union, with an empty union assigned one. Centroid L2 ↓ Mask-centroid distance divided by image height. Empty actor-frames are omitted. Chamfer ↓ Sum of the two mean nearest-neighbor distances between foreground-pixel sets, divided by image height. Empty actor-frames are omitted. ATE ↓ Mean track-point distance over jointly visible point-frames, divided by image height. ATE-3D ↓ Actor-position RMSE divided by the mean reference displacement of actors moving more than 0 .01 m. SI-MSE ↓ Per-frame variance of the log-depth residual after one clip-level a ffi ne disparity alignment. SSIM ↑ Mean frame SSIM from pytorch_msssim , with data range 255. LPIPS ↓ Mean frame LPIPS with an AlexNet backbone. IdDrift ↓ One minus DINOv2 patch cosine similarity, averaged within actors and then across actors, excluding frame zero. BGDrift ↓ Confidence-weighted residual from a per-frame RANSAC similarity transform, divided by image height. Table 11. All reported measurements. Arrows show the direction of better performance. The object-level scores use active actors only. 
+
+17 Mask and image-space metrics. Let Ma,t and bMa,t be the reference and generated masks for active actor a at frame t, c(M) their pixel centroid, and S(M) their foreground-pixel set. For any per-actor quantity qa,t , define the nested mean used by the mask metrics as 
+
+qa,t t,a = 1
+
+|T q|
+
+X
+
+> t∈T q
+
+1
+
+|A q,t |
+
+X
+
+> a∈A q,t
+
+qa,t , (10) where Aq,t contains actors for which qa,t is defined and Tq contains frames with at least one such actor. Also let 
+
+d(P , Q ) = 1
+
+|P |
+
+X
+
+> p∈P
+
+min  
+
+> q∈Q
+
+∥p − q∥2. (11) The three mask scores are IoU = 
+
+* |Ma,t ∩ bMa,t ||Ma,t ∪ bMa,t |
+
++
+
+> t,a
+
+, (12) L2 = 
+
+* ∥c(Ma,t ) − c( bMa,t )∥2
+
+H
+
++
+
+> t,a
+
+, (13) Chamfer = 
+
+* d(S(Ma,t ), S ( bMa,t )) + d(S( bMa,t ), S (Ma,t )) 
+
+H
+
++
+
+> t,a
+
+. (14) An empty IoU union contributes one. Actor-frames for which either mask is empty are omitted from L2 and Chamfer. If Q is the set of point-frame pairs visible in both clips, with reference and generated image coordinates up,t and bup,t , then ATE = 1
+
+H|Q| 
+
+X
+
+> (p,t )∈Q
+
+∥bup,t − up,t ∥2. (15) Unlike the mask scores, ATE weights every visible point-frame pair equally. 
+
+Depth alignment, ATE-3D, and SI-MSE. Video Depth Anything predicts disparity up to a clip-dependent a ffi ne transformation. Its output is bilinearly resized to the reference grid when necessary. Let dpred  
+
+> t
+
+(i, j ) be predicted disparity and Zref  
+
+> t
+
+(i, j ) be rendered depth. One scale and o ff set are fitted over all frames and valid pixels in the clip: (bs, bc) = arg min 
+
+> s,c
+
+X
+
+> (t,i,j )∈V D
+
+s d pred  
+
+> t
+
+(i, j ) + c − 1
+
+Zref  
+
+> t
+
+(i, j )
+
+!2
+
+, (16) where VD contains pixels with finite predicted disparity and reference depth in (0 , 100) m. Positive aligned disparities are inverted to obtain bZt . For the generated points Qa,t assigned to actor a and visible at frame t, the reconstructed actor position is 
+
+bpa,t = gmed nΠ−1bup,t , bZt (bup,t ) : p ∈ Q a,t 
+
+o , (17) where Π−1 uses the known camera intrinsics and extrinsics and depth is sampled bilinearly. The geometric median uses Weiszfeld’s algorithm with tolerance 10 −5 and at most 100 iterations. Let 
+
+V3 contain actor-frame pairs with a finite reconstruction, let ∆a = ∥pa,T a−1 − pa, 0∥2, and let Am = {a :
+
+∆a > 0.01 m }. The implemented 3D trajectory score is ATE-3D = 
+
+q
+
+|V 3|−1 P(a,t )∈V 3 ∥bpa,t − pa,t ∥22
+
+|A m|−1 Pa∈A m ∆a
+
+. (18) 18 For SI-MSE, let Vt contain pixels with valid reference and aligned predicted depth at frame t, and let δt,i,j = log bZt (i, j ) − log Zref  
+
+> t
+
+(i, j ). Then SI-MSE = 1
+
+|T D |
+
+X
+
+> t∈T D
+
+
+
+1
+
+|V t |
+
+X
+
+> (i,j )∈V t
+
+δ2 
+
+> t,i,j
+
+−
+
+
+
+1
+
+|V t |
+
+X
+
+> (i,j )∈V t
+
+δt,i,j 
+
+
+
+> 2
+
+ , (19) where TD contains frames with at least one valid pixel. 
+
+Full-frame metrics. Let Xt and bXt be the reference and generated RGB frames after temporal and spatial alignment. The reported scores are SSIM = 1
+
+T 
+
+> T−1
+
+X
+
+> t=0
+
+SSIM 255 (Xt , bXt ), (20) LPIPS = 1
+
+T 
+
+> T−1
+
+X
+
+> t=0
+
+LPIPS AlexNet (Xt , bXt ). (21) The first operator is the standard single-scale SSIM implementation in pytorch_msssim with data range 255. LPIPS receives RGB values mapped to [ −1, 1]. Both include frame zero. 
+
+IdDrift. A patch is retained when at least half of its requested width and height lie inside the image. Reference and generated patches are centered at their corresponding tracks at every jointly visible frame after frame zero. DINOv2 features are normalized before their dot product, and similarities are averaged within an actor before the actor means are averaged. This prevents actors with more visible points from receiving greater weight. With Pa denoting the valid point-frame pairs for actor a and Av the actors with at least one such pair, the exact calculation is IdDrift = 1 − 1
+
+|A v |
+
+X
+
+> a∈A v
+
+1
+
+|P a|
+
+X
+
+> (p,t )∈P a
+
+cos f (cref  
+
+> a,p,t
+
+), f (cgen  
+
+> a,p,t
+
+) . (22) 
+
+BGDrift. The union of the generated frame-zero actor masks defines the foreground. The back-ground is eroded with a 31 × 31 elliptical kernel before corner detection. At every later frame,  
+
+> estimateAffinePartial2D
+
+fits translation, rotation, and uniform scale between the frame-zero corners and their current positions. Corner weights are the product of their CoTracker3 confidences at the two frames. At least four corners are required. If RANSAC does not return a transform, raw displacement is used for that frame. Writing At for the fitted transform, x(t) 
+
+> i
+
+for a corner position, 
+
+wi,t for its confidence product, and Ct for corners with positive confidence at both endpoints gives BGDrift = 1
+
+H
+
+PT −1
+
+> t=1
+
+Pi∈C t wi,t ∥At (x(0)  
+
+> i
+
+) − x(t) 
+
+> i
+
+∥2
+
+PT −1
+
+> t=1
+
+Pi∈C t wi,t 
+
+. (23) 
+
+## B.4 Aggregation 
+
+Each example produces a JSON file of scalar measurements and an NPZ file containing available per-frame arrays. The released summary reports the arithmetic mean, population standard devi-ation, and finite count for each metric, followed by the same aggregation within each task. The confidence intervals and paired comparisons applied to these per-example results are reported with the extended model results in Section C. 19 B.5 Controlled Metric Perturbations 
+
+We test the three new metrics by changing one known quantity while holding a matched alternative fixed. Figure 7 plots the resulting responses. 0.0 0.2 0.4         
+
+> Displacement (m)
+> 0.0 0.2 0.4 0.6 0.8
+> Normalized error
+> Trajectory direction
+> ATE-3D ATE, lateral ATE, view ray
+> 010 20 30 40
+> Mean displacement (px)
+> 0.00 0.01 0.02 0.03
+> Height-normalized error  Background motion
+> BGDrift, jitter Raw displacement BGDrift, pan
+> 0.00 0.25 0.50 0.75 1.00
+> Severity
+> 0.0 0.2 0.4 0.6
+> Metric value
+> Object identity
+> IdDrift, identity IdDrift, gamma Pixel L2, identity Pixel L2, gamma
+
+Figure 7. Controlled metric perturbations. Left: equal 3D o ff sets are applied along the viewing ray and perpendicular to it. Center: coherent translation and independent corner jitter have matched raw displacement. Right: patches undergo an identity swap or a gamma change. Shading gives one standard error from the saved test output. 
+
+For ATE-3D, ten examples, split evenly between free fall and ramp collision, are perturbed at every frame by 0–0 .5 m. Moving the actor along the viewing ray leaves its image coordinate unchanged, so 2D ATE remains zero, whereas ATE-3D responds at the same rate as it does to a perpendicular displacement of equal magnitude. For BGDrift, 200 corners are followed across 49 frames under coherent translation and independent Gaussian jitter at matched mean displacements from 0 to 40 pixels. The fitted transform removes the translation, while its residual tracks the jitter. For IdDrift, ten frame-zero patches are tested over 20 trials. At severity q, the target swaps a patch with probability q, while the foil changes the same patch with γ = 1 + 1 .5q. IdDrift’s increase at maximum severity is 6 .3 times larger for the identity swap than for the gamma change, compared with 1 .3 times for pixel L2. 
+
+# C Extended Model Results 
+
+## C.1 Uncertainty Across Metrics 
+
+All intervals in this section use 20,000 percentile bootstrap resamples with the example as the resampling unit, preserving the frames, actors, and tracks that contribute to one per-example score. Figure 8 applies the same calculation to every model and metric in Table 3. All cells contain 100 finite values except Veo 3.1 on IdDrift, for which two clips contain no valid patch pairs and are omitted. 20 0.12 0.16 0.20 Wan 2.2 Cosmos 2.5 Veo 3.1 Veo 3.1 Fast Kling 3.0 Seedance 2.0 Seedance 2.0 Fast Grok Imagine 
+
+IoU ↑   
+
+> 0.02 0.04 0.06
+
+SI-MSE ↓   
+
+> 0.20 0.25 0.30 Wan 2.2 Cosmos 2.5 Veo 3.1 Veo 3.1 Fast Kling 3.0 Seedance 2.0 Seedance 2.0 Fast Grok Imagine
+
+Centroid L2 ↓   
+
+> 0.72 0.80 0.88
+
+SSIM ↑    
+
+> 0.3 0.4 0.5 0.6 Wan 2.2 Cosmos 2.5 Veo 3.1 Veo 3.1 Fast Kling 3.0 Seedance 2.0 Seedance 2.0 Fast Grok Imagine
+
+Chamfer ↓   
+
+> 0.08 0.12 0.16
+
+LPIPS ↓    
+
+> 0.15 0.20 0.25 0.30 Wan 2.2 Cosmos 2.5 Veo 3.1 Veo 3.1 Fast Kling 3.0 Seedance 2.0 Seedance 2.0 Fast Grok Imagine
+
+ATE ↓   
+
+> 0.45 0.50 0.55
+
+IdDrift ↓    
+
+> 1.8 2.4 3.0 3.6 Wan 2.2 Cosmos 2.5 Veo 3.1 Veo 3.1 Fast Kling 3.0 Seedance 2.0 Seedance 2.0 Fast Grok Imagine
+
+ATE-3D ↓    
+
+> 1234
+
+BGDrift × 10³ ↓ Figure 8. Uncertainty across all ten measurements. Points are model means and bars are bootstrap 95% confidence intervals over evaluation examples. Models follow the same fixed row order in every panel. BGDrift is multiplied by 10 3.
+
+Trajectory and depth measurements have wider intervals than the full-frame appearance scores, and some neighboring model means cannot be separated on a single metric. The larger pattern remains clear, however, because the models with the lowest trajectory errors are not those with the highest SSIM or lowest LPIPS. 21 C.2 Paired Model Comparisons 
+
+Because every model is evaluated on the same examples, a comparison can be made before averaging. For model i against model j, let wk be one when i is better on example k, one half for a tie, and zero otherwise. We report PoI( i, j ) = 1
+
+N
+
+NX
+
+k=1 
+
+wk , (24) and bootstrap the matched wk values. This statistic asks how often one model improves on another without allowing a few large errors to determine the comparison. Seedance F Seedance Grok Veo Veo F Wan Kling Cosmos Seedance F Seedance Grok Veo Veo F Wan Kling Cosmos                                                         
+
+> –0.49 0.68 0.65 0.72 0.67 0.81 0.80
+> 0.51 –0.64 0.58 0.63 0.72 0.72 0.69 0.32 0.36 –0.51 0.54 0.55 0.69 0.68 0.35 0.42 0.49 –0.55 0.56 0.60 0.68 0.28 0.37 0.46 0.45 –0.48 0.59 0.61 0.33 0.28 0.45 0.44 0.52 –0.49 0.63 0.19 0.28 0.31 0.40 0.41 0.51 –0.57
+> 0.20 0.31 0.32 0.32 0.39 0.37 0.43 –
+
+ATE-3D ↓ 
+
+> Wan Kling Cosmos Veo F Grok Veo Seedance Seedance F
+
+Wan Kling Cosmos Veo F Grok Veo Seedance Seedance F                                                         
+
+> –0.47 0.52 0.57 0.42 0.58 1.00 1.00
+> 0.53 –0.58 0.52 0.55 0.55 0.94 0.96
+> 0.48 0.42 –0.55 0.48 0.58 0.97 0.97
+> 0.43 0.48 0.45 –0.46 0.61 0.95 0.97
+> 0.58 0.45 0.52 0.54 –0.57 0.95 0.96
+> 0.42 0.45 0.42 0.39 0.43 –0.91 0.98 0.00 0.06 0.03 0.05 0.05 0.09 –0.92 0.00 0.04 0.03 0.03 0.04 0.02 0.08 –
+
+SSIM ↑ 
+
+0.0 0.5 1.0 
+
+Probability that the row model is better 
+
+Figure 9. Matched probability of improvement. Each cell is the probability that the row model is better than the column model on the same example. Rows and columns are ordered by the corresponding model mean, best first. Bold entries have a paired bootstrap 95% confidence interval that excludes 0 .5. 
+
+The two matrices reverse the models at their extremes. Each Seedance variant beats every non-Seedance model on ATE-3D in at least 65% of examples. On SSIM, every non-Seedance model beats both variants in at least 91%. The di ff erence seen in the model means therefore also appears within matched examples. 22 C.3 Task Breakdown                                                
+
+> Model Ball chain Ramp collision Drop into cluster Bounce Free fall Wan 2.2 1.02 1.39 1.78 3.70 5.30 Cosmos 2.5 1.12 1.32 2.01 4.02 5.74 Veo 3.1 0.75 1.86 1.69 3.53 4.54 Veo 3.1 Fast 0.86 1.59 1.80 3.66 5.22 Kling 3.0 1.52 1.56 1.79 3.89 5.02 Seedance 2.0 1.07 1.27 1.21 2.55 3.97 Seedance 2.0 Fast 0.87 1.12 1.32 2.76 3.83
+> Grok Imagine 0.97 1.28 1.41 3.27 4.58 Table 12. ATE-3D by task. Each cell is the mean over the 20 examples for that task. Lower is better; best and second-best values are bold and underlined.
+
+Free fall has the highest ATE-3D for all eight models, while ball chain has the lowest for all eight. The shared ordering follows the duration of motion more closely than the number of objects or contacts. Position errors accumulate throughout a fall, whereas much of a collision clip occurs before or after a short interaction. 
+
+# D Fine-tuning Wan 2.2 
+
+## D.1 Training Data and Objective 
+
+Both runs start from Wan 2.2 TI2V-5B and use the 5,000-example training manifest from Section A, which is disjoint from the evaluation manifest. Before optimization, Wan’s T5 model encodes the prompts and its VAE encodes the videos. The dataset contains 624 distinct prompts, so repeated prompts reuse the same text embedding, while all 49 frames are resized from 1280 ×704 to 640 ×352 before VAE encoding produces 13 temporal latent slots. The float16 text embeddings and video latents are streamed during training without spatial or temporal augmentation, and evaluation returns to the benchmark resolution of 1280 × 704. Each update starts from a ground-truth video latent z and samples one index t uniformly from the scheduler’s 1,000 training timesteps for each local batch. With Gaussian noise ϵ, the scheduler produces a noised latent qt (z, ϵ) and its flow target vt . The first temporal slot is then restored to its clean value: 
+
+ezt = qt (z, ϵ), [ezt ]:,:,0:1 = [ z]:,:,0:1 . (25) The DiT predicts velocity from ezt , the timestep, and the cached text context c. The first slot is also excluded from the float32 MSE: 
+
+L(θ) = w(t) MSE  [fθ (ezt , t, c)] :,:,1: , [vt (z, ϵ)] :,:,1: 
+
+ , (26) where w(t) is Wan’s scheduler weight. This is the same first-frame pinning used when the resulting checkpoints generate videos for evaluation. 
+
+## D.2 Optimization and Parameter Updates 
+
+Full fine-tuning updates every DiT parameter except the text and time conditioning modules, which remain fixed. LoRA freezes the base DiT and inserts rank-32 updates into the attention and feed-forward projections of every block. Table 13 compares the two configurations. 23 Setting LoRA Full fine-tuning Trainable weights Rank 32, α = 32, dropout 0 All non-conditioning DiT weights Updated modules q, k, v, o, ffn.0 , ffn.2 All remaining DiT modules; 
+
+> text_embedding
+
+, time_embedding ,and time_projection fixed Distributed strategy DDP FSDP FULL_SHARD , wrapped by DiT block Batch per GPU 2 16 Gradient accumulation 8 batches 1 batch Eff ective batch 128 examples 128 examples Learning rate 1 × 10 −4 2 × 10 −5
+
+Cosine schedule 5,000-step horizon, 250-step warmup 3,000-step horizon, 150-step warmup Gradient checkpointing Disabled Enabled Evaluated checkpoints Every 500 steps through step 3,000 Every 500 steps through step 3,000 Table 13. Fine-tuning configurations. Both runs use eight H100 GPUs, bf16 mixed precision, fused AdamW with weight decay 0 .01, ϵ = 10 −8, default β values, gradient clipping at 1 .0, and random seed 42. 
+
+The LoRA run uses DDP because only the adapter tensors need gradients and optimizer state. Full fine-tuning uses FSDP to shard model weights, gradients, and AdamW state across the eight GPUs. Checkpoints are written every 500 updates. The LoRA configuration has a 5,000-step scheduler horizon, but the saved and evaluated run ends at step 3,000. 
+
+## D.3 Complete Checkpoint Results 
+
+Object motion and geometry Visual similarity and stability Regime Step IoU ↑ L2 ↓ Cham. ↓ ATE ↓ ATE-3D ↓ SI-MSE ↓ SSIM ↑ LPIPS ↓ IdDrift ↓ BGDrift ↓
+
+Base – .183 .220 .370 .200 2.64 .0288 .925 .056 .501 .739 LoRA 500 .185 .168 .272 .158 2.34 .0247 .929 .056 .525 .726 LoRA 1,000 .207 .164 .264 .154 2.31 .0250 .929 .056 .518 .718 LoRA 1,500 .195 .174 .282 .163 2.40 .0261 .925 .058 .519 .770 LoRA 2,000 .193 .165 .264 .159 2.44 .0260 .925 .058 .523 .736 LoRA 2,500 .194 .163 .261 .153 2.38 .0277 .923 .060 .527 .737 LoRA 3,000 .186 .171 .276 .163 2.59 .0274 .924 .060 .522 .762 Full FT 500 .185 .187 .306 .159 2.59 .0288 .924 .062 .518 .717 
+
+Full FT 1,000 .190 .171 .273 .150 2.42 .0298 .924 .064 .527 .745 Full FT 1,500 .191 .168 .270 .147 2.20 .0274 .927 .062 .520 .733 Full FT 2,000 .193 .160 .253 .137 2.21 .0280 .926 .061 .529 .756 Full FT 2,500 .199 .165 .264 .150 2.11 .0262 .927 .058 .523 .737 Full FT 3,000 .193 .174 .281 .150 2.20 .0256 .925 .060 .525 .755 
+
+Table 14. Complete checkpoint sweep. Means over the 100-example evaluation set. Bold checkpoint labels mark the minimum ATE-3D within each run and are the checkpoints used in the subsequent comparisons. Within each metric, the best and second-best values are bold and underlined. BGDrift is multiplied by 10 3.
+
+24 The checkpoints marked in Table 14 have the lowest ATE-3D in their respective saved sweeps. The same 100 examples are used for this selection and for the reported metrics. These are therefore descriptions of the observed sweeps rather than held-out checkpoint-selection estimates. Table 15 gives paired bootstrap intervals from 20,000 resamples of the matched examples.                                                                                
+
+> Metric LoRA 1k −base Full FT 2.5k −base Full FT −LoRA IoU ↑+.024 [+ .008 ,+.041] +.016 [+ .001 ,+.030] −.009 [ −.027 ,+.009] L2 ↓−.056 [ −.076 ,−.036] −.055 [ −.076 ,−.035] +.001 [ −.019 ,+.021] Cham. ↓−.106 [ −.146 ,−.068] −.107 [ −.148 ,−.067] −.000 [ −.039 ,+.038] ATE ↓−.045 [ −.064 ,−.027] −.050 [ −.069 ,−.031] −.004 [ −.024 ,+.015] ATE-3D ↓−.33 [ −.58 ,−.10] −.53 [ −.86 ,−.25] −.20 [ −.50 ,+.07] SI-MSE ↓−.00376 [ −.00741 ,−.00091] −.00262 [ −.00583 ,−.00002] +.00114 [+ .00005 ,+.00243] SSIM ↑+.0042 [+ .0012 ,+.0072] +.0021 [+ .0000 ,+.0044] −.0021 [ −.0042 ,+.0004] LPIPS ↓−.0006 [ −.0031 ,+.0016] +.0020 [ −.0001 ,+.0040] +.0026 [+ .0007 ,+.0048] IdDrift ↓+.017 [ −.002 ,+.036] +.022 [+ .001 ,+.045] +.005 [ −.011 ,+.022] BGDrift ↓−.021 [ −.050 ,+.007] −.001 [ −.038 ,+.042] +.020 [ −.007 ,+.051]
+
+Table 15. Paired changes for the selected checkpoints. Each entry is the mean paired change followed by its bootstrap 95% confidence interval. Positive is better for IoU and SSIM; negative is better for every other row. BGDrift is multiplied by 10 3.
+
+Both selected checkpoints improve all six motion and geometry measurements relative to base Wan. SSIM also rises slightly, while the LPIPS and BGDrift intervals include zero for both runs. Full fine-tuning raises IdDrift by 0 .022 with an interval of [0 .001 , 0.045], whereas the LoRA change is not resolved. The ATE-3D di ff erence between the selected full and LoRA checkpoints is −0.20 with an interval of [ −0.50 , 0.07], so their ordering is not established by these examples. 
+
+## D.4 Task and Evaluation-Partition Breakdowns 
+
+Model Ball chain Ramp collision Drop into cluster Bounce Free fall Base 1.02 1.39 1.78 3.70 5.30 LoRA 1k 0.94 1.14 1.41 3.20 4.85 Full FT 2.5k 0.78 1.12 1.51 3.21 3.94 
+
+Table 16. Selected checkpoints by task. Mean ATE-3D over 20 examples per task. Lower is better; best and second-best values are bold and underlined. ATE-3D ↓ SSIM ↑
+
+Model ID Scene Object Both ID Scene Object Both Base 2.64 2.31 3.63 1.98 0.946 0.906 0.946 0.901 LoRA 1k 2.20 2.18 3.36 1.50 0.948 0.916 0.946 0.906 
+
+Full FT 2.5k 1.95 1.99 3.03 1.48 0.947 0.910 0.948 0.902 Table 17. Selected checkpoints by evaluation partition. ID uses training scenes and objects; Scene, Object, and Both use the corresponding held-out sets. Each cell averages 25 examples. Best and second-best values are bold and underlined. 
+
+25 Both selected checkpoints reduce mean ATE-3D on every task and evaluation partition. Their relative ordering varies by task: full fine-tuning is lower on ball chain, ramp collision, and free fall, while LoRA is slightly lower on drop into cluster and bounce. Free fall accounts for the largest absolute change under full fine-tuning. Neither selected checkpoint lowers the split-mean SSIM relative to base Wan. 
+
+# E Probe and Intervention Details 
+
+## E.1 Actor-Aligned Residual Streams 
+
+The activation sweep uses the 5,000 simulator-generated training videos rather than the 100 evalua-tion examples, splitting them into 4,000 for probe training, 500 for validation, and 500 for testing. Since the full fine-tuned backbone was trained on the same corpus, its probe scores describe access to state on that training distribution. Each 49-frame video is resized to 352 ×640 and encoded once with Wan’s VAE. This gives 13 temporal latent slots on a 44 × 80 spatial grid, which Wan patchifies into a 13 × 22 × 40 residual-stream grid with width 3,072. We add noise at five positions τ ∈ { 0.1, 0.3, 0.5, 0.7, 0.9} along the 1,000-step training schedule, keep the first temporal latent clean, and run the noised reference latent through the model with its text conditioning. Seed 0 fixes the noise draw, and hooks record the output of all 30 DiT blocks. The temporal slot mapping follows Wan’s 4 n + 1 VAE. Slot 0 contains pixel frame 0, while slot s > 0contains frames 4 s − 3 through 4 s. For each slot, the simulator masks are merged over its pixel frames and max-pooled to the 22 × 40 token grid. If Ma,s is the resulting set of tokens for actor a, the probe input at block ℓ is 
+
+hℓ,τ a,s = 1
+
+|Ma,s |
+
+X
+
+> (i,j )∈Ma,s
+
+hℓ,τ s,i,j . (27) A row is omitted when no token is covered. Position is the actor’s mean world position over the pixel frames assigned to the slot. Contact is one when any simulator contact in those frames involves the actor. The resulting dataset has one row for every visible example–actor–slot combination.             
+
+> Component Configuration Backbones Randomly initialized Wan architecture, base Wan 2.2 TI2V-5B, and the full fine-tuning checkpoint at step 2,500 Extraction sites 30 blocks at five schedule fractions, giving 150 cells per backbone Probe rows 148,303 training, 19,696 validation, and 18,637 test actor–time rows after visibility filtering Linear probe One a ffi ne map from 3,072 dimensions to the target MLP probe 3,072–64–target with a ReLU hidden layer Optimization Adam for 20 epochs, batch size 4,096, learning rate 10 −3, seed 0 Objectives and scores MSE and test R2for position; binary cross-entropy and test ROC-AUC for contact Table 18. Probe configuration. Every layer, schedule fraction, target, probe class, and label condition is fit separately.
+
+26 E.2 Probe Fits and Noise-Resolved Results 
+
+Every cell uses the same example-level split, so rows from one video cannot cross splits. For the shu ffl ed-label control, the training labels are permuted once with the same seed. Validation and test labels remain unchanged. The random backbone retains Wan’s VAE, token layout, and architecture but resets the DiT parameters. It separates information already present in the input representation from information organized by pretraining. 
+
+Position ( R2) Contact (AUC) Model Linear MLP Linear MLP Random init 0.388 ( −0.007) 0.769 ( −0.011) 0.696 (0 .489) 0.766 (0 .489) Base Wan 0.709 ( −0.006) 0.878 ( −0.003) 0.799 (0 .506) 0.816 (0 .515) Full fine-tuning 0.785 (−0.008) 0.924 (−0.006) 0.837 (0 .505) 0.864 (0 .509) Table 19. Probe scores across layers and noise levels. Each entry is the mean test score over 150 layer–noise cells. The score from a probe trained on shu ffl ed labels is shown in parentheses. Best and second-best trained scores are bold and underlined. 
+
+The shu ffl ed controls remain close to R2 = 0 and AUC = 0 .5. Base Wan improves substantially over the random network under a linear readout, and full fine-tuning raises the mean score for both targets and both probe classes. The gap is smaller for the MLP because a nonlinear head can recover much of the spatial information already present in the VAE latent and token layout. 0.0 0.5                 
+
+> Position ( R2)
+> τ= 0.1 τ= 0.3 τ= 0.5 τ= 0.7 τ= 0.9
+> 015 0.6 0.8
+> Contact (AUC)
+> 15 15 15 15 29
+> DiT block Random init Base Wan Full fine-tuning
+
+Figure 10. Linear probes at every block and schedule fraction. Each point is one of the 150 fitted cells per model and target. Faint horizontal lines mark chance. The random network approaches the trained models for position at τ = 0 .9, while the separation is clear at the other schedule positions. 
+
+27 0.0 0.5                 
+
+> Position ( R2)
+> τ= 0.1 τ= 0.3 τ= 0.5 τ= 0.7 τ= 0.9
+> 015 0.6 0.8
+> Contact (AUC)
+> 15 15 15 15 29
+> DiT block Random init Base Wan Full fine-tuning
+
+Figure 11. MLP probes at every block and schedule fraction. The nonlinear readout narrows the di ff erence between random and trained networks, especially for position. Contact retains a clearer ordering between the three backbones. 
+
+Additional probe sweeps use simulator quantities aligned to the same actor–time rows. Table 20 reports their mean score across all cells and their strongest individual cell. Position remains strong across the sweep, while orientation, angular velocity, and contact normal remain weak. The MLP finds stronger acceleration and velocity scores in a few cells, but these signals do not persist across layers and noise levels. 
+
+Linear MLP Simulator target Mean Best cell Mean Best cell Position 0.709 0.772 0.879 0.926 Orientation 0.024 0.055 0.035 0.065 Linear velocity -14.958 -1.497 -0.010 0.278 Linear acceleration -0.001 0.353 0.149 0.493 Angular velocity -0.095 -0.023 -0.002 0.001 Contact normal 0.096 0.141 0.049 0.138 Table 20. Continuous-state probes on base Wan. Entries are test R2, averaged over the 150 layer–noise cells or taken at the best cell. A negative value is worse than predicting the test-set mean. 
+
+## E.3 Position-Aligned Interventions 
+
+The intervention sweep uses base Wan at τ ∈ { 0.3, 0.5, 0.7}. A separate position subspace is fitted for each of the 90 block–schedule cells. Within a cell, valid actor–time rows are randomly split 80/20, and INLP repeatedly fits ridge regression with coe ffi cient 0 .05 on the projected training activations. The row space of each regressor is added to the removed basis until a new regressor has training 
+
+R2 < 0.05 or 30 iterations have run. Across the saved cells, the resulting position basis has rank 23–50, with mean rank 33.8 out of 3,072. 28 The rank-matched control is a random orthonormal basis. To construct the variance-matched control, let Xc be the centered activation matrix and Bp the position basis, giving removed variance 
+
+Vp = ∥XcBp∥2
+
+> F
+
+n − 1 . (28) Let λ1 ≥ λ2 ≥ · · · be the eigenvalues of the activation covariance, and choose the smallest K for which PKi=1 λi ≥ Vp. Removing a fraction α of the top-K principal-component subspace removes 
+
+α(2 − α) PKi=1 λi variance, so we use 
+
+α = 1 −
+
+s
+
+1 − Vp
+
+PKi=1 λi
+
+. (29) This control changes directions with at least as much activation variance as the position basis, while matching the total amount removed. For all three variants, the forward hook applies eh = h−α(hB )B⊤ to every residual token at the chosen block. Actor pooling is used to learn the position basis but is not used by the intervention itself. We compare the flow-matching loss with and without the hook under the same noised latent, excluding the clean first temporal slot. Continuing through the remaining blocks gives the full-model e ff ect. Applying Wan’s final time-conditioned head directly to the modified state gives the direct-head eff ect, and the two readouts coincide exactly at block 29. The intervention evaluates the first 100 training clips after fitting the bases on the full activation corpus. Table 21 averages over blocks and the three schedule fractions. Under both readouts, the position-aligned intervention is larger than either control for all 100 clip-level averages and for the mean at every block.                   
+
+> Removed subspace Full model ∆LDirect head ∆L
+> Position (INLP) 0.602 [0 .563 ,0.644] 1.229 [1 .157 ,1.304] Variance-matched PC 0.023 [0 .020 ,0.026] 0.055 [0 .052 ,0.059] Random subspace 0.012 [0 .012 ,0.012] 0.012 [0 .011 ,0.012] Table 21. Aggregate intervention e ff ects. Each entry is the mean loss increase followed by a bootstrap 95% confidence interval. We first average each of the 100 clips over 30 blocks and three noise levels, then resample clips 20,000 times.
+
+29 −10 −2 
+
+> 010 −2
+> 10 −1
+> 10 0
+> Full model  Δ loss
+
+τ = 0.3 τ = 0.5 τ = 0.7    
+
+> 015 −10 −2
+> 010 −2
+> 10 −1
+> 10 0
+> Direct head  Δ loss
+> 15 15 29
+
+DiT block Position (INLP) Variance-matched PC Random subspace Figure 12. Intervention e ff ects by block and schedule fraction. Lines are means over 100 clips and shading gives bootstrap 95% confidence intervals. The symmetric-log axis is linear between −0.01 and 0 .01, allowing the near-zero controls and the position intervention to remain visible in the same panels. 
+
+30

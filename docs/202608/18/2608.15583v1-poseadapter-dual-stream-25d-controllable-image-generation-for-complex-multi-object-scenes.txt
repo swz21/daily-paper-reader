@@ -1,0 +1,453 @@
+Title: PoseAdapter: Dual-Stream 2.5D Controllable Image Generation for Complex Multi-Object Scenes
+
+URL Source: https://arxiv.org/pdf/2608.15583v1
+
+Published Time: Tue, 18 Aug 2026 01:00:25 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# PoseAdapter: Dual-Stream 2.5D Controllable Image Generation for Complex Multi-Object Scenes 
+
+# Yufeng Chi 
+
+cyf23@mails.tsinghua.edu.cn Tsinghua University Beijing, China 
+
+# Huimin Ma 
+
+National University of Defense Technology Hunan, China 
+
+# Fan Gao 
+
+Tsinghua University Beijing, China 
+
+# Zhice Niu 
+
+Tsinghua University Beijing, China 
+
+# Keqin Li 
+
+Tsinghua University Beijing, China 
+
+# Jianmin Li ∗
+
+lijianmin@mail.tsinghua.edu.cn Tsinghua University Beijing, China (a) Single-object Setting 
+
+(b) Multi-object Setting                  
+
+> Amajestic black horse walking on snowy field Awooden chair in a well-lit minimalist room
+> Asports motorcycle on a neon-lit wet city street Amedieval knight standing in misty ancient ruins
+> Abear wearing goggles and jacket riding a
+> red motorcycle
+> Ayellow bus , a green Jeep and a black sedan
+> Abear wearing goggles and jacket
+> standing next to a
+> red motorcycle
+
+Figure 1: High-fidelity 2.5D controllable generation by PoseAdapter. (a) Single-object Setting: Precise adjustment of 3D orienta-tions (azimuth, polar, rotation) and spatial bounding boxes. (b) Multi-object Setting: Strict attribute decoupling in complex scenes, assigning specific identities and colors to distinct entities while eliminating attribute leakage. 
+
+This work is licensed under a Creative Commons Attribution 4.0 International License. 
+
+MM ’26, Rio de Janeiro, Brazil 
+
+© 2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2213-4/2026/11 https://doi.org/10.1145/3767308.3835074 
+
+## Abstract 
+
+While Text-to-Image (T2I) diffusion models have achieved remark-able success, precise spatial and orientational control in multi-object scenes remains a persistent challenge. Existing methods either rely on computationally expensive dense 3D maps or suffer from se-vere attribute leakage and “cut-and-paste” artifacts. To address these limitations, we propose PoseAdapter , a lightweight frame-work for high-fidelity 2.5D controllable image generation. Instead arXiv:2608.15583v1 [cs.CV] 16 Aug 2026 MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Yufeng Chi et al. 
+
+of dense spatial maps, it establishes precise spatial-angular an-chors using an efficient condition layout: individual object cap-tions, 2D bounding boxes, and 3D angles. To resolve the genera-tive trade-off between strict instance isolation and global coher-ence, we introduce a Context-Aware Dual-Stream Representation. By injecting local object tokens and relation-enriched scene to-kens into the visual stream of modern MM-DiT architectures via parallel masked and unmasked pathways, PoseAdapter eliminates attribute leakage while preserving natural inter-object relation-ships and scene-level coherence. To support this paradigm, we con-struct OrientLayout , a high-quality dataset featuring standardized 2.5D annotations and instance-level decoupled semantics. Extensive experiments demonstrate that PoseAdapter outperforms state-of-the-art baselines in spatial accuracy, orientational precision, and multi-object visual fidelity. Code and dataset will be available at https://github.com/cyf23/PoseAdapter. 
+
+## CCS Concepts 
+
+• Computing methodologies → Computer vision ; Scene under-standing ; Image processing ; Neural networks .
+
+## Keywords 
+
+Controllable Image Generation, Layout-to-Image, Diffusion Models, Orientation Control   
+
+> ACM Reference Format:
+> Yufeng Chi, Huimin Ma, Fan Gao, Zhice Niu, Keqin Li, and Jianmin Li. 2026. PoseAdapter: Dual-Stream 2.5D Controllable Image Generation for Complex Multi-Object Scenes. In Proceedings of the 34th ACM International Conference on Multimedia (MM ’26), November 10–14, 2026, Rio de Janeiro, Brazil. ACM, New York, NY, USA, 10 pages. https://doi.org/10.1145/3767308.3835074
+
+## 1 Introduction 
+
+Recent advances in Text-to-Image (T2I) diffusion models have greatly expanded the capabilities of visual content creation, enabling the generation of realistic and diverse images from natural language de-scriptions [14, 33, 37]. However, text prompts alone lack the spatial granularity required for complex, real-world multimedia applica-tions. Users often struggle to dictate the exact placement, size, and facing direction of individual entities within a scene. Precise spa-tial and orientational control has therefore become an important research direction for closing the gap between semantic intent and fine-grained visual output. However, high-fidelity controllable generation remains challeng-ing due to the limitations of existing conditioning methods (Table 1). First, current approaches struggle to balance orientation control, condition efficiency, and real-world generalization. For instance, Zero-1-to-3 [23] achieves orientation control via novel view infer-ence but cannot handle complex contextual scenes. CompassCon-trol [30] allows lightweight inputs but is restricted to single-angle manipulation and relies on synthetic data, thereby limiting real-world generalization. To achieve comprehensive layout and orien-tational control in the wild, state-of-the-art frameworks [6, 35] rely on dense, computationally expensive representations, such as depth or CNOCS maps, which are cumbersome for interactive editing. Furthermore, ORIGEN [29] enables precise 3D grounding without 
+
+Table 1: Comparison of orientation-aware image generation paradigms. “Arch. Agnostic” denotes seamless integration with standard T2I architectures. “Lightweight Cond.” indi-cates that the method does not require dense spatial maps (e.g., depth or CNOCS maps) as input conditions. Method Arbitrary 3D Orient. Lightweight Cond. Real-World Domain Arch. Agnostic                         
+
+> Zero-1-to-3 [23] ✓××✓
+> CompassControl [30] ×✓×✓
+> ORIGEN [29] ✓×✓×
+> LOOSECONTROL [6] ××✓✓
+> SceneDesigner [35] ✓×✓✓
+> PoseAdapter (Ours) ✓✓✓✓
+
+dense maps; however, it relies on optimization with a one-step flow model, preventing integration with standard multi-step diffusion. Even when spatial and orientational grounding is achieved, or-chestrating complex multi-object scenes introduces a second major challenge: preventing attribute leakage. When handling multiple instances, generative models frequently suffer from semantic entan-glement, where the color, texture, or identity of one object bleeds into another. To mitigate this issue, a common strategy is to en-force strict spatial masks or bounded attention regions to isolate the generation of each object [5, 18, 30, 40, 44]. However, this hard-boundary isolation inevitably leads to visible “cut-and-paste” arti-facts. Without access to neighboring context, the network fails to capture inter-object relationships, thereby losing natural occlusion, relative depth, and consistent lighting. Consequently, resolving the trade-off between strict instance decoupling and global contextual harmony remains an open problem. To address these challenges, we propose PoseAdapter , a novel framework designed for precise and decoupled multi-object genera-tion. As shown in Figure 1, our method effectively handles complex spatial placements and dynamic viewpoint shifts in single-object generation, while strictly enforcing attribute decoupling to prevent semantic blending in multi-object compositions. PoseAdapter achieves this through two core designs. First, we in-troduce an efficient 2.5D hybrid condition layout for precise spatial and orientational control without dense 3D maps. By parameteriz-ing each instance using a semantic object caption, a 2D bounding box, and three Euler angles, our method defines a spatial-angular an-chor for each entity. Second, to resolve the trade-off between strict spatial confinement and natural physical blending, we propose a novel Context-Aware Dual-Stream Representation . Build-ing upon the initial spatial-angular anchors, we encode the multi-modal instance conditions into unified object tokens to establish tight semantic-spatial binding. A scene transformer then models inter-object interactions, producing relation-enriched scene tokens. During the generation phase, these two complementary represen-tations are integrated into the pre-trained diffusion backbone via parallel cross-attention pathways: a masked local stream that en-forces strict instance boundaries to eliminate attribute leakage, and an unmasked global stream that preserves inter-object coherence. To adapt to modern MM-DiT architectures [4, 14, 32], we deploy a modality-decoupled injection strategy targeting exclusively the visual stream, keeping textual pathways intact. PoseAdapter: Dual-Stream 2.5D Controllable Image Generation MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+To support the training and evaluation of 2.5D controllable gen-eration, we construct OrientLayout , a large-scale dataset with fine-grained spatial and orientational annotations. Extensive experi-ments demonstrate that PoseAdapter outperforms existing state-of-the-art layout and orientation-guided generation methods in visual quality, semantic alignment, and spatial and orientational precision, especially in complex multi-object scenarios. In summary, our main contributions are as follows: 
+
+• We propose PoseAdapter , a lightweight and effective frame-work that achieves precise multi-object T2I generation condi-tioned on a 2.5D layout (object captions, 2D bounding boxes, and 3D angles). 
+
+• We introduce a novel Context-Aware Dual-Stream Rep-resentation to resolve the multi-object generative trade-off. By utilizing parallel masked and unmasked pathways, this design eliminates attribute leakage while preserving natural inter-object relationships and lighting harmony, and adapts naturally to modern MM-DiT architectures. 
+
+• We construct OrientLayout , a large-scale dataset with fine-grained spatial, orientational, and instance-level caption an-notations, and propose a robust Binary Orientation Verifica-tion protocol. Extensive evaluations validate our method’s superiority in spatial accuracy, orientational precision, and overall visual fidelity. 
+
+## 2 Related Work 2.1 Layout-Conditioned Generation 
+
+While T2I models [9, 14, 19, 33, 37] excel globally, precise multi-object spatial control remains challenging. Early methods address this by injecting spatial constraints via gated attention or geo-metric priors [8, 20, 47]. To mitigate semantic entanglement in complex scenes, some methods manipulate attention maps [7] or linguistic guidance [15], while common layout-conditioned ap-proaches enforce strict spatial masks [5, 18, 40, 44]. However, this hard-boundary isolation disrupts inter-object relationships, yield-ing composition artifacts. Others, like Build-A-Scene [13], use multi-stage interactive insertion. In contrast, PoseAdapter achieves one-pass harmonious generation, overcoming isolation artifacts via a Context-Aware Dual-Stream architecture. 
+
+## 2.2 Orientation-Controllable Generation 
+
+Beyond spatial layouts, dictating the exact 3D orientation of indi-vidual entities remains important but difficult. Early efforts like LOOSECONTROL [6] leverage ControlNet [46] for 3D spatial con-ditioning but struggle to achieve fine-grained angular precision. Lightweight token-injection frameworks such as C3DW [10] and CompassControl [30] attempt to encode explicit orientation priors, but their heavy reliance on synthetic training data limits general-ization to diverse real-world scenes. With the emergence of ori-entation foundation models (e.g., OrientAnything [41, 42]), recent work explores more generalized 3D grounding. Building upon this, ORIGEN [29] enables zero-shot orientation control via test-time optimization, but suffers from high inference cost due to iterative sampling. SceneDesigner [35] uses these foundation models to con-struct large-scale datasets and trains a model conditioned on dense CNOCS maps [39]. While providing explicit geometric guidance, such dense maps are cumbersome for interactive editing and remain prone to geometric deviations in complex compositions. To balance orientational precision and condition efficiency, PoseAdapter intro-duces a lightweight 2.5D hybrid layout (object captions, bounding boxes, and three angles), establishing spatial-angular anchors with-out the overhead of dense 3D maps or iterative optimization. 
+
+## 3 Method 
+
+Figure 2 illustrates the architecture of PoseAdapter. To achieve pre-cise 2.5D multi-object generation, we propose a modality-decoupled, dual-stream injection framework. First, multi-modal instance condi-tions (comprising semantic captions, 2D bounding boxes (BBoxes), and 3D angles) are encoded into unified object tokens for strict attribute-layout binding (Section 3.1). Next, to resolve the multi-object generative trade-off, we introduce a context-aware dual-stream representation that extracts relation-enriched scene tokens while preserving precise local object tokens (Section 3.2). These two complementary representations are then exclusively injected into the pre-trained MM-DiT visual backbone via parallel cross-attention branches, preventing attribute leakage while maintaining scene-level coherence (Section 3.3). Finally, we present our layout-aware Flow Matching training objective [14, 22, 25] (Section 3.4) and flexible inference strategies (Section 3.5). 
+
+## 3.1 2.5D Layout and Attribute Encoding 
+
+Building upon foundational layout-guided paradigms [26, 27, 31, 34, 43], we adopt a lightweight 2.5D hybrid layout that balances fine-grained control precision with user-friendliness. Specifically, a target scene comprising 𝑁 objects is defined as O = {𝑜 𝑖 }𝑁 𝑖 =1, where each object is parameterized as a condition tuple 𝑜 𝑖 = (𝑐 𝑖 , b𝑖 , a𝑖 ).Here, 𝑐 𝑖 represents the object caption, b𝑖 ∈ R4 denotes the 2D BBox, and a𝑖 ∈ R3 specifies the 3D orientation. These multi-modal components are jointly encoded to map the scene into a set of initial object tokens T 𝑜 = {t𝑜 𝑖 }𝑁 𝑖 =1, capturing both the semantic attributes and the spatial-angular configurations of each instance. 
+
+Object Caption Embedding. To precisely control the exclusive attributes of each instance 𝑜 𝑖 (e.g., material, color, and action), its corresponding object caption 𝑐 𝑖 is processed by a frozen pre-trained CLIP text encoder [11, 36]. We extract the pooled text embedding as the caption feature fcaption  
+
+> 𝑖
+
+∈ R𝐷 𝑡 , where 𝐷 𝑡 denotes the output dimension. Encoding detailed captions rather than category labels binds fine-grained attributes to specific entities, mitigating semantic entanglement at the condition level. 
+
+Box Encoding. The 2D BBox b𝑖 ∈ R4, parameterized by its min-max coordinates [𝑥 min , 𝑦 min , 𝑥 max , 𝑦 max ], explicitly dictates the spa-tial position and size of 𝑜 𝑖 . To capture subtle positional variations, we expand the normalized coordinates via a Fourier position em-bedding [28] with 16 frequency bands, then process them through a two-layer MLP with SiLU and LayerNorm, yielding the box em-bedding fbox  
+
+> 𝑖
+
+∈ R256 .
+
+Angle Encoding. To explicitly control the 3D orientation of 𝑜 𝑖 ,we parameterize it via three angles (azimuth, polar, and rotation), denoted as a𝑖 ∈ R3. While 6D rotation representations [48] suit 3D regression, their higher degrees of freedom complicate generative optimization; we therefore directly encode the angles. To preserve periodicity, we map them into a continuous trigonometric space MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Yufeng Chi et al. Condition Encoding 
+
+Obj. Caption c𝑖 
+
+BBox 𝒃 𝒊 
+
+Angles 𝒂 𝒊 
+
+> Shared Object Encoder
+
+×N      
+
+> Projection
+> Text Encoder 𝒫 :“A text prompt”
+> 𝒯 𝑜 = {𝒕 𝑖
+> 𝑜 }𝑖=1
+> 𝑁
+> 𝒕 1𝑜
+> 𝒕 2
+> 𝑜
+> 𝒕 3𝑜
+> 𝒕 𝑁 𝑜
+> 𝒕 1𝑠
+> 𝒕 2𝑠
+> 𝒕 3
+> 𝑠
+> 𝒕 𝑁 𝑠
+> 𝒯 𝑠 = {𝒕 𝑖 𝑠 }𝑖=1 𝑁
+> Concat Global Stream Trainable Frozen Local Stream
+
+Dual-Stream Representation 
+
+> 𝐻 𝑖𝑚𝑔
+> 𝐻 𝑡𝑥𝑡
+> M
+> 𝑂 𝑔𝑙𝑜𝑏𝑙
+> 𝑂 𝑙𝑜𝑐𝑎𝑙
+
++
+
++
+
+𝜆  
+
+> ෡𝐻 𝑖𝑚𝑔
+> ⋯⋯
+> Text
+> Encoder
+> Box
+> Encoder
+> Angle Encoder
+> Transformer
+> Encoder
+
+𝛾  
+
+> 𝒯 𝑠
+> 𝒯 o
+> to_V
+> to_K
+> QK V
+
+MMDiT Block 
+
+> Fusion
+> MLP
+
+Figure 2: Overall pipeline of the proposed PoseAdapter. Given a set of instance conditions (captions, 2D bounding boxes, and 3D angles), we first encode them into unified object tokens T 𝑜 . A scene transformer then models their interactions to produce relation-enriched scene tokens T 𝑠 . Finally, these dual-stream representations are exclusively injected into the pre-trained MM-DiT visual stream via a masked local stream (enforcing precise boundaries) and an unmasked global stream (preserving inter-object coherence). 
+
+eangle  
+
+> 𝑖
+
+= [sin (a𝑖 ), cos (a𝑖 )] ∈ R6. The resulting 6D feature is pro-cessed by a three-layer MLP with SiLU and LayerNorm, yielding the angle embedding fangle  
+
+> 𝑖
+
+∈ R256 .Finally, these multi-modal embeddings are concatenated and projected via a fusion network (MLP fusion ) to construct the initial unified object token: 
+
+t𝑜 𝑖 = MLP fusion ([ fcaption  
+
+> 𝑖
+
+, fbox  
+
+> 𝑖
+
+, fangle  
+
+> 𝑖
+
+]) . (1) 
+
+## 3.2 Context-Aware Dual-Stream Representation 
+
+Given the initial object tokens T 𝑜 = {t𝑜 𝑖 }𝑁 𝑖 =1, a straightforward approach is to employ them as independent conditions. To prevent attribute leakage, prior layout-to-image methods [5, 18, 30, 40, 44] typically enforce strict spatial constraints. Specifically, for each token t𝑜 𝑖 , a spatial mask is derived from its corresponding bounding box b𝑖 . Formally, the joint layout mask M ∈ R𝐿 ×𝑁 (where 𝐿 is the visual sequence length) is defined as: 
+
+M𝑝,𝑖 =
+
+(
+
+0, if 𝑝 ∈ R ( b𝑖 )−∞ , otherwise, (2) where R ( b𝑖 ) denotes the region of b𝑖 . This mask acts as an additive bias in cross-attention to explicitly bound the receptive field: Attn (Q, K𝑜 , V𝑜 , M) = Softmax 
+
+ Q(K𝑜 )⊤
+
+√𝑑 + M
+
+
+
+V𝑜 , (3) where K𝑜 and V𝑜 are projected from T 𝑜 .While this additive mask effectively drives the attention weights outside the BBox to zero, preventing feature bleeding, it processes each entity in strict isolation. Generating objects without inter-object context yields “cut-and-paste” artifacts and fails to capture critical spatial relationships. Drawing on work in scene understanding [26, 27, 31, 43], we introduce context-aware scene tokens to overcome this isolation. The isolated object tokens T 𝑜 are fed into a multi-layer Scene Transformer [38], where self-attention mechanisms allow each object to perceive the semantic and geometric configurations of all other entities. This transforms the localized representations into a set of relation-enriched scene tokens T 𝑠 = {t𝑠 𝑖 }𝑁 𝑖 =1. These scene tokens encode the global layout context, providing a full receptive field that facilitates natural physical blending. The unmasked global attention of T 𝑠 promotes scene-level co-herence. However, relaxed regional constraints reintroduce the risk of attribute leakage. We therefore combine both representations into a Dual-Stream architecture: T 𝑠 captures global context, while 
+
+T 𝑜 enforces strict local boundaries. This combination establishes a complete condition space for the subsequent injection strategy. 
+
+## 3.3 Modality-Decoupled Dual-Stream Injection 
+
+Following IP-Adapter [45], we integrate these context-aware rep-resentations exclusively into the visual stream. Modern MM-DiT architectures decouple visual ( Himg ) and textual ( Htxt ) hidden states; injecting our dual-stream conditions solely into Himg avoids inter-fering with the pre-trained text representations. Within each transformer block, the normalized visual query Qimg 
+
+interacts with our representations via two parallel cross-attention branches. For parameter efficiency and feature alignment, both local object tokens T 𝑜 and global scene tokens T 𝑠 share the same key and value projection matrices ( W𝑖𝑝 𝑘 and W𝑖𝑝 𝑣 ). Notably, to stabilize the cross-attention computation, the projected keys are further normalized via RMSNorm before being explicitly decoupled. To enforce strict instance boundaries, the masked local stream computes cross-attention using the dynamic layout mask M:
+
+Olocal = Attn (Qimg , RMSNorm (T 𝑜 W𝑖𝑝 𝑘 ), T 𝑜 W𝑖𝑝 𝑣 , M). (4) Simultaneously, the unmasked global stream attends to T 𝑠 with-out spatial restrictions to capture inter-object relationships: 
+
+Oglobal = Attn (Qimg , RMSNorm (T 𝑠 W𝑖𝑝 𝑘 ), T 𝑠 W𝑖𝑝 𝑣 , 0). (5) Finally, the complementary outputs are aggregated via a train-able, zero-initialized gating parameter 𝛾 and residually injected back into the visual hidden states: 
+
+ˆHimg = Himg + 𝜆 · ( Oglobal + 𝛾 · Olocal ). (6) PoseAdapter: Dual-Stream 2.5D Controllable Image Generation MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+where 𝜆 is a continuous scale factor. The updated representation 
+
+ˆHimg balances precise instance control with global coherence. 
+
+## 3.4 Training Strategy 
+
+Our model is trained end-to-end using the Rectified Flow Matching objective [22, 25]. The forward probability path linearly interpolates between the clean data latent x0 and standard Gaussian noise 𝜖 ∼N ( 0, I). The intermediate noisy latent at timestep 𝑡 ∈ [0, 1] is defined as x𝑡 = (1 − 𝑡 )x0 + 𝑡𝜖 . The network is optimized to predict the flow velocity v = 𝜖 − x0.Following [2, 14], we sample the timestep 𝑡 using Logit-Normal Sampling. Standard T2I synthesis centers this distribution ( 𝑚 = 0) to emphasize intermediate steps, but layout-conditioned generation must prioritize high-noise phases where macroscopic spatial con-figurations are established; we therefore apply a positive location shift. Specifically, we sample 𝑢 ∼ N ( 𝑚, 𝑠 2) with 𝑚 = 1.0 and 𝑠 = 1.0, mapping to the timestep via 𝑡 = 𝜎 (𝑢 ). This shifts the density toward higher noise levels ( 𝑡 → 1), forcing the model to prioritize global spatial grounding over high-frequency details. To focus the loss more on foreground objects, we introduce a box mask loss. Rather than computing a uniform MSE across the entire spatial resolution, we dynamically up-weight the penalty within the designated BBox regions. Formally, the spatially weighted objective is defined as: 
+
+Lflow = Ex0,𝜖,𝑡, P,C
+
+"
+
+1
+
+𝐿 
+
+> 𝐿
+
+∑︁ 
+
+> 𝑗 =1
+
+W𝑗 · ∥ v𝜃 (x𝑡 , 𝑡, P, C) − v∥22
+
+#
+
+, (7) where 𝐿 is the spatial sequence length, P represents the full prompt, 
+
+C denotes our dual-stream layout conditions, and v𝜃 is the network prediction. The spatial weight vector W ∈ R𝐿 is computed dynami-cally: 
+
+W𝑗 = 1.0 + ( 𝛼 − 1.0) · Mloss  
+
+> 𝑗
+
+. (8) Here, Mloss is a binary mask indicating the union of all BBoxes, and 
+
+𝛼 > 1 is a hyperparameter scaling the penalty inside the objects. Finally, to enable flexible compositional control and support Classifier-Free Guidance (CFG) [17] during inference, we imple-ment a decoupled modality dropout strategy. During training, we randomly drop condition modalities—such as the global caption, ob-ject captions, or all conditions—to establish an unconditional base-line. This decoupling ensures the model learns to independently attend to global semantics, local attributes, and layout geometries without entanglement. 
+
+## 3.5 Inference and Controllability 
+
+During inference, PoseAdapter accepts a global scene prompt P and instance conditions O = {( 𝑐 𝑖 , b𝑖 , a𝑖 )} . To prevent out-of-distribution textual degradation, the full prompt P is preserved and processed by the pre-trained text encoders. Simultaneously, the local object captions 𝑐 𝑖 and their geometric configurations ( b𝑖 , a𝑖 ) are exclusively injected into the visual stream. In practice, users simply provide object captions and a back-ground description, which are concatenated to form P without complex layout-related vocabulary. Alternatively, an off-the-shelf LLM can parse a user instruction into P and O. Users can also adjust CFG scales to balance textual fidelity with layout adherence. 
+
+## 4 Dataset Construction: OrientLayout 
+
+To support the training and evaluation of 2.5D controllable genera-tion, we construct OrientLayout . In total, the dataset comprises 110K high-quality samples, consisting of 62K images derived from COCO [21], 6K from Cityscapes [12, 16], and the remaining 42K from Objectron [1]. Each sample is structured as (I, P, {( 𝑐 𝑖 , b𝑖 , a𝑖 )}) ,comprising the image I, the full prompt P, and a set of object con-ditions. Each condition contains a local caption 𝑐 𝑖 , a 2D BBox b𝑖 ,and 3D angles a𝑖 (azimuth, polar, and rotation). 
+
+Spatial and Orientational Annotation. We utilize two comple-mentary data pipelines. For the Objectron and Cityscapes subsets, we derive 3D angles from original 3D poses and extract 2D BBoxes via Grounding DINO [24]. For the COCO subset, we leverage the provided 2D BBoxes and annotate the missing 3D angles via Ori-entAnything [41]. We filter out low-confidence predictions, exces-sively small instances, and isotropic objects (e.g., spheres). 
+
+Standardization and Manual Verification. We first resolve coor-dinate conflicts within Objectron, where the definition of a “canon-ical front” varies across categories (e.g., “cup” vs. “book”). We apply strict coordinate transformations to align these native poses with the unified prediction space of OrientAnything. For the COCO subset, human annotators manually verify the annotations, filter-ing out erroneous orientations and heavily occluded instances to ensure high-quality ground truths. 
+
+Relationship-Aware Semantic Annotation. Finally, we employ an MLLM [3] to generate the full prompt P and individual object captions 𝑐 𝑖 . To mitigate semantic ambiguity, we explicitly prompt the MLLM to include target categories and exclude distractors for each BBox. This semantic decoupling ensures 𝑐 𝑖 serves as a precise anchor without attribute entanglement. 
+
+## 5 Experiments 
+
+Implementation Details. We adopt Stable Diffusion 3.5 [14] as our pre-trained T2I backbone. PoseAdapter is trained on the con-structed OrientLayout dataset for 60 epochs using 7 NVIDIA RTX 5090 (32GB) GPUs. The image resolution is set to 512 × 512 with a total batch size of 24. We employ the AdamW optimizer, initial-izing learning rates at 3e-5 for the condition encoder and scene transformer, 1.5e-5 for the dual-stream adapter, and 1e-3 for the gating parameters. Furthermore, we set the box mask loss weight 
+
+𝛼 = 3 and the injection scale 𝜆 = 1. Further details and additional analyses are provided in the Supplementary Material. 
+
+## 5.1 Experimental Setup 
+
+Baselines. We compare PoseAdapter against state-of-the-art 3D-aware controllable generation frameworks, selecting LOOSECON-TROL [6] and SceneDesigner [35] as our primary baselines. Other methods discussed in our literature review are excluded from this evaluation: Zero-1-to-3 [23] and CompassControl [30] are con-strained to single-object manipulation or specific synthetic domains, while ORIGEN [29] relies on a distinct optimization-based para-digm. Regarding the condition formats, while PoseAdapter operates directly on lightweight 2.5D parameters, we provide LOOSECON-TROL and SceneDesigner with their required dense representations MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Yufeng Chi et al. 
+
+(e.g., depth or CNOCS maps). Although the SceneDesigner man-uscript proposes a Disentangled Object Sampling algorithm, its official open-source implementation relies exclusively on a unified global control pathway. To evaluate its multi-object capabilities, we explicitly provide the spatial layout information and inter-object relationships within the full prompt to guide its generation. 
+
+Evaluation Datasets. As the official validation set of SceneDesigner is unreleased, we reconstruct an equivalent benchmark from the COCO validation set following its protocol. Utilizing the pipeline from Section 4, we manually scrutinize the data to ensure pre-cise ground-truth orientations and employ random sampling to align the size of our dataset with that of the baseline. The final benchmark comprises OrientLayout-Single (285 front, 170 back) and 
+
+OrientLayout-Multi (250 multi-object cases). 
+
+Evaluation Metrics. To evaluate visual fidelity, semantic align-ment, and spatial precision, we follow the evaluation protocol of SceneDesigner. Specifically, to measure the visual fidelity of the gen-erated images, we report the Fréchet Inception Distance (FID). For the evaluation of global semantic alignment, we compute the stan-dard CLIP score to assess the consistency between the full prompt and the image. Furthermore, to evaluate the fine-grained semantic alignment of individual entities, we additionally compute an object-level CLIP score (O-CLIP). This metric is calculated by cropping the region of each detected object, computing the CLIP similarity between the cropped region and the corresponding object caption, and subsequently averaging the scores across all instances. Finally, to quantify spatial precision, we calculate the mean Intersection over Union (mIoU) and the spatial accuracy ( 𝐴𝑐𝑐 𝑙𝑠 at IoU > 0.6) by utilizing Grounding DINO for the detection of objects. To evaluate orientation accuracy, following the protocol of re-cent baselines [29, 35], we employ OrientAnything to estimate the azimuth angles of the generated objects and report the accuracy within a 22 .5◦ tolerance ( 𝐴𝑐𝑐 22 .5◦ ). However, we observe that ap-plying this automated predictor to generated images occasionally yields unstable predictions, despite our conditioning angles being derived from its own pseudo-labels. Relying solely on automated metrics may not fully capture the human-perceived orientation fidelity. To address this, we introduce Binary Orientation Verification .The OrientAnything benchmark categorizes azimuths into eight discrete directions (e.g., front, front-left). However, asking human evaluators to classify objects into these eight bins introduces severe subjective bias at angular boundaries. To mitigate this, we quantize the continuous ground-truth azimuth into its corresponding target label among the eight directions. We then ask evaluators a simple bi-nary question: “Is the object facing [Target Direction]?” The positive response rate defines our Binary Orientation Verification Accuracy (𝐴𝑐𝑐 𝐵𝑂𝑉 ). This design reduces human cognitive load while reliably assessing orientation. Details are in the Supplementary Material. 
+
+## 5.2 Qualitative Results 
+
+Figure 3 provides a visual comparison between PoseAdapter and the baseline models across diverse generation scenarios. Specifi-cally, the condition column illustrates the respective spatial and orientational control signals utilized by each method. We display the 2.5D condition visualizations for the proposed approach, the rendered CNOCS maps for SceneDesigner, and the corresponding depth maps for LOOSECONTROL. 
+
+Single-object Setting. LOOSECONTROL merely approximates spatial locations, failing to capture target orientations. SceneDesigner achieves better alignment but remains geometrically imprecise. Specifically, it occasionally violates bounding box constraints (e.g., the “steam locomotive”) or exhibits azimuth deviations (e.g., the “basketball sneaker”). In contrast, PoseAdapter consistently synthe-sizes high-fidelity images complying with the designated layout and 3D orientation. 
+
+Multi-Object Setting. In complex multi-object scenarios, LOOSEC-ONTROL fails to synthesize semantically aligned images. Even after incorporating layout hints into the full prompt and using multiple sampling steps, SceneDesigner still suffers from severe attribute leakage and concept confusion. It visibly tangles the distinct col-ors and materials across the generated “cameras” and “chairs”, and erroneously dyes the screen of the “laptop” green (third column from the right). It also struggles with complex spatial manipulations involving polar and rotation angles (e.g., the “airplane” and the cen-tral “camera”). By explicitly binding object captions to 2.5D spatial conditions via our dual-stream architecture, PoseAdapter decouples multiple entities and eliminates attribute leakage, yielding high-fidelity results faithful to both textual semantics and spatial-angular constraints. 
+
+## 5.3 Quantitative Results 
+
+Table 2 summarizes quantitative evaluation results across three di-mensions: visual quality, semantic alignment, and spatial/orientational control precision. 
+
+Visual Quality and Text-Image Alignment. PoseAdapter achieves superior photorealism and diversity, as evidenced by the lowest FID. Beyond competitive global semantic alignment, our method demonstrates a clear advantage in object-level CLIP (O-CLIP), con-solidating the fact that our dual-stream architecture preserves indi-vidual semantic identities and prevents attribute leakage in complex scenes. 
+
+Spatial Layout and Orientation Precision. PoseAdapter consis-tently outperforms baselines across all splits in fine-grained 2.5D control. LOOSECONTROL struggles with bounding box adherence (𝐴𝑐𝑐 𝑙𝑠 , mIoU) and largely fails in orientation alignment under both automated and human evaluations ( 𝐴𝑐𝑐 22 .5◦ , 𝐴𝑐𝑐 𝐵𝑂𝑉 ), as its coarse dense conditioning lacks accurate boundary enforcement and ex-plicit angular inputs. While SceneDesigner captures general orien-tations, its spatial precision remains inferior even in single-object scenarios, revealing its incapability to enforce strict scale limits. In the OrientLayout-Multi setting, SceneDesigner’s performance drops sharply due to severe inter-object interference. PoseAdapter leverages explicit 2.5D conditions to achieve the best spatial and orientation accuracy. Notably, while our method leads in automated accuracy ( 𝐴𝑐𝑐 22 .5◦ ), all methods score systematically lower than in human verification ( 𝐴𝑐𝑐 𝐵𝑂𝑉 ). This gap confirms the instability of automated predictors on generated images, and consolidates the need for 𝐴𝑐𝑐 𝐵𝑂𝑉 . Despite performance drops on back-facing objects due to limited back-view data, our method continues to outperform all baselines. PoseAdapter: Dual-Stream 2.5D Controllable Image Generation MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+Table 2: Quantitative comparison on OrientLayout. 𝐴𝑐𝑐 22 .5◦ : automated accuracy (OrientAnything); 𝐴𝑐𝑐 𝐵𝑂𝑉 : human verification. 
+
+Method Overall Quality OrientLayout-Single-Front OrientLayout-Single-Back OrientLayout-Multi FID ↓ CLIP ↑ O-CLIP ↑ 𝐴𝑐𝑐 𝑙𝑠 ↑ mIoU ↑ 𝐴𝑐𝑐 22 .5◦ ↑ 𝐴𝑐𝑐 𝐵𝑂𝑉 ↑ 𝐴𝑐𝑐 𝑙𝑠 ↑ mIoU ↑ 𝐴𝑐𝑐 22 .5◦ ↑ 𝐴𝑐𝑐 𝐵𝑂𝑉 ↑ 𝐴𝑐𝑐 𝑙𝑠 ↑ mIoU ↑ 𝐴𝑐𝑐 22 .5◦ ↑ 𝐴𝑐𝑐 𝐵𝑂𝑉 ↑
+
+LOOSECONTROL 36.78 0.287 0.232 34.72 32.94 10.18 12.28 35.23 34.87 6.47 8.82 24.20 29.45 2.43 6.40 SceneDesigner 25.10 0.347 0.288 75.79 69.79 73.68 86.67 74.71 66.45 62.35 80.58 47.48 46.38 56.00 80.00 
+
+PoseAdapter (Ours) 24.60 0.344 0.310 97.84 87.96 87.02 95.44 99.40 88.89 71.76 88.82 91.67 81.72 72.70 93.22 A black fluffy dog on the beach                       
+
+> Alion walking
+> cross the African savanna
+> A studio shot of a
+> basketball sneaker
+> Asteam locomotive
+> chugging through a forest
+> Amountain bicycle in a lush
+> green pine forest
+> Ared airplane and awhite boat
+> Awhite wooden
+> chair , a red
+> teddy bear and ayellow toy car
+> Asilver laptop , a
+> green mug and a
+> yellow book with white title
+> Ablack camera ,
+> asilver instance
+> camera and a
+> brown leather vintage camera
+> Ared velver chair ,
+> ayellow leather
+> chair , a wooden chair and a silver futuristic chair
+> LOOSECONTROL SceneDesigner Ours  Condition
+
+Figure 3: Qualitative comparison of controllable image generation. The proposed PoseAdapter demonstrates precise layout and orientation control across diverse settings. The Condition column displays the respective inputs: 2.5D visualizations for the proposed approach, CNOCS maps for SceneDesigner, and depth maps for LOOSECONTROL. Table 3: Efficiency and latency comparison (RTX 5090, 3 ob-jects, 28 steps). “Tr. Params” denotes trainable parameters; “Prep.” indicates external preprocessing time. Our method avoids spatial map rendering entirely. Method Backbone Tr. Params Injection Prep. (s) ↓ Net. (s) ↓               
+
+> LOOSECONTROL SD 1.5 0.7M CN + LoRA ∼14.2 ∼2.6 SceneDesigner SD 3.5 1,487.7M ControlNet ∼13.7 ∼2.4
+> PoseAdapter (Ours) SD 3.5 228.0M IP-Adapter 0.0 ∼3.0
+
+Efficiency. Using the same SD 3.5 backbone, PoseAdapter requires only 15.3% of the trainable parameters of SceneDesigner. While our dual-stream cross-attention introduces a marginal overhead during neural inference, our 2.5D representation enables zero-delay condition encoding. Since baselines natively require manual 3D GUI orchestration, we employ an automated 2D-to-3D optimization script to establish a measurable lower bound for their preprocess-ing. Even so, their intrinsic reliance on 3D engine rendering (e.g., Blender) inflicts an 𝑂 (𝑁 ) multi-second bottleneck. By bypassing this entirely, our method yields significantly faster end-to-end gen-eration. Table 3 provides a detailed quantitative comparison. 
+
+## 5.4 User Study 
+
+We conducted a blind user study to acquire human-perceived qual-ity evaluation. To prevent cherry-picking, an LLM was utilized to generate 100 diverse layout instructions (50 single- and 50 multi-object) for categories with distinct canonical fronts. Twenty hu-man evaluators assessed the generated images based on text, spa-tial, and orientation alignment (Pass/Fail). As reported in Table 4, PoseAdapter consistently achieves over 90% approval across all criteria. It significantly outperforms baselines, which suffer severe attribute leakage and geometric distortion, particularly in complex multi-object scenes. Further visualizations and details are deferred to the Supplementary Material. 
+
+## 5.5 Ablation Study 
+
+To evaluate the core components of PoseAdapter, we ablate our model architecture and training objectives (Table 5). For the archi-tectural ablation, we focus on the OrientLayout-Multi benchmark to perform quantitative comparisons, as single-object scenes insuf-ficiently expose the limitations of isolated local streams. MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Yufeng Chi et al. 
+
+Table 4: User study results (approval rate %). Method Single-Object Multi-Object 
+
+Text Orient. Spatial Text Orient. Spatial LOOSECONTROL 45.2 15.5 38.0 16.4 3.5 7.5 SceneDesigner 92.5 82.0 77.5 60.2 45.5 32.0 
+
+PoseAdapter (Ours) 98.5 97.0 98.5 95.0 87.5 95.5 Condition  
+
+> Dual Stream
+> (Ours)
+> Global Stream
+> (Scene Token)
+> white rooster
+> pink flamingo silver helicopter
+> yellow bulldozer
+> silver coffee machine
+> red oven
+
+Figure 4: Qualitative ablation results of relying solely on the global stream. Table 5: Quantitative ablation study of PoseAdapter.                                                                
+
+> Method Split OrientLayout Overall
+> 𝐴𝑐𝑐 𝑙𝑠 (%) ↑mIoU (%) ↑𝐴𝑐𝑐 𝐵𝑂𝑉 (%) ↑CLIP ↑O-CLIP ↑
+> w/o Box Mask Loss Single 97.56 87.32 90.55 0.342 0.309 Multi 86.84 79.06 90.61 w/o 𝑡 -Sampling Shift Single 96.40 86.21 89.45 0.341 0.307 Multi 87.86 78.44 89.91 w/o Both Strategies Single 94.79 82.66 86.81 0.323 0.300 Multi 86.63 77.60 87.13 Global Stream Only Multi 88.65 77.78 92.17 0.342 0.308 Local Stream Only Multi 91.50 81.25 88.69 0.334 0.310
+> PoseAdapter (Ours) Single 98.42 88.30 92.97 0.344 0.310
+> Multi 91.67 81.72 93.22
+
+Effectiveness of the Context-Aware Dual-Stream. The global stream, with soft spatial constraints, captures inter-object rela-tionships and consistent illumination essential for 3D orientation inference. However, it lacks explicit spatial routing and becomes vulnerable to attribute leakage where attention to one object bleeds into neighboring regions (Figure 4: flamingo generates rooster’s comb, helicopter absorbs bulldozer’s hue). In contrast, the local stream employs strict box masking to achieve superior spatial accu-racy and eliminate cross-object interference, yet by restricting the receptive field to isolated regions, it deprives the model of global contextual information necessary for accurate 3D orientation in-ference, and therefore exhibits disjointed lighting and perspective Condition 
+
+> Local Stream
+> (Object Token)
+> Dual Stream
+> (Ours)
+> golden retriever
+> wooden boat
+> grey wolf
+> bald eagle
+> brown teddy bear
+> brown leather sofa
+> bed with white sheets
+
+Figure 5: Qualitative ablation results of relying solely on the local stream. 
+
+misalignment (Figure 5: golden retriever and grey wolf appear un-naturally pasted, brown leather sofa suffers clipping). This trade-off between spatial precision and orientation accuracy motivates our dual-stream design: by combining both streams, PoseAdapter en-forces precise boundaries via the local stream and achieves accurate orientation control by leveraging the global stream’s rich contexts. 
+
+Effectiveness of Training Strategies. We further ablate our pro-posed training objectives. Removing box mask loss or t-sampling shift degrades both spatial and orientational precision; removing both causes the largest drop (Table 5). The two strategies synergize for robust grounding: the box loss up-weights foreground regions to prevent boundary violations, while the t-sampling shift prioritizes coarse geometric layout during high-noise Flow Matching steps. 
+
+## 6 Conclusion 
+
+We present PoseAdapter, a lightweight framework for 2.5D con-trollable generation that avoids dense 3D maps by anchoring ob-jects with captions, 2D boxes, and 3D angles. A Context-Aware Dual-Stream Representation decouples masked local tokens from unmasked global tokens within the visual stream, eliminating at-tribute leakage while preserving inter-object coherence. Trained on our OrientLayout dataset, PoseAdapter surpasses prior arts in spatial, orientational, and visual fidelity. Currently limited to real-world priors, the model may struggle with extreme layouts; future work will augment synthetic data for enhanced robustness. 
+
+## 7 Acnowledgments 
+
+This work was supported by the Fundamental and Interdisciplinary Disciplines Breakthrough Plan of the Ministry of Education of China (No. JYB2025XDXM101) and the National Natural Science Foundation of China (project No. 62595773). PoseAdapter: Dual-Stream 2.5D Controllable Image Generation MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+## References 
+
+[1] Adel Ahmadyan, Liangkai Zhang, Artsiom Ablavatski, Jianing Wei, and Matthias Grundmann. 2021. Objectron: A Large Scale Dataset of Object-Centric Videos in the Wild With Pose Annotations. In IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2021, virtual, June 19-25, 2021 . Computer Vision Foundation / IEEE, 7822–7831. doi:10.1109/CVPR46437.2021.00773 [2] Jeffrey Atchison and S. M. Shen. 1980. Logistic-normal distributions:Some prop-erties and uses. Biometrika 67 (1980), 261–272. https://api.semanticscholar.org/ CorpusID:123168591 [3] Shuai Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wenbin Ge, Sibo Song, Kai Dang, Peng Wang, Shijie Wang, Jun Tang, Humen Zhong, Yuanzhi Zhu, Ming-Hsuan Yang, Zhaohai Li, Jianqiang Wan, Pengfei Wang, Wei Ding, Zheren Fu, Yiheng Xu, Jiabo Ye, Xi Zhang, Tianbao Xie, Zesen Cheng, Hang Zhang, Zhibo Yang, Haiyang Xu, and Junyang Lin. 2025. Qwen2.5-VL Technical Report. CoRR abs/2502.13923 (2025). arXiv:2502.13923 doi:10.48550/ARXIV.2502.13923 [4] Fan Bao, Shen Nie, Kaiwen Xue, Yue Cao, Chongxuan Li, Hang Su, and Jun Zhu. 2023. All are Worth Words: A ViT Backbone for Diffusion Models. In IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2023, Vancouver, BC, Canada, June 17-24, 2023 . IEEE, 22669–22679. doi:10.1109/CVPR52729.2023.02171 [5] Omer Bar-Tal, Lior Yariv, Yaron Lipman, and Tali Dekel. 2023. MultiDiffusion: Fusing Diffusion Paths for Controlled Image Generation. In International Con-ference on Machine Learning, ICML 2023, 23-29 July 2023, Honolulu, Hawaii, USA (Proceedings of Machine Learning Research, Vol. 202) , Andreas Krause, Emma Brun-skill, Kyunghyun Cho, Barbara Engelhardt, Sivan Sabato, and Jonathan Scarlett (Eds.). PMLR, 1737–1752. https://proceedings.mlr.press/v202/bar-tal23a.html [6] Shariq Farooq Bhat, Niloy J. Mitra, and Peter Wonka. 2024. LOOSECONTROL: Lifting ControlNet for Generalized Depth Conditioning. In ACM SIGGRAPH 2024 Conference Papers, SIGGRAPH 2024, Denver, CO, USA, 27 July 2024- 1 August 2024 ,Andres Burbano, Denis Zorin, and Wojciech Jarosz (Eds.). ACM, 102. doi:10.1145/ 3641519.3657525 [7] Hila Chefer, Yuval Alaluf, Yael Vinker, Lior Wolf, and Daniel Cohen-Or. 2023. Attend-and-Excite: Attention-Based Semantic Guidance for Text-to-Image Diffu-sion Models. ACM Trans. Graph. 42, 4 (2023), 148:1–148:10. doi:10.1145/3592116 [8] Kai Chen, Enze Xie, Zhe Chen, Yibo Wang, Lanqing Hong, Zhenguo Li, and Dit-Yan Yeung. 2024. GeoDiffusion: Text-Prompted Geometric Control for Object Detection Data Generation. In The Twelfth International Conference on Learning Representations, ICLR 2024, Vienna, Austria, May 7-11, 2024 . OpenReview.net. https://openreview.net/forum?id=xBfQZWeDRH [9] Yunpeng Chen, Yu Gao, Lixue Gong, Meng Guo, Qiushan Guo, Zhiyao Guo, Xi-aoxia Hou, Weilin Huang, Yixuan Huang, Xiaowen Jian, Huafeng Kuang, Zhichao Lai, Fanshi Li, Liang Li, Xiaochen Lian, Chao Liao, Liyang Liu, Wei Liu, Yanzuo Lu, Zhengxiong Luo, Tongtong Ou, Guang Shi, Yichun Shi, Shiqi Sun, Yu Tian, Zhi Tian, Peng Wang, Rui Wang, Xun Wang, Ye Wang, Guofeng Wu, Jie Wu, Wenxu Wu, Yonghui Wu, Xin Xia, Xuefeng Xiao, Shuang Xu, Xin Yan, Ceyuan Yang, Jianchao Yang, Zhonghua Zhai, Chenlin Zhang, Heng Zhang, Qi Zhang, Xinyu Zhang, Yuwei Zhang, Shijia Zhao, Wenliang Zhao, and Wenjia Zhu. 2025. Seedream 4.0: Toward Next-generation Multimodal Image Generation. CoRR 
+
+abs/2509.20427 (2025). arXiv:2509.20427 doi:10.48550/ARXIV.2509.20427 [10] Ta Ying Cheng, Matheus Gadelha, Thibault Groueix, Matthew Fisher, Radomír Mech, Andrew Markham, and Niki Trigoni. 2024. Learning Continuous 3D Words for Text-to-Image Generation. In IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2024, Seattle, WA, USA, June 16-22, 2024 . IEEE, 6753–6762. doi:10.1109/CVPR52733.2024.00645 [11] Mehdi Cherti, Romain Beaumont, Ross Wightman, Mitchell Wortsman, Gabriel Ilharco, Cade Gordon, Christoph Schuhmann, Ludwig Schmidt, and Jenia Jitsev. 2023. Reproducible Scaling Laws for Contrastive Language-Image Learning.. In 
+
+IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2023, Vancouver, BC, Canada, June 17-24, 2023 . IEEE, 2818–2829. http://dblp.uni-trier.de/db/conf/cvpr/cvpr2023.html#ChertiBWWIGSSJ23 [12] Marius Cordts, Mohamed Omran, Sebastian Ramos, Timo Rehfeld, Markus En-zweiler, Rodrigo Benenson, Uwe Franke, Stefan Roth, and Bernt Schiele. 2016. The Cityscapes Dataset for Semantic Urban Scene Understanding. In 2016 IEEE Confer-ence on Computer Vision and Pattern Recognition, CVPR 2016, Las Vegas, NV, USA, June 27-30, 2016 . IEEE Computer Society, 3213–3223. doi:10.1109/CVPR.2016.350 [13] Abdelrahman Eldesokey and Peter Wonka. 2025. Build-A-Scene: Interactive 3D Layout Control for Diffusion-Based Image Generation. In The Thirteenth International Conference on Learning Representations, ICLR 2025, Singapore, April 24-28, 2025 . OpenReview.net. https://openreview.net/forum?id=gg6dPtdC1C [14] Patrick Esser, Sumith Kulal, Andreas Blattmann, Rahim Entezari, Jonas Müller, Harry Saini, Yam Levi, Dominik Lorenz, Axel Sauer, Frederic Boesel, Dustin Podell, Tim Dockhorn, Zion English, and Robin Rombach. 2024. Scaling Rec-tified Flow Transformers for High-Resolution Image Synthesis. In Forty-first International Conference on Machine Learning, ICML 2024, Vienna, Austria, July 21-27, 2024 (Proceedings of Machine Learning Research, Vol. 235) , Ruslan Salakhut-dinov, Zico Kolter, Katherine A. Heller, Adrian Weller, Nuria Oliver, Jonathan Scarlett, and Felix Berkenkamp (Eds.). PMLR / OpenReview.net, 12606–12633. https://proceedings.mlr.press/v235/esser24a.html [15] Weixi Feng, Xuehai He, Tsu-Jui Fu, Varun Jampani, Arjun R. Akula, Pradyumna Narayana, Sugato Basu, Xin Eric Wang, and William Yang Wang. 2023. Training-Free Structured Diffusion Guidance for Compositional Text-to-Image Synthesis. In The Eleventh International Conference on Learning Representations, ICLR 2023, Kigali, Rwanda, May 1-5, 2023 . OpenReview.net. https://openreview.net/forum? id=PUIqjT4rzq7 [16] Nils Gählert, Nicolas Jourdan, Marius Cordts, Uwe Franke, and Joachim Denzler. 2020. Cityscapes 3D: Dataset and Benchmark for 9 DoF Vehicle Detection. CoRR 
+
+abs/2006.07864 (2020). arXiv:2006.07864 https://arxiv.org/abs/2006.07864 [17] Jonathan Ho and Tim Salimans. 2022. Classifier-Free Diffusion Guidance. CoRR 
+
+abs/2207.12598 (2022). arXiv:2207.12598 doi:10.48550/ARXIV.2207.12598 [18] Yunji Kim, Jiyoung Lee, Jin-Hwa Kim, Jung-Woo Ha, and Jun-Yan Zhu. 2023. Dense Text-to-Image Generation with Attention Modulation. In IEEE/CVF In-ternational Conference on Computer Vision, ICCV 2023, Paris, France, October 1-6, 2023 . IEEE, 7667–7677. doi:10.1109/ICCV51070.2023.00708 [19] Black Forest Labs, Stephen Batifol, Andreas Blattmann, Frederic Boesel, Saksham Consul, Cyril Diagne, Tim Dockhorn, Jack English, Zion English, Patrick Esser, Sumith Kulal, Kyle Lacey, Yam Levi, Cheng Li, Dominik Lorenz, Jonas Müller, Dustin Podell, Robin Rombach, Harry Saini, Axel Sauer, and Luke Smith. 2025. FLUX.1 Kontext: Flow Matching for In-Context Image Generation and Editing in Latent Space. CoRR abs/2506.15742 (2025). arXiv:2506.15742 doi:10.48550/ARXIV. 2506.15742 [20] Yuheng Li, Haotian Liu, Qingyang Wu, Fangzhou Mu, Jianwei Yang, Jianfeng Gao, Chunyuan Li, and Yong Jae Lee. 2023. GLIGEN: Open-Set Grounded Text-to-Image Generation. In IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2023, Vancouver, BC, Canada, June 17-24, 2023 . IEEE, 22511– 22521. doi:10.1109/CVPR52729.2023.02156 [21] Tsung-Yi Lin, Michael Maire, Serge J. Belongie, James Hays, Pietro Perona, Deva Ramanan, Piotr Dollár, and C. Lawrence Zitnick. 2014. Microsoft COCO: Common Objects in Context. In Computer Vision - ECCV 2014 - 13th European Conference, Zurich, Switzerland, September 6-12, 2014, Proceedings, Part V (Lecture Notes in Computer Science, Vol. 8693) , David J. Fleet, Tomás Pajdla, Bernt Schiele, and Tinne Tuytelaars (Eds.). Springer, 740–755. doi:10.1007/978-3-319-10602-1_48 [22] Yaron Lipman, Ricky T. Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matthew Le. 2023. Flow Matching for Generative Modeling. In The Eleventh Inter-national Conference on Learning Representations, ICLR 2023, Kigali, Rwanda, May 1-5, 2023 . OpenReview.net. https://openreview.net/forum?id=PqvMRDCJT9t [23] Ruoshi Liu, Rundi Wu, Basile Van Hoorick, Pavel Tokmakov, Sergey Zakharov, and Carl Vondrick. 2023. Zero-1-to-3: Zero-shot One Image to 3D Object. In 
+
+IEEE/CVF International Conference on Computer Vision, ICCV 2023, Paris, France, October 1-6, 2023 . IEEE, 9264–9275. doi:10.1109/ICCV51070.2023.00853 [24] Shilong Liu, Zhaoyang Zeng, Tianhe Ren, Feng Li, Hao Zhang, Jie Yang, Qing Jiang, Chunyuan Li, Jianwei Yang, Hang Su, Jun Zhu, and Lei Zhang. 2024. Grounding DINO: Marrying DINO with Grounded Pre-training for Open-Set Object Detection. In Computer Vision - ECCV 2024 - 18th European Conference, Milan, Italy, September 29-October 4, 2024, Proceedings, Part XLVII (Lecture Notes in Computer Science, Vol. 15105) , Ales Leonardis, Elisa Ricci, Stefan Roth, Olga Russakovsky, Torsten Sattler, and Gül Varol (Eds.). Springer, 38–55. doi:10.1007/ 978-3-031-72970-6_3 [25] Xingchao Liu, Chengyue Gong, and Qiang Liu. 2023. Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow. In The Eleventh International Conference on Learning Representations, ICLR 2023, Kigali, Rwanda, May 1-5, 2023 . OpenReview.net. https://openreview.net/forum?id=XVjTT1nw5z [26] Léopold Maillard, Tom Durand, Adrien Ramanana Rahary, and Maks Ovsjanikov. 2025. LACONIC: A 3D Layout Adapter for Controllable Image Creation. In 
+
+Proceedings of the IEEE/CVF International Conference on Computer Vision . 18046– 18057. [27] Léopold Maillard, Nicolas Sereyjol-Garros, Tom Durand, and Maks Ovs-janikov. 2024. DeBaRA: Denoising-Based 3D Room Arrangement Gen-eration. In Advances in Neural Information Processing Systems 38: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024 , Amir Globersons, Lester Mackey, Danielle Belgrave, Angela Fan, Ulrich Paquet, Jakub M. Tomczak, and Cheng Zhang (Eds.). http://papers.nips.cc/paper_files/paper/2024/hash/ c55aeaa3a85954615319a7e55c81197a-Abstract-Conference.html [28] Ben Mildenhall, Pratul P. Srinivasan, Matthew Tancik, Jonathan T. Barron, Ravi Ramamoorthi, and Ren Ng. 2022. NeRF: representing scenes as neural radiance fields for view synthesis. Commun. ACM 65, 1 (2022), 99–106. doi:10.1145/3503250 [29] Yunhong Min, Daehyeon Choi, Kyeongmin Yeo, Jihyun Lee, and Minhyuk Sung. 2025. ORIGEN: Zero-Shot 3D Orientation Grounding in Text-to-Image Gener-ation. In The Thirty-ninth Annual Conference on Neural Information Processing Systems .[30] Rishubh Parihar, Vaibhav Agrawal, Sachidanand VS, and Venkatesh Babu Rad-hakrishnan. 2025. Compass Control: Multi Object Orientation Control for Text-to-Image Generation. In IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2025, Nashville, TN, USA, June 11-15, 2025 . Computer Vision Foundation / IEEE, 2791–2801. doi:10.1109/CVPR52734.2025.00266 MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Yufeng Chi et al. 
+
+[31] Despoina Paschalidou, Amlan Kar, Maria Shugrina, Karsten Kreis, Andreas Geiger, and Sanja Fidler. 2021. ATISS: Autoregressive Transformers for Indoor Scene Syn-thesis. In Advances in Neural Information Processing Systems 34: Annual Conference on Neural Information Processing Systems 2021, NeurIPS 2021, December 6-14, 2021, virtual , Marc’Aurelio Ranzato, Alina Beygelzimer, Yann N. Dauphin, Percy Liang, and Jennifer Wortman Vaughan (Eds.). 12013–12026. https://proceedings.neurips. cc/paper/2021/hash/64986d86a17424eeac96b08a6d519059-Abstract.html [32] William Peebles and Saining Xie. 2023. Scalable Diffusion Models with Transform-ers. In IEEE/CVF International Conference on Computer Vision, ICCV 2023, Paris, France, October 1-6, 2023 . IEEE, 4172–4182. doi:10.1109/ICCV51070.2023.00387 [33] Dustin Podell, Zion English, Kyle Lacey, Andreas Blattmann, Tim Dockhorn, Jonas Müller, Joe Penna, and Robin Rombach. 2024. SDXL: Improving Latent Diffusion Models for High-Resolution Image Synthesis. In The Twelfth Interna-tional Conference on Learning Representations, ICLR 2024, Vienna, Austria, May 7-11, 2024 . OpenReview.net. https://openreview.net/forum?id=di52zR8xgf [34] Can Qin, Shu Zhang, Ning Yu, Yihao Feng, Xinyi Yang, Yingbo Zhou, Huan Wang, Juan Carlos Niebles, Caiming Xiong, Silvio Savarese, Stefano Ermon, Yun Fu, and Ran Xu. 2023. UniControl: A Unified Diffusion Model for Con-trollable Visual Generation In the Wild. In Advances in Neural Information Processing Systems 36: Annual Conference on Neural Information Processing Systems 2023, NeurIPS 2023, New Orleans, LA, USA, December 10 - 16, 2023 ,Alice Oh, Tristan Naumann, Amir Globerson, Kate Saenko, Moritz Hardt, and Sergey Levine (Eds.). http://papers.nips.cc/paper_files/paper/2023/hash/ 862f45ccecb2275851bc8acebb8b4d65-Abstract-Conference.html [35] Zhenyuan Qin, Xincheng Shuai, and Henghui Ding. 2025. SceneDesigner: Control-lable Multi-Object Image Generation with 9-DoF Pose Manipulation. In Advances in Neural Information Processing Systems .[36] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever. 2021. Learning Transferable Visual Models From Natural Language Supervision. In Proceedings of the 38th International Conference on Machine Learning, ICML 2021, 18-24 July 2021, Virtual Event (Pro-ceedings of Machine Learning Research, Vol. 139) , Marina Meila and Tong Zhang (Eds.). PMLR, 8748–8763. http://proceedings.mlr.press/v139/radford21a.html [37] Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn Ommer. 2022. High-Resolution Image Synthesis with Latent Diffusion Models. In 
+
+IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2022, New Orleans, LA, USA, June 18-24, 2022 . IEEE, 10674–10685. doi:10.1109/CVPR52688. 2022.01042 [38] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. 2017. Attention is All you Need. In Advances in Neural Information Processing Systems 30: An-nual Conference on Neural Information Processing Systems 2017, December 4-9, 2017, Long Beach, CA, USA , Isabelle Guyon, Ulrike von Luxburg, Samy Bengio, Hanna M. Wallach, Rob Fergus, S. V. N. Vishwanathan, and Roman Garnett (Eds.). 5998–6008. https://proceedings.neurips.cc/paper/2017/hash/ 3f5ee243547dee91fbd053c1c4a845aa-Abstract.html [39] He Wang, Srinath Sridhar, Jingwei Huang, Julien Valentin, Shuran Song, and Leonidas J. Guibas. 2019. Normalized Object Coordinate Space for Category-Level 6D Object Pose and Size Estimation. In IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2019, Long Beach, CA, USA, June 16-20, 2019 . Computer Vision Foundation / IEEE, 2642–2651. doi:10.1109/CVPR.2019.00275 [40] Xudong Wang, Trevor Darrell, Sai Saketh Rambhatla, Rohit Girdhar, and Ishan Misra. 2024. InstanceDiffusion: Instance-Level Control for Image Generation. In IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2024, Seattle, WA, USA, June 16-22, 2024 . IEEE, 6232–6242. doi:10.1109/CVPR52733. 2024.00596 [41] Zehan Wang, Ziang Zhang, Tianyu Pang, Chao Du, Hengshuang Zhao, and Zhou Zhao. 2025. Orient Anything: Learning Robust Object Orientation Estimation from Rendering 3D Models. In Forty-second International Conference on Machine Learning, ICML 2025, Vancouver, BC, Canada, July 13-19, 2025 (Proceedings of Machine Learning Research, Vol. 267) , Aarti Singh, Maryam Fazel, Daniel Hsu, Simon Lacoste-Julien, Felix Berkenkamp, Tegan Maharaj, Kiri Wagstaff, and Jerry Zhu (Eds.). PMLR / OpenReview.net. https://proceedings.mlr.press/v267/ wang25er.html [42] Zehan Wang, Ziang Zhang, Jiayang Xu, Jialei Wang, Tianyu Pang, Chao Du, Hengshuang Zhao, and Zhou Zhao. 2025. Orient Anything V2: Unifying Orien-tation and Rotation Understanding. In The Thirty-ninth Annual Conference on Neural Information Processing Systems .[43] Qiuhong Anna Wei, Sijie Ding, Jeong Joon Park, Rahul Sajnani, Adrien Poulenard, Srinath Sridhar, and Leonidas J. Guibas. 2023. LEGO-Net: Learning Regular Rearrangements of Objects in Rooms. In IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2023, Vancouver, BC, Canada, June 17-24, 2023 .IEEE, 19037–19047. doi:10.1109/CVPR52729.2023.01825 [44] Jinheng Xie, Yuexiang Li, Yawen Huang, Haozhe Liu, Wentian Zhang, Yefeng Zheng, and Mike Zheng Shou. 2023. BoxDiff: Text-to-Image Synthesis with Training-Free Box-Constrained Diffusion. In IEEE/CVF International Conference on Computer Vision, ICCV 2023, Paris, France, October 1-6, 2023 . IEEE, 7418–7427. doi:10.1109/ICCV51070.2023.00685 [45] Hu Ye, Jun Zhang, Sibo Liu, Xiao Han, and Wei Yang. 2023. IP-Adapter: Text Compatible Image Prompt Adapter for Text-to-Image Diffusion Models. CoRR 
+
+abs/2308.06721 (2023). arXiv:2308.06721 doi:10.48550/ARXIV.2308.06721 [46] Lvmin Zhang, Anyi Rao, and Maneesh Agrawala. 2023. Adding Conditional Control to Text-to-Image Diffusion Models. In IEEE/CVF International Conference on Computer Vision, ICCV 2023, Paris, France, October 1-6, 2023 . IEEE, 3813–3824. doi:10.1109/ICCV51070.2023.00355 [47] Guangcong Zheng, Xianpan Zhou, Xuewei Li, Zhongang Qi, Ying Shan, and Xi Li. 2023. LayoutDiffusion: Controllable Diffusion Model for Layout-to-Image Generation. In IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2023, Vancouver, BC, Canada, June 17-24, 2023 . IEEE, 22490–22499. doi:10. 1109/CVPR52729.2023.02154 [48] Yi Zhou, Connelly Barnes, Jingwan Lu, Jimei Yang, and Hao Li. 2019. On the Continuity of Rotation Representations in Neural Networks. In IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2019, Long Beach, CA, USA, June 16-20, 2019 . Computer Vision Foundation / IEEE, 5745–5753. doi:10.1109/ CVPR.2019.00589
