@@ -1,0 +1,348 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-19T20:27:04.984631+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 5,
+    "quick_skim_target": 11,
+    "quick_selected": 5
+  },
+  "deep_dive": [
+    {
+      "id": "2608.17695v1",
+      "source": "arxiv",
+      "title": "Magnitude-Direction Decoupling for Fast Video Generation with Flow Matching Models",
+      "abstract": "Flow matching models for video generation achieve impressive performance but suffer from high computational overhead due to iterative denoising. In fact, the original model is not necessary for all denoising steps, allowing some steps to use lightweight alternatives for faster sampling. However, directly using caching or lightweight models can deviate from the original denoising trajectory, resulting in suboptimal performance. Through empirical analysis, we find that lightweight models can robustly capture the magnitude components of the original model's output, while caching provides reliable directional guidance. Building on this insight, we propose the Magnitude-Direction Decoupling (MDD) method, which adaptively employs a direction-calibrated lightweight model as a substitute for the original model to accelerate inference and effectively correct deviations in the denoising trajectory. Moreover, MDD further reduces inference costs by reusing magnitude information under classifier-free guidance (CFG). As a result, MDD offers a more reliable and lightweight solution to accelerate sampling. Experiments show that MDD outperforms existing acceleration methods, delivering promising speedups (e.g., up to 2.95x on Wan2.1) while preserving high visual fidelity and content richness.",
+      "authors": [
+        "Haonan Xu",
+        "Feiyang Chen",
+        "Songkui Chen",
+        "Hongpeng Pan",
+        "Zhefeng Wang",
+        "Xinyu Duan",
+        "Baoxing Huai",
+        "Yang Yang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-18T12:12:21+00:00",
+      "link": "https://arxiv.org/pdf/2608.17695v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Flow matching models for video generation; proposes magnitude-direction decoupling for fast sampling",
+      "llm_evidence_cn": "流匹配模型用于视频生成，提出幅值-方向解耦加速采样",
+      "llm_evidence": "流匹配模型用于视频生成，提出幅值-方向解耦加速采样",
+      "canonical_evidence": "流匹配模型用于视频生成，提出幅值-方向解耦加速采样",
+      "llm_tldr_en": "Flow matching models for video generation suffer from iterative denoising cost. The paper proposes Magnitude-Direction Decoupling (MDD), combining lightweight models for magnitude and caching for directional guidance, with adaptive direction calibration to preserve trajectory while accelerating sampling.",
+      "llm_tldr_cn": "针对流匹配视频生成模型迭代去噪计算开销大的问题，本文提出幅值-方向解耦（MDD）方法。通过经验分析发现轻量模型能稳健捕捉输出的幅值分量，而缓存可提供可靠的方向引导，据此自适应地结合两者并校准方向，在不明显偏离原始去噪轨迹的情况下加速采样。该方法在保持视频生成质量的同时显著降低推理成本，为流匹配视频生成的高效采样提供了新思路。",
+      "llm_tldr": "针对流匹配视频生成模型迭代去噪计算开销大的问题，本文提出幅值-方向解耦（MDD）方法。通过经验分析发现轻量模型能稳健捕捉输出的幅值分量，而缓存可提供可靠的方向引导，据此自适应地结合两者并校准方向，在不明显偏离原始去噪轨迹的情况下加速采样。该方法在保持视频生成质量的同时显著降低推理成本，为流匹配视频生成的高效采样提供了新思路。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching based generative video model",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.17426v1",
+      "source": "arxiv",
+      "title": "SemComp-Bench: Benchmarking Semantic Task Completion in Video Generation",
+      "abstract": "We introduce Semantic Task Completion Video Generation, an outcome-oriented video generation task. Under this formulation, success requires both achievement of the intended outcome and semantic grounding. Semantic grounding characterizes the correspondence between the reference image and the generated outcome in terms of high-level semantics relevant to the task. Evaluation focuses on the generated outcome and requires neither the presentation of a complete sequence of intermediate task steps nor conventional appearance consistency with the reference image. To support systematic evaluation, we construct SemComp-Data, an evaluation dataset covering six domains. Each instance comprises a reference image, a detailed instruction, a brief instruction, and an outcome-centric video clip. A scalable four-stage curation pipeline converts raw videos into standardized SemComp-Data instances. We further introduce SemComp-Bench, an evaluation protocol that uses a vision-language model (VLM) to answer structured binary questions. SemComp-Bench reports the OA Score and the GR Score for Outcome Achievement and Generation Reliability, respectively. Experiments on representative video generation models show that achieving intended outcomes while maintaining task-relevant semantic grounding in reference images remains challenging.",
+      "authors": [
+        "Keyu Tu",
+        "Zhuowei Chen",
+        "Mengqi Huang",
+        "Yuxin Wang",
+        "Jiahao Zhu",
+        "Zhendong Mao",
+        "Yongdong Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-18T06:45:07+00:00",
+      "link": "https://arxiv.org/pdf/2608.17426v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Benchmark for semantic task completion in video generation",
+      "llm_evidence_cn": "视频生成中的语义任务完成基准",
+      "llm_evidence": "视频生成中的语义任务完成基准",
+      "canonical_evidence": "视频生成中的语义任务完成基准",
+      "llm_tldr_en": "Introduces a new video generation task and benchmark that evaluates whether generated video achieves an intended outcome and semantic grounding with a reference image.",
+      "llm_tldr_cn": "现有视频生成评测侧重外观一致性，缺少对任务结果是否达成的评估。本文提出语义任务完成视频生成任务，要求生成视频既实现预期结果又符合参考图像的语义。构建覆盖六个领域的SemComp-Data数据集，为结果导向的视频生成提供系统评测方案。该工作推动视频生成从视觉相似走向任务语义达成。",
+      "llm_tldr": "现有视频生成评测侧重外观一致性，缺少对任务结果是否达成的评估。本文提出语义任务完成视频生成任务，要求生成视频既实现预期结果又符合参考图像的语义。构建覆盖六个领域的SemComp-Data数据集，为结果导向的视频生成提供系统评测方案。该工作推动视频生成从视觉相似走向任务语义达成。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "video generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.18040v1",
+      "source": "arxiv",
+      "title": "Optimize Your Sampling: Tuned Diffusion Sampling with Bayesian Optimization",
+      "abstract": "Sampling from a diffusion model typically requires many forward passes through a large neural network, making generation computationally expensive. While much work has focused on efficient solvers and samplers, comparatively little attention has been paid to selecting the sampling timesteps themselves. A recent line of work optimizes theoretically derived surrogates for sample quality rather than the quality metric itself. We propose Optimizing Your Sampling (OYS), which instead treats timestep selection as a black-box optimization problem, optimizing the target metric directly with Bayesian optimization. OYS outperforms both the default schedules and those of Align Your Steps on text-to-image generation, and improves over the default schedules on inpainting and other image tasks, in both quantitative and human evaluations. OYS requires no additional training, is applicable even to distilled models, and improves both simple and sophisticated samplers such as Euler and DPM-Solver++. A 5-step OYS schedule retains 89%-94% of the quality of a 50-step schedule while reducing inference cost by 10x.",
+      "authors": [
+        "Travis Zhang",
+        "Christian Belardi",
+        "Justin Lovelace",
+        "Jin Peng Zhou",
+        "Saebyeol Shin",
+        "Carla P. Gomes",
+        "Kilian Q. Weinberger"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-08-18T17:33:00+00:00",
+      "link": "https://arxiv.org/pdf/2608.18040v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Treats diffusion sampling timestep selection as black-box optimization to improve text-to-image generation, relevant to diffusion generative models.",
+      "llm_evidence_cn": "将扩散模型采样步长选择视为黑盒优化，提升文本到图像生成质量",
+      "llm_evidence": "将扩散模型采样步长选择视为黑盒优化，提升文本到图像生成质量",
+      "canonical_evidence": "将扩散模型采样步长选择视为黑盒优化，提升文本到图像生成质量",
+      "llm_tldr_en": "Diffusion sampling cost depends on timestep schedule, but schedules are usually hand-designed or surrogate-optimized. The paper proposes OYS, using Bayesian optimization to directly optimize target metrics, outperforming default schedules and Align Your Steps on text-to-image generation.",
+      "llm_tldr_cn": "扩散模型采样通常需要多次前向传播，现有工作多优化求解器而忽视采样时间步的选择，且往往优化理论代理而不是真实质量指标。论文提出OYS，将采样时间步选择视为黑盒优化问题，直接以目标指标用贝叶斯优化搜索。实验显示OYS在文本到图像生成上优于默认调度和Align Your Steps，并在多种任务上改善默认调度。该工作为扩散采样调度提供了新的优化思路。",
+      "llm_tldr": "扩散模型采样通常需要多次前向传播，现有工作多优化求解器而忽视采样时间步的选择，且往往优化理论代理而不是真实质量指标。论文提出OYS，将采样时间步选择视为黑盒优化问题，直接以目标指标用贝叶斯优化搜索。实验显示OYS在文本到图像生成上优于默认调度和Align Your Steps，并在多种任务上改善默认调度。该工作为扩散采样调度提供了新的优化思路。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.14308v1",
+      "source": "arxiv",
+      "title": "Information Spreading in Diffusion Models from Effective Field Theory",
+      "abstract": "We study score-matching diffusion models with a convolutional architecture. We argue that the inductive bias of locality means that the machinery of effective field theory from physics can be usefully applied to describe the denoising dynamics. We apply this formalism first to a simple toy example which permits an analytical description, and thereafter to MNIST, and show that in both cases, the mutual information between two points grows in a manner predicted by a simple effective field theory of Brownian motion.",
+      "authors": [
+        "Navonil Neogi",
+        "Nabil Iqbal"
+      ],
+      "primary_category": "hep-th",
+      "categories": [
+        "hep-th",
+        "cond-mat.stat-mech",
+        "cs.LG"
+      ],
+      "published": "2026-08-14T13:45:31+00:00",
+      "link": "https://arxiv.org/pdf/2608.14308v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Theoretical analysis of score-matching diffusion models using effective field theory, relevant to understanding diffusion generative models.",
+      "llm_evidence_cn": "用有效场论分析分数匹配扩散模型的去噪动力学，属于扩散生成模型理论",
+      "llm_evidence": "用有效场论分析分数匹配扩散模型的去噪动力学，属于扩散生成模型理论",
+      "canonical_evidence": "用有效场论分析分数匹配扩散模型的去噪动力学，属于扩散生成模型理论",
+      "llm_tldr_en": "Applies effective field theory from physics to analyze score-matching diffusion models with convolutional architectures. The inductive bias of locality enables analytical prediction of mutual information growth during denoising, validated on MNIST and a toy example.",
+      "llm_tldr_cn": "该论文从物理学有效场论视角分析卷积架构的分数匹配扩散模型，认为局部性归纳偏置可以用有效场论描述去噪动力学。论文先在可解析的玩具示例上应用该形式，再在MNIST上验证，两种情况下的两点互信息增长都与简单布朗运动有效场论预测一致。该工作为理解扩散模型的表示传播提供了理论工具。",
+      "llm_tldr": "该论文从物理学有效场论视角分析卷积架构的分数匹配扩散模型，认为局部性归纳偏置可以用有效场论描述去噪动力学。论文先在可解析的玩具示例上应用该形式，再在MNIST上验证，两种情况下的两点互信息增长都与简单布朗运动有效场论预测一致。该工作为理解扩散模型的表示传播提供了理论工具。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.17286v1",
+      "source": "arxiv",
+      "title": "Abra: Scaling Diffusion Image Training",
+      "abstract": "Compute-optimal scaling laws guide the training of frontier language models yet remain largely unexplored for visual generation. We present a systematic scaling law study for text-to-image diffusion models using Abra, a controlled family of flow-matching transformers trained across three orders of magnitude worth of compute ($10^{19}$ to $10^{22}$ FLOPs), reaching significantly larger compute budgets than previous works. We demonstrate that diffusion models scale just as predictably as language models but require far more data to train optimally: compute optimality occurs at approximately $200$ image tokens per parameter, ten times the Chinchilla compute-optimal prescription for LLMs. We show that unlike language models, diffusion models are robust to overtraining and that practitioners should err on the side of more data rather than a larger model. Finally, we show that this predictability extends beyond training loss to generative quality metrics, optimal CFG settings, representation quality, and even the shape of the training curves, which collapse onto a universal form.",
+      "authors": [
+        "Kyle Chickering",
+        "Wei-An Lin",
+        "Swayam Bhanded",
+        "Dan Saunders",
+        "Akshat Tripathi",
+        "Jiaming Song",
+        "Shyamal Buch",
+        "Xinchen Yan"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-18T02:36:25+00:00",
+      "link": "https://arxiv.org/pdf/2608.17286v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Scaling laws for flow-matching text-to-image diffusion models",
+      "llm_evidence_cn": "流匹配文生图扩散模型的扩展定律",
+      "llm_evidence": "流匹配文生图扩散模型的扩展定律",
+      "canonical_evidence": "流匹配文生图扩散模型的扩展定律",
+      "llm_tldr_en": "Systematically studies scaling laws for text-to-image diffusion models with flow-matching transformers across three orders of magnitude of compute, showing they require more data than LLMs.",
+      "llm_tldr_cn": "视觉生成模型缺乏计算最优扩展定律研究。本文提出Abra，对基于流匹配的Transformer文本到图像扩散模型进行从1e19到1e22 FLOPs的系统性扩展实验。结果表明扩散模型扩展如同语言模型一样可预测，但最佳数据量约为每参数200个图像token，远高于LLM的Chinchilla比例。该研究为扩散模型训练计算分配提供指导，但与视频生成无直接关联。",
+      "llm_tldr": "视觉生成模型缺乏计算最优扩展定律研究。本文提出Abra，对基于流匹配的Transformer文本到图像扩散模型进行从1e19到1e22 FLOPs的系统性扩展实验。结果表明扩散模型扩展如同语言模型一样可预测，但最佳数据量约为每参数200个图像token，远高于LLM的Chinchilla比例。该研究为扩散模型训练计算分配提供指导，但与视频生成无直接关联。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.17747v1",
+      "source": "arxiv",
+      "title": "TINA+: Probing Residual Visual Knowledge in Unlearned Diffusion Models via Diffusion-Consistent Text-Free Inversion",
+      "abstract": "Although text-to-image diffusion models exhibit remarkable generative power, concept erasure techniques are essential for preventing harmful content. Existing adversarial probes evaluate these methods by testing whether erased concepts can still be recovered. However, existing erasure and probe methods remain largely text-centric, focusing on whether the text-to-image mapping is severed while overlooking whether the corresponding visual knowledge remains. To investigate this question from a visual perspective, we leverage diffusion inversion to probe whether a generative trajectory can reconstruct visual instances of an erased concept. Under a null-text condition, standard inversion avoids the textual pathway but amplifies approximation errors, hindering faithful trajectory recovery. To address this challenge, we introduce TINA+, a diffusion-consistent Text-free INversion Attack equipped with optimization-based inversion. We also find that unconstrained diffusion inversion may discover spurious trajectories, even allowing a randomly initialized diffusion model to reconstruct the target concept. Such trajectories may falsely indicate residual visual knowledge. TINA+ therefore introduces Diffusion-Consistent Trajectory Regularization to suppress this failure mode. By penalizing trajectories that fall far below the expected marginal energy evolution of diffusion, TINA+ suppresses spurious inversion paths while preserving its ability to recover erased concepts. Experiments across twelve erasure methods, four concept-erasure tasks, and different model architectures demonstrate that TINA+ reliably probes residual visual knowledge through diffusion-consistent visual trajectories. These results provide stronger evidence that current methods often obscure concepts by severing text-image links rather than eliminating the underlying visual knowledge.",
+      "authors": [
+        "Qianlong Xiang",
+        "Miao Zhang",
+        "Kun Wang",
+        "Haoyu Zhang",
+        "Junhui Hou",
+        "Liqiang Nie"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-18T13:11:11+00:00",
+      "link": "https://arxiv.org/pdf/2608.17747v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Diffusion model inversion and probing for concept erasure; text-to-image diffusion generative model analysis",
+      "llm_evidence_cn": "利用扩散模型反演探测概念擦除后的残留视觉知识，属于扩散模型生成与分析方法",
+      "llm_evidence": "利用扩散模型反演探测概念擦除后的残留视觉知识，属于扩散模型生成与分析方法",
+      "canonical_evidence": "利用扩散模型反演探测概念擦除后的残留视觉知识，属于扩散模型生成与分析方法",
+      "llm_tldr_en": "TINA+ probes residual visual knowledge in unlearned text-to-image diffusion models through diffusion-consistent text-free inversion, revealing that erased concepts may still be reconstructed visually under null-text conditions.",
+      "llm_tldr_cn": "针对文本到图像扩散模型的概念擦除评测，现有对抗探针主要关注文本到图像映射是否被切断，忽略了视觉知识是否残留。本文提出TINA+，通过扩散一致的无文本反演，在空文本条件下重建已擦除概念的视觉实例，从而从视觉角度探测模型中的残留知识。该方法为概念擦除评估提供了新的视觉视角，能够揭示仅靠文本探针无法发现的残余生成能力。实验证明TINA+能有效探测未学习后的视觉知识残留。",
+      "llm_tldr": "针对文本到图像扩散模型的概念擦除评测，现有对抗探针主要关注文本到图像映射是否被切断，忽略了视觉知识是否残留。本文提出TINA+，通过扩散一致的无文本反演，在空文本条件下重建已擦除概念的视觉实例，从而从视觉角度探测模型中的残留知识。该方法为概念擦除评估提供了新的视觉视角，能够揭示仅靠文本探针无法发现的残余生成能力。实验证明TINA+能有效探测未学习后的视觉知识残留。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.17832v1",
+      "source": "arxiv",
+      "title": "GenRec: Knowing Where to Reconstruct and Where to Generate",
+      "abstract": "Generative novel view synthesis from sparse input images is rarely all reconstruction or all generation: pixels visible in some source view have a unique correct value modulated only by view-dependent shading, while pixels in disocclusions or beyond the captured volume admit a distribution of plausible completions. Existing generative novel-view-synthesis methods conflate these regimes under a single uniform loss, blurring the line between geometric fidelity and creative hallucinations even when scene geometry is injected through warped point clouds or projected depth. We introduce GenRec, a multi-view flow matching model that builds the reconstruction--generation split directly into its architecture, supervision, and gradient flow. Guided by an observation mask derived from the source cameras and a monocular depth estimator, a flow matching backbone jointly denoises RGB and scene-coordinate maps across all target views, while a pixel-space refinement stage restores high-frequency detail on observed pixels; the same mask gates supervision so regression signals do not contaminate the generative prior. Across RealEstate10K, DL3DV-10K, and Mip-NeRF~360, in both single-view extrapolation and two-view interpolation, GenRec attains the best reconstruction fidelity in observed regions while also surpassing purely generative baselines on perceptual quality in unobserved ones, showing the effectiveness of our approach.",
+      "authors": [
+        "Ata Çelen",
+        "Jaewoo Jung",
+        "Federico Tombari",
+        "Marc Pollefeys",
+        "Sunghwan Hong",
+        "Michael Niemeyer",
+        "Daniel Barath"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-18T14:31:19+00:00",
+      "link": "https://arxiv.org/pdf/2608.17832v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Multi-view flow matching for novel view synthesis, not video",
+      "llm_evidence_cn": "用于新视角合成的多视角流匹配，不涉及视频",
+      "llm_evidence": "用于新视角合成的多视角流匹配，不涉及视频",
+      "canonical_evidence": "用于新视角合成的多视角流匹配，不涉及视频",
+      "llm_tldr_en": "GenRec is a multi-view flow matching model that explicitly separates reconstruction from generation using an observation mask, improving control in sparse-input novel view synthesis.",
+      "llm_tldr_cn": "生成式新视角合成常混淆可重建区域与需生成区域。GenRec提出多视角流匹配模型，通过观察掩码将重建与生成分离到架构、监督和梯度流中。实验显示该方法在稀疏输入下能更清晰地划分两种模式，提升几何保真与创造性可控性。其为新视角合成提供了更细致的设计准则。",
+      "llm_tldr": "生成式新视角合成常混淆可重建区域与需生成区域。GenRec提出多视角流匹配模型，通过观察掩码将重建与生成分离到架构、监督和梯度流中。实验显示该方法在稀疏输入下能更清晰地划分两种模式，提升几何保真与创造性可控性。其为新视角合成提供了更细致的设计准则。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "flow matching",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.17973v1",
+      "source": "arxiv",
+      "title": "LinCa: Accelerating Diffusion Models via Learnable Decomposed Feature Caching",
+      "abstract": "Diffusion models have achieved remarkable success in image and video generation, yet the high computational cost of iterative sampling remains a critical bottleneck for practical deployment. Feature caching has emerged as a promising acceleration paradigm by reusing or predicting intermediate features across timesteps. However, existing training-free methods apply uniform prediction strategies that cannot adapt to the heterogeneous feature dynamics, causing significant quality degradation under high acceleration ratios. We propose LinCa, a feature caching framework based on learnable invertible networks. LinCa decomposes cached features into sub-components with distinct continuity properties via a lightweight invertible network and applies differentiated prediction orders matched to each component. The strict invertibility guarantees lossless reconstruction back to the original feature space, forming a unified Decompose-Predict-Reconstruct pipeline. By training separate predictors for different models and timestep segments, LinCa adapts to heterogeneous feature dynamics. Experiments on FLUX, Qwen-Image, and HunyuanVideo demonstrate that LinCa, with less than 0.2% additional parameters, significantly outperforms existing methods and maintains near-lossless quality at 5-7x speedup. Code: https://github.com/QHR69/LinCa",
+      "authors": [
+        "Jinshan Liu",
+        "Haoran Qin",
+        "Xiaobing Tu",
+        "Jiacheng Liu",
+        "Jiahui Hu",
+        "Zhengan Yan",
+        "Yukun Xie",
+        "Kerui Shen",
+        "Jinkui Ren",
+        "Yuqi Lin",
+        "Xiantao Zhang",
+        "Linfeng Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-18T16:26:21+00:00",
+      "link": "https://arxiv.org/pdf/2608.17973v1",
+      "tags": [
+        "keyword:diff-video",
+        "query:diff-video"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Feature caching to accelerate diffusion models for image and video generation",
+      "llm_evidence_cn": "特征缓存加速图像与视频扩散模型",
+      "llm_evidence": "特征缓存加速图像与视频扩散模型",
+      "canonical_evidence": "特征缓存加速图像与视频扩散模型",
+      "llm_tldr_en": "LinCa accelerates diffusion models via learnable invertible networks that decompose cached features into sub-components with distinct continuity, adapting caching strategies for higher acceleration quality.",
+      "llm_tldr_cn": "扩散模型采样迭代计算量大，现有特征缓存方法未考虑特征异质性。LinCa用可学习的可逆网络分解缓存特征，对不同连续性的子成分采用差异化预测策略。在图像和视频扩散模型上，该方法在高加速比下明显减小质量退化。它为扩散模型部署提供了实用的加速工具。",
+      "llm_tldr": "扩散模型采样迭代计算量大，现有特征缓存方法未考虑特征异质性。LinCa用可学习的可逆网络分解缓存特征，对不同连续性的子成分采用差异化预测策略。在图像和视频扩散模型上，该方法在高加速比下明显减小质量退化。它为扩散模型部署提供了实用的加速工具。",
+      "llm_tags": [
+        "query:diff-video"
+      ],
+      "matched_query_tag": "query:diff-video",
+      "matched_query_text": "diffusion models as generative models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

@@ -1,0 +1,1312 @@
+Title: Information Spreading in Diffusion Models from Effective Field Theory
+
+URL Source: https://arxiv.org/pdf/2608.14308v1
+
+Published Time: Mon, 17 Aug 2026 00:50:18 GMT
+
+Number of Pages: 23
+
+Markdown Content:
+# INFORMATION SPREADING IN DIFFUSION MODELS FROM EFFECTIVE FIELD THEORY 
+
+Navonil Neogi 1,2 Nabil Iqbal 1,3 
+
+> 1
+
+Centre for Particle Theory, Department of Mathematical Sciences, Durham University 
+
+> 2
+
+Institute of Physics, University of Amsterdam 
+
+> 3
+
+Amsterdam Machine Learning Lab, University of Amsterdam 
+
+navonil.neogi@durham.ac.uk, nabil.iqbal@durham.ac.uk 
+
+# ABSTRACT 
+
+We study score-matching diffusion models with a convolutional architecture. We argue that the inductive bias of locality means that the machinery of effective field theory from physics can be usefully applied to describe the denoising dynamics. We apply this formalism first to a simple toy example which permits an analytical description, and thereafter to MNIST, and show that in both cases, the mutual information between two points grows in a manner predicted by a simple effective field theory of Brownian motion. 
+
+# 1 MOTIVATION 
+
+One of the key insights of physics in the twentieth century is that of effective theory , i.e. the idea that one can understand systems scale-by-scale, and that the long-distance behavior of a given system can be understood without full knowledge of the microscopic behavior. In most conventional physical systems principles such as locality and symmetry allow one to formulate an effective description where the short-distance physics affects the long-distance dynamics only through a few relevant parameters. These ideas have found particularly powerful use when applied to quantum field theory (Weinberg, 1979). In this work we turn the same philosophy to the understanding of diffusion models in deep learn-ing. Such models are a workhorse of generative AI, and are used to generate samples from a data distribution by gradually constructing structure from a starting distribution of pure noise. In general the dynamics of such models is rather complicated; however, as we argue below, under certain cir-cumstances principles of locality and symmetry can be used to derive a very simple effective field theory which governs the growth of mutual information at early times and long distances in the reverse process. We empirically test the predictions of our effective theory in very simple trained diffusion models on toy datasets. We find this to be an interesting and potentially useful applica-tion of the principles of effective theory in a new context. An attempt has been made to provide background material to make the paper more self-contained for members of both the physics and machine-learning communities. 1.1 PREVIOUS WORK 
+
+Diffusion models (Sohl-Dickstein et al., 2015; Ho et al., 2020) are a powerful and commonly used method in generative AI, achieving state of the art results across many modalities, including images (Dhariwal & Nichol, 2021; Rombach et al., 2022), text (Li et al., 2023), and scientific applications such as construction of molecules (Hoogeboom et al., 2022). In this work we study these models in their score-matching incarnation Song et al. (2020). The dynamical regimes we describe in the reverse process are similar to those detailed in Raya & Ambrogioni (2023) Biroli et al. (2024), and in particular, we mainly study what appears to correspond to the ’Gaussian’ regime in those works. However, our work considers spatial structure within the samples, and aims to better understand the ’Brownian motion’ regime described there. We also briefly examine the ’memorisation’ regime in Biroli et al. (2024) - which we call the ’snapping’ regime - where samples approach their nearest training equivalents. Previous work on understanding general principles underlying these models also includes Cotler & Rezchikov (2023) from a physical perspective. 1arXiv:2608.14308v1 [hep-th] 14 Aug 2026 In particular, an approach based on information theory has been applied to study the creation of structure in data within diffusion models. The so-called ’I-MMSE’ relationship formulated the evolution of mutual information between successive Gaussian evolutions, first in Guo et al. (2004) and later extended and applied to the pointwise case in Venkat & Weissman (2012); Kong et al. (2023). A useful contribution of our work is to study spatial mutual information on a pixel level over the course of the reverse process in diffusion, using a specifically physics-based approach (EFT) for handling the spatial structure in the case of convolutional architecture. The object we study in the regime near the beginning of the reverse process in our EFT description is also studied as the second-order term in the Jacobian in the recent work Ambrogioni (2026). The same analytic formulation of the ±1 grid example is also discussed therein. A different perspective on the transitions between regimes where patterns are formed and patches snap is provided in terms of collapse of Fourier modes. It is our belief that these perspectives are connected and future work will explore these connections. 
+
+Effective field theory (EFT) is a classic approach in physics (Weinberg, 1979; Polchinski, 1992) where constraints on the description of a system - in physics, typically locality, symmetry or causal-ity - allow for the construction of simplified models that describe its dynamics. As we review, such simplified models can usually fruitfully be understood as understanding the system of interest at a particular length scale. We apply this approach to model the reverse process of a diffusion model, to understand how mutual information is created and spreads in the sample as it is gradually denoised. 
+
+# 2 THEORY 
+
+2.1 DIFFUSION MODELS AND WHAT THEY DO 
+
+In recent years, diffusion models have become ubiquitous in machine learning to generate high-dimensional data, in particular images. Below we present a brief review for a physics audience. The reader who is already familiar with diffusion models and their score-matching formulation is encouraged to skip this short exposition and proceed to the effective field theory of the score function. The problem of generative artificial intelligence (AI) can be stated as follows: we would like to generate samples of data drawn from a certain distribution p(ϕ), whose precise analytic form is not known but of which we already have (many) pre-existing samples. This is difficult, and one approach to the problem is to find a way to convert samples from a much simpler distribution (e.g. a Gaussian) to the samples that we want. This is done by first constructing a probability flow from distributions of target data to a simpler distribution (usually a Gaussian distribution) can allow us to learn the inverse flow using a neural network, allowing us to go from pure Gaussian noise to generated data samples. In other words, we first learn how to destroy data by gradually turning it into noise. This is typically done through an Ornstein-Uhlenbeck process, which may be written in the form of an SDE: 
+
+dϕ = − β(t)2 ϕdt + pβ(t)dW t (1) where ϕ(x, t ) are the samples, and t runs from 0 at the data samples to some large positive value T
+
+when the samples have been noised to approximately pure noise. The question is then: given that we have been able to destroy the samples, can we rebuild them start-ing from pure noise? We should then aim to find, given a sample, in which direction in probability space we want to go next in order to move towards a high-probability area of the data distribution. This is achieved through simple stochastic dynamics. Just as in normal thermodynamics we would want to enact the Langevin flow dx = −∇ U dt + dW t, where U is the potential energy of the state, and could instead write this in terms of the Boltzmann distribution p0 = exp( −βU ), very similar dynamics turn out to enact the reverse of the forward process in this case: 
+
+dϕ = − β(t)2 ϕdt − β(t)∇x log pt(x)dt + pβdW t (2) Here dW t is noise and its coefficient √β is chosen in such a way that the equilibrium distribution is exactly the Boltzmann distribution. 2The important object to be able to carry out this reverse process computationally, and go from noise to data, is therefore the quantity π(ϕ, t ) := ∇x log pt(x), which is the central learned object in diffusion models, and is called the score function . In other words, we don’t need to know the full normalized probability distribution we are aiming for at every point of the reverse process: we only need to know the gradient, or in which direction to flow next. In practice, the score function is learned using a neural network, using a method called score match-ing (Hyv¨ arinen & Dayan, 2005) which is now commonly used for generative modeling (Song & Ermon, 2019). In particular, by discretising the forward (noising) process run on training data sam-ples, the neural network can learn the score function for the reverse process. The specific form of the reverse process we use in this work, for field ϕ, is the deterministic ODE form without noise: ∂ϕ (t)
+
+∂t = ∂t ¯αt
+
+¯αt
+
+[ϕ(t) + π (ϕ(t), t )] (3) As explained in Song et al. (2020), both this and the SDE form lead to the same data distribution at the end of the reverse process. In practice, the score function π(ϕ(t), t ) is represented by a neural network which is trained on many samples from the data distribution. The reverse process starts from pure noise, so ϕ(0) is usually a grid of pointwise i.i.d. Gaussian variables; that is, ϕ(x, 0) ∼ N (0 , 1) 
+
+for all points x within the sample. 2.2 MICROSCOPIC DERIVATION OF CREATIVITY IN LOCAL EQUIVARIANT MODELS 
+
+Diffusion models such as described above work extremely well and are one of the workhorses of generative AI, generating seemingly creative examples of images, text, etc. As articulated clearly in Kamb & Ganguli (2025), it is curious to note that the training objective of such models should actually drive them to precisely memorize their training data: however when used in practice they instead generate creative outputs that seemingly remix their training data in interesting ways. Is it possible to obtain a universal theory for how this happens? A potential mechanism was given in Kamb & Ganguli (2025), where it was argued that in fact it is the inductive biases of the underlying neural networks which do not permit them to precisely fit the underlying objective and memorize their training data precisely. Rather they fail in an interesting and understandable manner. For example, when the network has a convolutional architecture, then the constraints of locality and translational equivariance imply that the score function which minimizes its training objective is given by an object called the Equivariant Local Score Machine or ELS: 
+
+π[ϕ]( x) = − 11 − ¯αt
+
+P 
+
+> φ∈PΩ(D)
+
+(ϕ(x) − √¯αtφ(0)) N (ϕΩx |√¯αtφ, (1 − ¯αt)I)
+
+P 
+
+> φ′∈PΩ(D)
+
+N (ϕΩx |√¯αtφ′|(1 − ¯αt)I) (4) We briefly explain the objects arising in this formula: ϕ is the local field which is being evolved, and φ runs over the set of all possible patches PΩ(D) taken from the training dataset D. The size of each patch is a parameter ∆ which must be specified. As explained in detail in Kamb & Ganguli (2025), this should be viewed as a mechanism by which each patch of the image is pulled towards an increasingly less noisy patch of the training data, resulting in a kind of mosaic of training data which manifests as a plausible and creative image. The mechanism above agrees closely on a sample-by-sample basis with the results of real learned models, and there is a sense in which it can be viewed as providing an exact solution to the problem of understanding training dynamics. We note however that while it is simple conceptually, in practice it is a rather complicated object: formulating the ELS requires an explicit sum over all patches in the training data . One can ask whether it is possible to understand the general dynamics of diffusion models in a simplified manner, ideally one in which the complexity of the training data appears only through a small number of parameters. 2.3 EFFECTIVE FIELD THEORY FOR THE REVERSE PROCESS 
+
+We now turn to the novel contribution of this work, i.e. the idea of using effective field theory (EFT) – a concept originating in physics, but with wide applicability – to achieve such a goal. Effective field theory is a formalization of the common-sense idea that nature can be understood at different 3length scales : e.g. one does not need to understand the microscopic structure of the proton (small scale) to study how water waves move (long scale). 2.3.1 SIMPLE EXAMPLE OF EFFECTIVE FIELD THEORY 
+
+At a technical level, this is usually accomplished by expanding various quantities order-by-order in derivatives. For the reader who is unfamiliar with this concept, we consider an extremely simple example. (The reader who is already familiar with EFT is encouraged to skip to the next subsection). Consider the following equation of motion for a particle moving in one dimension x(t):
+
+d2xdt 2 + τ d3xdt 3 = 0 (5) The first term is the normal movement of an idealized particle feeling no force. The second term is an example of a “higher-derivative” term that might appear in a more realistic model. Note that by dimensional analysis its coefficient τ must have dimensions of time. Let us study the most general solution to this third order differential equation, labeled by three integration constants ci.
+
+x(t) = c1 + c2t + c3e− tτ (6) Now imagine that we are interested in the movement of the particle over long time-scales, i.e. with 
+
+t ≫ τ . In this case the term in c3 is exponentially small and can be neglected, and we simply obtain motion with a constant velocity. Note that this could perhaps have been anticipated before explicitly solving the equations of motion (5): on general grounds, if we care about a regime where t ≫ τ ,then we are saying that the time scale τ is very small compared to the time variation of the quantities of interest, and to good approximation we can set τ = 0 from the outset, resulting in the same conclusion. Note that any further higher derivative terms (e.g. τ n−2 dn 
+
+> dt n
+
+x(t)) will have a coefficient proportional to higher powers of some quantity with dimensions of time τ and can also be neglected. This is a very powerful principle: essentially by dimensional analysis alone, the dynamics of almost any system at suitably long time scales is usually controlled by only a few parameters. The idea of 
+
+effective field theory is to apply this general principle in a sophisticated manner, usually resulting in a controlled expansion that works for long distances or late times , often the regime of interest. The application of this idea to quantum field theory in particular is extremely well developed (Weinberg, 1979; Polchinski, 1992). See e.g. (Burgess, 2007; Kaplan, 2005) for reviews. 2.3.2 EFFECTIVE THEORY OF DIFFUSION MODEL 
+
+In this work we will apply the same approach to the buildup of correlations in a diffusion model with a convolutional backbone. It may not be obvious that the required principles apply in this setting. We will argue that the primary ideas required are locality in space and translational equivariance ,are sufficient to allow us to use general principles of EFT to understand the reverse process. The basic idea behind our approach is the following. The dynamics of the reverse process is fully determined by the ODE (3), in which the interesting dynamical input is the score function π(ϕ(t), t ).In general, the score function π(ϕ(t), t ) is an arbitrarily complicated functional of the current con-figuration ϕ(t), and it may seem impossible to understand how the model chooses to represent it. The insight of effective field theory is that this is often not the case: one can consider systematic expansions of the quantity of interest and then argue (as we did above in the toy example) that the interesting dynamics is determined by a few terms. To that end, let us consider a double expansion of π(ϕ(t), t ) – or, equivalently, the right hand side of the evolution equation (3) in a double expansion of ϕ(x, t ) and spatial derivatives of ϕ(x, t ). Now 
+
+¯αt is a monotonic function of t, describing noise that is always being added as the forward process evolves. For example, in our implementation of the ±1 grid example, we use the standard cosine schedule from Nichol & Dhariwal (2021). This gives the following noise scheduling: 
+
+¯αt =
+
+> t
+
+Y
+
+> ti=0
+
+cos 2
+
+ π
+
+2 
+
+> ti
+> T
+
++ s
+
+1 + s
+
+
+
+(7) Where s is a small constant to ensure the absence of sharp zeroes or infinities, and T is the final time in the forward process, with ti being the discretised time points along the forward process. 4The result of this monotonicity is that we can always reparametrize time t in terms of ¯αt, and we will do this from now on. Here are the first few terms of this expansion: 
+
+∂ ˜ϕ(x, ¯αt)
+
+∂ ¯αt
+
+= g0(¯ αt) + g2(¯ αt)v2 · ∇ ˜ϕ(x, t ) + g3(¯ αt)∇2 ˜ϕ(x, t ) + g4 ˜ϕ2(x, t )+ + g5 ˜ϕ2(x, t )v5 · ∇ ˜ϕ(x, t ) + g6(¯ αt)∇ ˜ϕ(x, t ) · ∇ ˜ϕ(x, t ) + g7 ˜ϕ3 + g8 ˜ϕv8 · ∇ ˜ϕ... (8) where the vi are vectors which do not depend on the field ϕ but (at this point) can have arbitrary dependence on time. We note a technical point: there is no term linear in ϕ on the right-hand-side of (15). This is because such a term can be absorbed into a field redefinition. For example, if a1(¯ αt) were the coefficient of such a term, we could redefine ˜ϕ = exp 
+
+h
+
+− R t dt ′a1(¯ αt)
+
+i
+
+ϕ and absorb all resultant factors in the other terms into the definitions of their coefficients. Thus with no loss of generality we will assume that we have already done so and work with the rescaled field ˜ϕ from now on 1.Where do the two constraints of locality and translational equivariance enter in this expansion? Translational equivariance implies that the coefficient functions g(¯ αt) cannot depend explicitly on space x. Locality implies that the score function at point x depends more strongly on points which are close to the point x than those that are far away, suggesting that a derivative expansion is possible in principle. However, for this expansion to also be useful , one has to meaningfully argue that that it can be truncated to a finite set of terms. To understand such a truncation, we first impose all of the symmetries of our underlying data distri-bution. We assume for this example that our underlying data distribution is rotationally equivariant, meaning that all of the vectors vi = 0 . We also assume an underlying Z2 symmetry which acts as 
+
+ϕ → − ϕ, so that g0, g6 are zero. In that case we find the following much simpler expansion: 
+
+∂ ˜ϕ(x, ¯αt)
+
+∂ ¯αt
+
+= g3(¯ αt)∇2 ˜ϕ(x, t ) + g7 ˜ϕ3 + · · · (9) We would like to consider dynamics near the pure noise endpoint at ¯αt → 0. To that end we assume that all of the coefficient functions gi(¯ αt) have finite limits as ¯αt → 0, i.e. gi(¯ αt → 0) = ci, and furthermore we assume that in the regime of interest we can treat them as constant. We will now formalize the notion of studying “long distances”. To do this we introduce a scaling limit, i.e. we consider zooming to longer distances (and later times) by introducing a parameter λ.
+
+¯αt → λ2 ¯αt x → λx λ → ∞ (10) One can now ask how the field ˜ϕ is affected by this rescaling; as it turns out, when defining ˜ϕ
+
+correctly one should assume the following scaling: 
+
+˜ϕ → λ− d 
+
+> 2
+
+˜ϕ (11) where d is the number of spatial dimensions. We now briefly explain this formula, in two different ways. We first present a somewhat heuristic argument that is reminiscent of arguments in physics, and then explain an equivalent point of view arising from the central limit theorem. 1. What is the distribution of the original field ϕ(x, ¯αt = 0) ? At the start of the reverse pro-cess in diffusion this is a random variable drawn from a normal distribution of unit width, uncorrelated across the spatial sites. In other words, we have the following probability distribution: 
+
+p(ϕ(¯ αt = 0 , x )) = N −1 Y
+
+> i
+
+exp( − 12 ϕ(xi)2) → N −1 exp 
+
+
+
+− 12
+
+Z
+
+ddxϕ (x)2
+
+
+
+(12) where we have passed to a continuum notation in the second line. Now consider the rescal-ing x → λx : in order for the distribution to remain invariant we should simultaneously 
+
+> 1It is important that any observables of interest remain invariant under such a rescaling, which we will show to be true for the mutual information in our case
+
+5rescale ϕ(x) → λ− d 
+
+> 2
+
+ϕ. (This is precisely analogous to the usual procedure used to assign a scaling dimension to a quantum field in phyiscs, see e.g. the textbook treatment in Peskin & Schroeder (1995) ). 2. This can also be understood from the central limit theorem. Let us consider an averaged field ϕℓ averaged over a cubic box of size ℓϕℓ(x) = 1
+
+ℓd
+
+X
+
+> y
+
+ϕ(y) (13) At ¯αt = 0 , the sum runs over ℓd uncorrelated variables on each site, and thus has variance 
+
+ℓ d 
+
+> 2
+
+. Thus the typical size of the averaged field is ℓ− d 
+
+> 2
+
+: rescaling ℓ → λℓ now results in the same scaling (11). Note that from this point of view we are studying not the original field ϕ but rather an averaged version ϕℓ; this is the usual philosophy of EFT, and all such observables will agree with the original, as long as we study questions on scales that are significantly longer than ℓ.The utility of establishing this scaling is that we can now use it to demonstrate which terms in the formal expansion (15) are important. Scaling all of the terms using (10) and (11), we find: 
+
+λ−2− d
+
+> 2
+
+∂ ˜ϕ(x, ¯αt)
+
+∂ ¯αt
+
+= g3λ−2− d 
+
+> 2
+
+∇2 ˜ϕ(x, t ) + g7λ− 3d 
+
+> 2
+
+˜ϕ3 + · · · (14) We now take the limit λ → ∞ . Importantly, any other terms which appear here with either more derivatives of higher powers of ˜ϕ will come with a factor of λ raised to a higher power and can be neglected. In the case d = 2 the three terms shown above are the only ones which survive, and we thus find the following equation 
+
+∂ ˜ϕ(x, ¯αt)
+
+∂ ¯αt
+
+= g3∇2 ˜ϕ(x, t ) + g7 ˜ϕ3 (15) which thus describes the growth of long-distance correlations shortly after the pure noise endpoint in a diffusion model in d = 2 .This is as far as we can go using general physical principle of effective field theory. This is clearly an enormous simplification of the most general dynamics: the full microscopic dependence of the training dataset appears only through a few parameters, the ci. As it turns out, we can go further still if we now use the microscopic description provided by the ELS in (4). It is explained in detail in Appendix A.1 that in fact all nonlinearities of the form ˜ϕm come multiplied with powers of ¯αt;to be precise, multiplied by a factor O( ¯ αt 
+
+> m+1 2
+
+); thus the ˜ϕ3 term can be neglected in the ¯αt → 0
+
+limit. This can be understood heuristically from the factors of √¯αtφ in (4), which capture the fact that the mean of the distribution of the noised training data is drawn towards the origin at the noise endpoint. 2
+
+We thus find that the dynamics of the field close to the noise endpoint is given by the following extremely simple expression, 
+
+∂ ˜ϕ(x, ¯αt)
+
+∂ ¯αt
+
+= g3∇2 ˜ϕ(x, t ) (16) usually called the heat equation or diffusion equation. It is not a coincidence that it has appeared here: this equation is ubiquitous in describing physical phenomena for reasons ultimately arising from the effective field theory arguments given here. (Note the word “diffusion” plays multiple roles in this subject). 2.4 MUTUAL INFORMATION GROWTH 
+
+We would now like to compute an observable using this simple model. In particular, we will study the growth of correlations at the early stages of the reverse process. One such measure of correlations     
+
+> 2We note that in the language of RG, a term in c7˜ϕ3would be marginal , which means that it would result in logarithmic corrections to all quantities that we compute. There is a well-developed framework to compute these corrections, but they would not have been visible in the finite resolution experiments that we perform in any case.
+
+6is the mutual information between the field at two spatial points. We first define the connected two-point correlation function of the samples ϕ at time t during the reverse process as follows: 
+
+Gt(x, y ) := ⟨ϕ(x, t )ϕ(y, t )⟩ − ⟨ ϕt⟩2 (17) where the angled brackets denote an ensemble average (in this case, over multiple realisations of the initial noise). Note that we assume that ⟨ϕ(x, t )⟩ = ⟨ϕt⟩ is constant in space by translational equivariance. We further assume that all quantities are Gaussian distributed; this is a self-consistent assumption as at αt = 0 the initial conditions are drawn from factorized Gaussians, and the linear evolution equation (16) will not introduce any higher-order moments. The mutual information between the lattice points ϕ(x) and ϕ(y) may then be written 
+
+I(x, y ; t) = − 12 log 1 − ρ(x, y ; t)2 (18) where ρ(x, y ; t) is the correlation coefficient of the distributions of the two pixels at time t:
+
+ρ(x, y ; t) := Gt(x, y )
+
+⟨ϕ2 
+
+> t
+
+⟩ − ⟨ ϕt⟩2 (19) Note, as claimed earlier, that the mutual information is therefore invariant under a field redefinition where ϕ is multiplied by a function of time, as in the EFT approach outlined above. It is now possible to use the evolution equation (16) to explicitly solve for the growth of correlations as a function of diffusion time. The basic result is simple to state: at the beginning of the process each point is uncorrelated with the rest, and thus the mutual information is a delta function in space. As time goes on points become correlated and the mutual information itself diffuses outwards, be-coming a Gaussian whose width grows with time. Such a Gaussian takes the following form 
+
+ρ(x, y ; t) = exp 
+
+
+
+− |x − y|2
+
+4D ¯αt
+
+
+
+(20) where D is an effective diffusion constant that controls the rate of speed of the information. As we shall later see, this constant is exactly the coefficient of the EFT diffusion equation we study. We can see that as ’time’ ¯αt increases, the correlation, and therefore the mutual information, increases for the same separation |x − y|. Equivalently the correlation length ξ defining mutual information growth grows diffusively as ξ2 ∼ ¯αt.The key result is that rather than depending on spatial separation and time independently, ρ, depends entirely on a self-similar, scale-invariant variable 
+
+ρ(x, y ; t) = ρ(|x − y|2/¯αt) . (21) A derivation of these results are provided in Appendix B. Therefore the EFT makes a clear predic-tion: at different times, if we plot against the self-similar variable |x − y|2/¯αt, we should obtain the same curve for ρ. In the later sections we will verify this prediction empirically in a few simple examples of trained diffusion models. 2.5 SNAPPING REGIME AT END OF REVERSE PROCESS 
+
+Our discussion so far has been all near the beginning of the diffusion process. Here we briefly mention that an a different expansion can be performed near the end of the reverse process, where 
+
+¯αt → 1−. Here we start from the form of the ELS in Kamb & Ganguli (2025), and expand in powers of ϵt := 1 − ¯αt. As the ELS involves a sum over patches φ in the training data, we shall separate out: 
+
+∂ϕ (x)
+
+∂t = − ∂tϵt
+
+1 − ϵt
+
+1
+
+ϵt
+
+(1 − ϵt)ϕ(x) − √1 − ϵt
+
+φ∗(0) + P 
+
+> φ∈PΩ(D)
+
+φ(0) e(ϕΩx −√ ¯αtφ∗)2−(ϕΩx −√ ¯αtφ)2/2ϵtI
+
+1 + P   
+
+> φ′∈Py
+> Ω(D)
+
+e(ϕΩx −√ ¯αtφ∗)2−(ϕΩy −√ ¯αtφ′)2/2ϵtI
+
+!
+
+(22) 7Figure 1: Images generated at end of reverse process by analytical ELS machine (left) and trained ConvNet model (right). The training images are simply two homogenous grids of ±1 (centre). Thus, simplifying and dropping subleading terms in ϵ - which here are both O(ϵt) and O(e−1/ϵ t ) -we get a leading order evolution equation different to the diffusive regime, which now governs the end of the reverse process: 
+
+∂ϕ (x)
+
+∂t ≈ − ∂tϵt
+
+ϵt
+
+(ϕ(x) − φ∗(0)) (23) This simple equation describes a simple exponential trajectory to the nearest training patch φ∗, and reflects the fact that as the reverse process nears its endpoint, individual patches decouple from each other and only proceed to the nearest training patch on an individual basis. This is the ’memorisa-tion’ regime in Biroli et al. (2024). The limiting behaviour of the score function itself in this snapping regime is used in Theorem 4.1 of Kamb & Ganguli (2025) to establish locally consistent points. We have here however further noted the explicit evolution equation that describes how the snapping happens dynamically, in the spirit of our EFT approach of describing dynamical behaviour with simple equations. 
+
+# 3 EXPERIMENTS 
+
+We now show that the predictions of the effective field theory are borne out in two simple examples. 3.1 TWO SAMPLES 
+
+We shall now demonstrate the diffusive regime quantitatively in a simple case with a full analytical description. Following Kamb & Ganguli (2025), we build a simple convolutional neural network for a diffusion model trained on only two samples: a grid where every pixel has the value 1, and another grid where every pixel is −1. As explained in that work, due to the locality bias of the ConvNet, the diffusion model will generically produce patches with value 1 and −1, of a characteristic size smaller than the size of the whole grid, as seen in Figure 1. In this case, the ELS is easy to formulate, since it has only two possible patches in the training data: all 1s, or all −1s. This leads to an explicit evolution equation of the form: 
+
+∂ϕ t(x)
+
+∂t = ∂t ¯αt
+
+¯αt
+
+11 − ¯αt
+
+−¯αtϕ(x) + √¯αt tanh 
+
+√¯αt
+
+P 
+
+> y∈Ωx
+
+ϕ(y)1 − ¯αt
+
+!! 
+
+(24) We plot the evolution of two-point correlations of the samples in the reverse process under the pure ELS (with a constant 5x5 locality kernel) against this self-similar variable in Figure 2. This allows 8(a) Mutual information curves against position at different times 
+
+> (b) Mutual information curves against self-similar variable at different times collapse
+
+Figure 2: Verification of diffusive behaviour of ELS machine with 5 × 5 kernel size during reverse process. 
+
+> (a) Mutual information curves against position at different times
+> (b) Mutual information curves against self-similar variable at different times collapse
+
+Figure 3: Verification of diffusive behaviour of learned model during reverse process. us to see that curves at different timesteps collapse, confirming our theoretical understanding of diffusive scaling. This ELS machine can be compared directly to a simple diffusion model with a ConvNet backbone trained on an equally split batch of 1 and −1 grids. Curve collapse extremely similar to the analytical ELS model may be observed in Figure 3. Note that we have excluded very small separations where 
+
+r is a few pixels, as at these scales, the results of the trained model diverge slightly from the pure ELS. This effect may be modelled by changing the size to illustrate our result. 3.2 TRANSITION BETWEEN REGIMES IN ±1 GRIDS 
+
+To understand the transition out of the diffusive regime, we can consider the action of the score function on a simple test grid ϕtest , such as one which smoothly interpolates from −1 to 1 along the 
+
+x1-axis (the horizontal axis, say) which runs along the interval (−L/ 2, L/ 2) :
+
+ϕtest (x1, x 2) = 2x1
+
+L (25) Then, the score function becomes 
+
+π[ϕtest (x1, x 2)] = − 11 − ¯αt
+
+ 2x1
+
+L
+
+
+
+− √¯αt tanh 
+
+√¯αt(2∆ + 1) 2   2x1
+
+> L
+
+
+
+1 − ¯αt
+
+!! 
+
+, (26) where we note that the sum over the local patch has taken an elegant form here due to our simple test function. 9If we now take the derivative of this quantity - the right hand side of the evolution equation, that determines how at x1 = L/ 2, we obtain 
+
+∂π [ϕtest (x1, x 2)] 
+
+∂x 1
+
+= 21 − ¯αt
+
+
+
+− 1
+
+L + ¯αt(2∆ + 1) 2
+
+L(1 − ¯αt)
+
+
+
+(27) We understand that diffusion occurs when this is small and the evolution is flat, and stops occuring when a sharp spatial gradient forms at x1 = 0 , which means that the evolution is trying to snap even small positive or negative values to +1 or −1 respectively. We need to define the transition by a factor Ω. Let us mark it at the point when the absolute value of the spatial gradient of the score function at x = 0 , time ¯αt is a factor Ω greater than that at the begin-ning of the reverse process ¯αt = 0 (in this simple case, where the data is a straight line, that gradient is just −2/L ). Here, we identify the end of the purely diffusive regime, as now nonlinearities are definitely important. Note that in this characterisation of the transition, there is no sharp, precise point where the be-haviour changes from entirely diffusive to entirely snapping. Instead, there is always some amount of diffusive spreading of mutual information and some amount of snapping, and the best our method here allows us to do is to characterise this by the factor Ω.Applying this criterion in this case, and assuming that ¯αt is small enough when the diffusive regime ends that we may approximate 1 − ¯αt ≈ 1, we get a criterion: 
+
+¯α(crit ) 
+
+> t
+
+≈ Ω + 1 (2∆ + 1) 2 (28) Thus, the duration of the diffusive regime in this case is controlled by the effective ELS kernel size ∆, or in more practical terms, solely by the architecture of the network. More generally, it is controlled by the structure of the training data and the network architecture. However, one could conduct a similar procedure in the case of more complicated data by feeding similar test grids into the score functions. The general test grids would interpolate instead between local patches of the training data. The sharpness of the ’gradient’ would be measured by dot-product overlap of the sample ϕ with these training patches. Note that there is no discontinuity in this tran-sition, and the behaviour does not seem to correspond to usual physical notions of phase transitions. Now, what is the correlation length developed at the end of the diffusive regime, and therefore, since no new spatial mutual information is developed in the rest of the reverse process, in the final samples? Recall the form of our EFT equation describing this diffusive regime: 
+
+∂ ˜ϕ(x, ¯αt)
+
+∂ ¯αt
+
+= D∇2 ˜ϕ(x, t ) (29) Here, D is the diffusion constant that appears as the coefficient of the Laplacian term (which we earlier called, in our EFT series of terms, g3). Recalling the Gaussian form of the correlation that this produces (20), and recalling that it evolves in space according to the variable |x − y|2/4D ¯αt, we can correspondingly here write down the spatial correlation length ξ. This is just the characteristic decay lengthscale of this Gaussian - here, at time ¯α(crit ) 
+
+> t
+
+, it is 
+
+ξ ∼
+
+q
+
+2D ¯α(crit ) 
+
+> t
+
+≈
+
+p2D(Ω + 1) 2∆ + 1 (30) However, in the simple ±1 grid example, we have a handle on how D behaves as a function of the ELS patch size. Note that the sum over a locality kernel - the quantity that appears in the ELS in this case - is simply ∆X
+
+> k,l =−∆
+
+ϕ(x + k, y + l) (31) We wish to write this sum in terms of derivatives of ϕ, which we can do by Taylor expanding. By symmetry, all first derivatives will vanish, as will the mixed derivative term ∂x∂y ϕ.We are interested, following our EFT approach, only in the first nontrivial term, which is the Lapla-cian term that induces diffusion. This will be the coefficient of ∂2
+
+> x
+
+ϕ (and also, by symmetry, of ∂2 
+
+> y
+
+ϕ). 10 Figure 4: Spatial dependence of C(r, t ); straight line with fixed slope D illustrates Gaussian depen-dence. Noting that 
+
+ϕ(x + k, y + l) = ϕ(x, y ) + ... + k2
+
+2 ∂2
+
+> x
+
+ϕ(x, y ) + l2
+
+2 ∂2 
+
+> y
+
+ϕ(x, y ) + ... (32) This yields the coefficient D of ∂2 
+
+> x
+
++ ∂2 
+
+> y
+
+:
+
+D =
+
+> ∆
+
+X
+
+> k,l =−∆
+
+k2
+
+2 = 12
+
+> ∆
+
+X
+
+> k=−∆
+
+k2
+
+! ∆X
+
+> l=−∆
+
+1
+
+!
+
+= 12∆(∆ + 1)(2∆ + 1) 3 (2∆ + 1) ∼ ∆4 (33) So, in the ELS, 
+
+X
+
+> y∈Ωx
+
+ϕ(y) = linear term in ϕ + 12∆(∆ + 1)(2∆ + 1) 3 (2∆ + 1) ∇2ϕ(x) + ... (34) This means that the achieved correlation length can be precisely written as 
+
+ξ(crit ) ∼
+
+q ∆(∆+1)(2∆+1) 3 (2∆ + 1)(Ω + 1) 2∆ + 1 ∼ ∆√Ω + 1 (35) Which means that the correlation length scales linearly with the ELS kernel size (as we would expect). If we do vary the ELS kernel size throughout the reverse process, we would expect the correlation length to be altered by a factor that is a function of the way the kernel size is varied. Note that the ’correlation length’ ξ presented here is a statistical quantity derived from the averaged two-point function. In particular, at the end of the reverse process, it is different to the geometric correlation length, obtained by averaging the radii of clusters of 1 or −1 in the produced samples. We would expect a similar result in the general case, but setting up a similar test function is analyt-ically difficult since samples are in general not homogenous, and patches that interpolate between two dataset patches may be closer to a third patch already present in the dataset than either of the two being interpolated between, which requires careful handling that is not immediately clear. We empirically test the theoretical computation of D by plotting log ρ(r, t ) against the self-similar variable r2/¯αt for the real ConvNet data, since we expect ρ to have a Gaussian shape. We see from Figure 4 that the gradient of the graph is ≈ 0.020 . According to theory, this gradient is 1/2D, which gives D ≈ 25 . This is actually exactly consistent with a value of ∆ = 2 . Naturally, we do not expect to get a perfect integer value of ∆ since, as explained earlier, in reality the kernel size is shrinking throughout the reverse process. However, the correct order of magnitude provides a reassuring check of our theoretical calculations. Indeed, plotting these curves throughout the reverse process can also be a means of estimating ∆,the kernel size, throughout the reverse process, giving a systematic inference method building on the 11 reasoning in Kamb & Ganguli (2025). In the future, it would be interesting to investigate whether such a method carried out on test data, such as the ±1 grids here, can also help infer the variation of the kernel size throughout the reverse process for more complex real data. The overall picture we obtain therefore is as follows: close to the pure noise endpoint, the reverse process starts off by creating spatial mutual information on a scale which is the correlation length, which grows from 0, until it saturates at a fixed level set by the nonlinearity and the size of the locality kernel in the ELS machine. 3.3 MNIST We now turn to a slightly more realistic example by training a diffusion model on the celebrated MNIST dataset. We first note that the justification of our theory discussion must be slightly modified, as MNIST does not have the symmetries we used earlier to obtain a simplified linear EFT equation. 3.3.1 RELAXING SYMMETRIES 
+
+The absence of the symmetries we earlier assumed means that in MNIST, and other realistic datasets, a number of other terms in the EFT will become significant. Here, we consider the first few linear terms of the EFT expansion 
+
+∂ϕ ∂ ¯αt
+
+= g0(¯ αt) + g1(¯ αt)ϕ + g2v2(¯ αt) · ∇ ϕ + g3(¯ αt)∇2ϕ (36) Note that in this general case nonlinear terms in theory could appear in the expansion, such as 
+
+ϕ2, ϕ ∇ϕ, ϕ 3. However, as we show in Appendix A.1, for the ELS machine at least, each further power of ϕm brings with it a power of O(¯ α(m+1) /2 
+
+> t
+
+), which means that in the limit ¯αt → 0 we can discard these terms in comparison with the linear terms we study here. We can redefine ϕ off the bat to make a number of the terms on the right hand side disappear. Consider the field redefinition: 
+
+ϕ(x, ¯αt) = exp 
+
+Z ¯αt
+
+> ¯α0
+
+g1(s)ds 
+
+
+
+˜ϕ
+
+
+
+x −
+
+Z ¯αt
+
+> ¯α0
+
+g2v2(s)ds, ¯αt
+
+
+
+(37) Then the evolution equation for ˜ϕ becomes 
+
+∂ ˜ϕ∂ ¯αt
+
+= exp 
+
+
+
+−
+
+Z ¯αt
+
+> ¯α0
+
+g1(s)ds 
+
+
+
+a(¯ αt) + g3(¯ αt)∇2 ˜ϕ (38) From this simplified evolution equation it becomes clear that if we start with IID Gaussian random noise, that is, 
+
+⟨ϕ(x, 0) ⟩ = 0 , ⟨ϕ(x, 0) ϕ(y, 0) ⟩ = δ(x − y) (39) Then taking the expectation of the evolution equation after multiplying through by ϕ(y, t ), and subtracting the appropriate one-point function terms, gives an evolution equation (as before) for the 
+
+connected two-point function of ϕ:
+
+∂⟨ ˜ϕ(x, t ) ˜ϕ(y, t )⟩c
+
+∂ ¯αt
+
+= 2 g3(¯ αt)∇2⟨ ˜ϕ(x, t ) ˜ϕ(y, t )⟩c (40) This has exactly the same solution as we derived before, if we introduce a new time co-ordinate 
+
+τ (¯ αt) = R ¯αt 
+
+> ¯α0
+
+ds g 3(s):
+
+⟨ ˜ϕ(x, τ ) ˜ϕ(y, τ )⟩c = 1(8 πτ )d/ 2 exp 
+
+
+
+− (x − y)2
+
+8τ
+
+
+
+(41) But now, of course, the important new question in this case is what we get when we transform back to the connected two-point correlation function of the original field ϕ:
+
+⟨ϕ(x, τ )ϕ(y, τ )⟩c =exp 
+
+
+
+2 R ¯αt 
+
+> ¯α0
+
+g1(s)ds 
+
+
+
+(8 πτ )d/ 2 exp 
+
+
+
+− (x − y)2
+
+8τ
+
+
+
+(42) Where, rather nicely, because we only have a function of x − y, the shift of position in the definition of ˜ϕ made no difference to the two-point function. And from here it is relatively straightforward to show that the mutual information is independent of the exponential prefactor. Therefore, once again, the ∇2 term - through τ , which is defined from its coefficient - is the only one that actually controls the growth of correlations. 12 Figure 5: Images generated by ConvNet with circular padding trained on MNIST dataset. 
+
+> (a) Mutual information curves against position at different times
+> (b) Mutual information curves against self-similar variable at different times collapse
+
+Figure 6: Verification of diffusive behaviour of MNIST during reverse process. A ’tail’ is visible where the correlation becomes negative due to the network learning a characteristic digit size. 3.3.2 EXPERIMENTAL RESULTS FOR MNIST We now turn to the mutual information measurements. For simplicity we maintain circular padding, though this is not standard for image generation. Formulating the ELS with non-periodic boundary conditions, without circular padding, is also possible as detailed in Kamb & Ganguli (2025), but requires us to carefully distinguish between different types of edge and border local patches. The plots of mutual information are shown in Figure 6. In this figure, we again plot mutual informa-tion at scales beyond r ∼ a few pixels. We again see curve collapse, demonstrating agreement with the EFT at early times. Note that at large distances the collapse is not perfect. The large distance structure is sensitive to the choice of boundary conditions – e.g. imposing an explicit boundary rather than using periodic boundary conditions changes the curves at large r2 but also results in a reduced quality of data collapse. We believe this arises from an interaction of the diffusive modes with the boundaries. 3.4 NOISE SCHEDULING AND NOISE IN SPATIAL CORRELATIONS 
+
+Our picture of the reverse process so far is split into the early diffusive regime, where spatial structure is built up, and the late ’snapping’ regime, where local patches snap pointwise to the nearest patch in the training data. We have seen that only the architecture of the network, and not the details of the precise noising schedule used, controls the spatial correlations built up in the final generated samples. However, the choice of noising does affect the ’fuzziness’ of the spatial structure in the final samples. In the example of the ±1 grids, this manifests as noisiness in the colour of the patches. This arises simply because samples during the reverse process are generated using a numerical integrator with evenly spaced timesteps. In our case, we have used a first-order Euler method every-where. The approximate equation of motion for the snapping regime (23) is, pointwise, a first-order 13 differential equation. This means that the error in the samples will be O(1 /N ) if there are N steps in total during the snapping regime 3.There is a different notion of ’fuzziness’, which concerns the definition around the edges of regions of ±1. This is more difficult to treat analytically, requiring as it does a notion of ’region boundary’ carried across various local patches. We leave the interesting possibility of such a theory to future work. 
+
+# 4 CONCLUSION 
+
+In this article, we have established the application of the formalism of EFT from physics to diffusion models with local convolutional architectures. We began with the idea that the learned score function in the reverse process, and therefore the evolution of the samples, can be expanded in a series of terms on general locality and symmetry principles, taking our cue from EFT expansions in physics. The ELS machine of Kamb & Ganguli (2025) provides a microscopic realisation of the score func-tion learned by such a model. We showed that our EFT approach can vastly simplify the complicated analytic structure of the ELS machine (at least, near the limiting endpoints of the reverse process) into equations involving a few straightforward terms, and allow us to study the growth of spatial mutual information in samples over the reverse process using these simple EFT equations. The EFT allowed us to argue for the restriction of the evolution equation to a few simple terms, but these also included nonlinear terms, which are difficult to keep track of analytically. Happily, the structure of the ELS showed that these nonlinear terms are unimportant in the regime of interest (near the pure noise endpoint). We also calculated these equations explicitly from the ELS for a toy model of ±1 grids. Our work has characterised the existence of regimes within the reverse process, together with a quantitative description of their dynamics. In particular, in experiments on both the ±1 grids and on MNIST, we have directly shown - in accordance with our theoretical predictions - the existence of a diffusive regime where information spreads in space according to the self-similar variable x2/¯αt,so that the noise schedule plays the role of time in the diffusion equation. It is interesting to ask whether an effective field theory approach could be helpful for other network architectures, e.g. transformers. In particular, it has recently been argued that a notion of locality is inherited from the data , independent of the underlying network architecture Lukoianov et al. (2025); we leave this interesting topic for further research. ACKNOWLEDGMENTS 
+
+We are grateful to L. Ambrogioni for discussions and comments on the draft. This work was sup-ported by a grant from the Simons Foundation (PD-Pivot Fellow-00004147, NI). NI and NN are supported by the STFC under grant number ST/T000708/1. Claude Code was used to implement experiments, collect data and visualise the results. 
+
+# REFERENCES 
+
+Luca Ambrogioni. How out-of-equilibrium phase transitions can seed pattern formation in trained diffusion models, 2026. URL https://arxiv.org/abs/2603.20092 .Giulio Biroli, Tony Bonnaire, Valentin de Bortoli, and Marc M´ ezard. Dynamical regimes of diffu-sion models. Nature Communications , 15(1), November 2024. ISSN 2041-1723. doi: 10.1038/ s41467-024-54281-3. URL http://dx.doi.org/10.1038/s41467-024-54281-3 .C. P. Burgess. Introduction to Effective Field Theory. Ann. Rev. Nucl. Part. Sci. , 57:329–362, 2007. doi: 10.1146/annurev.nucl.56.080805.140508. Taco Cohen and Max Welling. Group equivariant convolutional networks. In International confer-ence on machine learning , pp. 2990–2999. PMLR, 2016.            
+
+> 3Note that the step size δt ∝1/N , so each step has a truncation error of δt 2∝1/N 2. However, there are
+> Nsteps of each of these, leading to, in general, a final error of O(1 /N )
+
+14 Jordan Cotler and Semon Rezchikov. Renormalizing diffusion models, 2023. URL https:// arxiv.org/abs/2308.12355 .Prafulla Dhariwal and Alexander Nichol. Diffusion models beat gans on image synthesis. Advances in neural information processing systems , 34:8780–8794, 2021. Dongning Guo, S. Shamai, and S. Verdu. Mutual information and mmse in gaussian channels. In 
+
+International Symposium onInformation Theory, 2004. ISIT 2004. Proceedings. , pp. 349–349, 2004. doi: 10.1109/ISIT.2004.1365386. Jonathan Ho, Ajay Jain, and Pieter Abbeel. Denoising diffusion probabilistic models. Advances in neural information processing systems , 33:6840–6851, 2020. Emiel Hoogeboom, Vıctor Garcia Satorras, Cl´ ement Vignac, and Max Welling. Equivariant diffu-sion for molecule generation in 3d. In International conference on machine learning , pp. 8867– 8887. PMLR, 2022. Aapo Hyv¨ arinen and Peter Dayan. Estimation of non-normalized statistical models by score match-ing. Journal of Machine Learning Research , 6(4):695, 2005. Mason Kamb and Surya Ganguli. An analytic theory of creativity in convolutional diffusion mod-els. In Forty-second International Conference on Machine Learning , 2025. URL https: //openreview.net/forum?id=ilpL2qACla .David B. Kaplan. Five lectures on effective field theory. 10 2005. Xianghao Kong, Rob Brekelmans, and Greg Ver Steeg. Information-theoretic diffusion. In 
+
+The Eleventh International Conference on Learning Representations , 2023. URL https: //openreview.net/forum?id=UvmDCdSPDOW .Yifan Li, Kun Zhou, Wayne Xin Zhao, and Ji-Rong Wen. Diffusion models for non-autoregressive text generation: A survey. arXiv preprint arXiv:2303.06574 , 2023. Artem Lukoianov, Chenyang Yuan, Justin Solomon, and Vincent Sitzmann. Locality in image dif-fusion models emerges from data statistics. arXiv preprint arXiv:2509.09672 , 2025. Alexander Quinn Nichol and Prafulla Dhariwal. Improved denoising diffusion probabilistic models. In International conference on machine learning , pp. 8162–8171. PMLR, 2021. Michael E. Peskin and Daniel V. Schroeder. An Introduction to quantum field theory . Addison-Wesley, Reading, USA, 1995. ISBN 978-0-201-50397-5, 978-0-429-50355-9, 978-0-429-49417-8. doi: 10.1201/9780429503559. Joseph Polchinski. Effective field theory and the Fermi surface. In Theoretical Advanced Study Institute (TASI 92): From Black Holes and Strings to Particles , pp. 0235–276, 6 1992. Gabriel Raya and Luca Ambrogioni. Spontaneous symmetry breaking in generative diffusion mod-els. In A. Oh, T. Naumann, A. Globerson, K. Saenko, M. Hardt, and S. Levine (eds.), Advances in Neural Information Processing Systems , volume 36, pp. 66377–66389. Curran Associates, Inc., 2023. URL https://proceedings.neurips.cc/paper_files/paper/2023/ file/d0da30e312b75a3fffd9e9191f8bc1b0-Paper-Conference.pdf .Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Bj¨ orn Ommer. High-resolution image synthesis with latent diffusion models. In 2022 IEEE/CVF conference on com-puter vision and pattern recognition (CVPR) , pp. 10674–10685. ieee, 2022. Tim Salimans and Jonathan Ho. Progressive distillation for fast sampling of diffusion models. CoRR ,abs/2202.00512, 2022. URL https://arxiv.org/abs/2202.00512 .Jascha Sohl-Dickstein, Eric Weiss, Niru Maheswaranathan, and Surya Ganguli. Deep unsupervised learning using nonequilibrium thermodynamics. In International conference on machine learn-ing , pp. 2256–2265. pmlr, 2015. Yang Song and Stefano Ermon. Generative modeling by estimating gradients of the data distribution. 
+
+Advances in neural information processing systems , 32, 2019. 15 Yang Song, Jascha Sohl-Dickstein, Diederik P Kingma, Abhishek Kumar, Stefano Ermon, and Ben Poole. Score-based generative modeling through stochastic differential equations. arXiv preprint arXiv:2011.13456 , 2020. Kartik Venkat and Tsachy Weissman. Pointwise relations between information and estimation in gaussian noise. In 2012 IEEE International Symposium on Information Theory Proceedings , pp. 701–705, 2012. doi: 10.1109/ISIT.2012.6284310. Steven Weinberg. Phenomenological Lagrangians. Physica A , 96(1-2):327–340, 1979. doi: 10. 1016/0378-4371(79)90223-1. 
+
+# A APPENDIX 
+
+A.1 LONG -DISTANCE DESCRIPTION OF EQUIVARIANT LOCAL SCORE MACHINE 
+
+Here we study the equivariant local score machine discussed in Kamb & Ganguli (2025) and perform a systematic expansion in derivatives, showing that it admits a weakly-coupled fixed point near the pure-noise endpoint. The starting point is Eq (9) of Kamb & Ganguli (2025), which provides the following expression for the score Mt[ϕ]( x)
+
+Mt[ϕ]( x) = X
+
+> φ∈PΩ(D)
+
+(√¯αtφ(x) − ϕ(x)) 1 − ¯αt
+
+Wt(φ|ϕ, x ) (43) where the weight Wt(φ|ϕ, x ) is defined to be: 
+
+Wt(φ|ϕ, x ) = N (ϕΩx |√¯αtφ, (1 − ¯αt)I)
+
+P 
+
+> φ′∈PΩ(D)
+
+N (ϕΩx |√¯αtφ′|(1 − ¯αt)I) (44) and where the normal distribution can be written explicitly as 
+
+N (ϕΩx |√¯αtφ, (1 − ¯αt)I) = n exp 
+
+− 12 (1 − ¯αt)−1 X
+
+> y∈Ωx
+
+ ϕ(y) − √¯αtφ(y)2
+
+ (45) (where the normalization constant n cancels between numerator and denominator, and thus we do not calculate it). Note that the sum over y is over the patch Ωx centered about x. We have used a notation slightly different from Kamb & Ganguli (2025) in that we write φ(x) rather than φ(0) to denote the value of the datapoint in question at the center of the patch Ωx.We now adopt a continuum notation, i.e. 
+
+X
+
+> y∈Ωx
+
+→
+
+Z
+
+> Ωx
+
+dy (46) and systematically expand the right-hand side of Eq. (64) in derivatives of ϕ about the evaluation point x. This is possible because it depends only on patches Ωx, and is thus a short-range kernel; such a short range kernel always admits an analytic expansion in momentum space and can thus be expanded in derivatives. This expansion is generally only useful when the derivatives are themselves small and thus the expansion can be truncated at some order. Our main point is that this expansion can always be systematically written in terms of an expansion in powers of ϕ and derivatives of ϕ. The first few terms in such an expansion take the form: 
+
+Mt[ϕ]( x) = a0,0(¯ αt) + a1,0(¯ αt)ϕ(x) + aμ
+
+> 1,1
+
+(¯ αt)∂μϕ(x) + aμν 
+
+> 1,2
+
+(¯ αt)∂μ∂ν ϕ(x) + · · · (47) where a term in am,n multiplies m powers of ϕ and n derivatives of ϕ. We will explicitly work out only the first few terms as the expansion rapidly becomes unwieldy. To proceed we write 
+
+ϕ(y) = ϕ(x) + ( y − x)μ∂μϕ(x) + 12 (y − x)μ(y − x)ν ∂μ∂ν ϕ(x) + · · · (48) 16 and insert this into the integral in the exponent to find 
+
+12
+
+Z
+
+> Ωx
+
+dy  ϕ(y) − √¯αtφ(y)2 = 12
+
+Z
+
+> Ωx
+
+dy 
+
+
+
+ϕ(x) − √¯αtφ(y) + ( y − x)μ∂μϕ(x) + 12 (y − x)μ(y − x)ν ∂μ∂ν ϕ(x) + · · · 
+
+2
+
+(49) We can now systematically expand in derivatives. We first expand the normal distribution in an expansion as 
+
+N (ϕΩx |√¯αtφ, (1 − ¯αt)I) = b0,0 + b1,0ϕ(x) + bμ
+
+> 1,1
+
+∂μϕ(x) + bμν 
+
+> 1,2
+
+∂μ∂ν ϕ(x) + · · · (50) where the expansion coefficients bm,n [¯ αt, φ ] implicitly depend on ¯αt and the data point in question 
+
+φ. All of the terms without derivatives can be written as: 
+
+> ∞
+
+X
+
+> m=0
+
+bm, 0ϕ(x)m = n exp 
+
+
+
+− 12 (1 − ¯αt)−1
+
+Z
+
+dy ϕ(x) − √¯αtφ(y)2
+
+
+
+(51) we may thus read off 
+
+b0,0 = n exp 
+
+
+
+− 12 (1 − ¯αt)−1
+
+Z
+
+dy √¯αtφ(y)2
+
+
+
+(52) etc. and similarly for all bm, 0. We write down the first few derivative terms that are linear in ϕ.Explicitly, we have 
+
+bμ 
+
+> 1,1
+
+= b0,0(1 − ¯αt)−1
+
+Z
+
+> Ωx
+
+dy (y − x)μ√¯αtφ(y) (53) 
+
+bμν  
+
+> 1,2
+
+= 12 b0,0(1 − ¯αt)−1
+
+Z
+
+> Ωx
+
+dy (y − x)μ(y − x)ν √¯αtφ(y) (54) These expansion coefficients are somewhat analogous to familiar expressions “moments of inertia”, where the data variables φ play the role of a density. We now assemble the pieces. For notational convenience denote 
+
+Z[¯ αt] ≡ X
+
+> φ′∈PΩ(D)
+
+b0,0[¯ αt, φ ′] (55) The denominator of (44) then becomes 
+
+X
+
+> φ′∈PΩ(D)
+
+N (ϕΩx |√¯αtφ′, (1 −¯αt)I) = Z
+
+1 + Z−1b1,0ϕ + Z−1 X
+
+> φ′
+
+bμ
+
+> 1,1
+
+[φ′]∂μϕ(x) + Z−1 X
+
+> φ′
+
+bμν 
+
+> 1,2
+
+[φ′]∂μ∂ν ϕ(x) + · · · 
+
+
+
+(56) and if we introduce the following notation for a function a[φ] of data points φ:
+
+[a]c ≡ a(φ) − Z−1 X
+
+> φ′∈PΩ(D)
+
+a(φ′) (57) then the weight (44) can be written 
+
+Wt(φ|ϕ, x ) = 1
+
+Z
+
+ b00 + [ b1,0(φ)] cϕ + [ bμ
+
+> 1,1
+
+(φ)] c∂μϕ + · · ·  (58) Inserting this into (64) and expanding out the terms, we can finally obtain explicit expressions for the first few coefficients in (47): 
+
+a00 = 1
+
+Z
+
+11 − ¯αt
+
+X
+
+> φ
+
+√¯αtφb 00 (φ) (59) 
+
+a1,0 = 1
+
+Z
+
+11 − ¯αt
+
+X
+
+> φ
+
+ √¯αtφ[b1,0]c(φ) − b0,0
+
+ (60) 
+
+aμ 
+
+> 1,1
+
+= 1
+
+Z
+
+11 − ¯αt
+
+X
+
+> φ
+
+ √¯αtφ[bμ
+
+> 1,1
+
+]c(φ) (61) 
+
+aμν  
+
+> 1,2
+
+= 1
+
+Z
+
+11 − ¯αt
+
+X
+
+> φ
+
+ √¯αtφ[bμν 
+
+> 1,2
+
+]c(φ) (62) 17 These expressions are lengthy and not really very illuminating. There are two important points here: the first is really just to state that given a microscopic description (in this case the equivariant local score machine), explicit formulas can be found for the terms in the effective field theory expansion (in this case, writable as sums over the dataset). Furthermore, often symmetries are useful in con-straining these terms. For example, imagine that the underlying dataset has a Z2 symmetry which takes ϕ → − ϕ: if the underlying neural networks are equivariant under this symmetry (Cohen & Welling (2016)), then we can see that a00 = 0 . Similarly, if the dataset has rotational symmetry then we can set aμ 
+
+> 1,1
+
+= 0 , and aμ 
+
+> 1,2
+
+= δμν as the only rotationally invariant two-tensor. The second important point considers the scaling of terms in this expansion. Note that in the for-mula for the EFT (43), the weight contains a numerator and denominator both of which contain an 
+
+exp( −ϕ2Ωx ) term that can be cancelled. In other words, we can also write the weight as 
+
+Wt(φ|ϕ, x ) = exp − 12 (1 − ¯αt)−1 R dy  −2ϕ(x)√¯αtφ(y) + ¯ αtφ(y)2 P 
+
+> φ′∈PΩ(D)
+
+exp − 12 (1 − ¯αt)−1 R dy (−2ϕ(x)√¯αtφ′(y) + ¯ αtφ′(y)2) (63) From this rearrangement, it is clear to see that every time ϕ(x) appears, it is multiplied by a factor of √¯αt, so that Wt(φ|ϕ, x ) is really a function Wt(φ|√¯αtϕ, x ).Now, before we put the weight back into the score, note that the evolution equation itself (3), with the ELS score function, is 
+
+∂ϕ (t)
+
+∂ ¯αt
+
+= 1¯αt
+
+[ϕ(t) + π (ϕ(t), t )] = 1¯αt
+
+X
+
+> φ∈PΩ(D)
+
+(√¯αtφ(x) − ¯αtϕ(x)) 1 − ¯αt
+
+Wt(φ|ϕ, x ) (64) Putting the weight back into the full equation (43) for the score function, therefore, we see that 
+
+am, 0 = O(¯ α(m+1) /2 
+
+> t
+
+) (65) simply because the weight is a function of √¯αtϕ: every new term involving a new power of ϕ in the expansion comes with at least a power of ¯α1/2 
+
+> t
+
+.This means that nonlinear terms such as ϕ2, ϕ 3, ϕ ∇ϕ in our EFT expansion become strictly sublead-ing (in powers of ¯αt, in the limit ¯αt → 0) to linear terms. This is why they have no visible impact in the experimental data we see. We verify this approach for the ±1 grid example to show that EFT coefficients may be meaningfully extracted using these methods. To denote the +1 grid, we shall write φ+(x) = 1 for all x, and similarly φ−(x) = −1 everywhere. First, we calculate 
+
+b0,0[¯ αt, φ +] = b0,0[¯ αt, φ −] = n exp 
+
+
+
+− 12 ¯αt(1 − ¯αt)−1
+
+Z
+
+> Ωx
+
+dy 
+
+
+
+(66) We are going to keep the integral explicit for now, since it is technically an approximation of a discrete sum to which we shall find it useful to revert later. Then, the quantity Z[¯ αt] in this case is: 
+
+Z[¯ αt] = X
+
+> φ′∈PΩ(D)
+
+b0,0[¯ αt, φ ′] = 2 n exp 
+
+
+
+− 12 ¯αt(1 − ¯αt)−1
+
+Z
+
+> Ωx
+
+dy 
+
+
+
+(67) Next, we need to work out 
+
+bμν 
+
+> 1,2
+
+[φ+] = 12 b0,0(1 − ¯αt)−1√¯αt
+
+Z
+
+> Ωx
+
+dy (y − x)μ(y − x)ν (68) And similarly, we’ll have 
+
+bμν 
+
+> 1,2
+
+[φ−] = − 12 b0,0(1 − ¯αt)−1√¯αt
+
+Z
+
+> Ωx
+
+dy (y − x)μ(y − x)ν (69) 18 Now to proceed to working out aμν 
+
+> 1,2
+
+, which is the quantity we want, note that 
+
+Z−1 X
+
+> φ′∈PΩ(D)
+
+bμν 
+
+> 1,2
+
+(φ′) = bμν 
+
+> 1,2
+
+[φ+] + bμν 
+
+> 1,2
+
+[φ−] = 0 . (70) So 
+
+[b1,2]μν c (φ+) = bμν 
+
+> 1,2
+
+(φ+) (71) Then, we can finally write 
+
+aμν  
+
+> 1,2
+
+= 1
+
+Z
+
+11 − ¯αt
+
+X
+
+> φ
+
+ √¯αtφ[bμν 
+
+> 1,2
+
+]c(φ)
+
+= 1
+
+Z
+
+11 − ¯αt
+
+b0,0(1 − ¯αt)−1 ¯αt
+
+Z
+
+> Ωx
+
+dy (y − x)μ(y − x)ν
+
+= ¯αt
+
+2(1 − ¯αt)2
+
+Z
+
+> Ωx
+
+dy (y − x)μ(y − x)ν (72) If we now consider Ωx as a 3x3 cell, and evaluate this integral at face value, we get 
+
+aμν  
+
+> 1,2
+
+= 2¯ αtδμν 
+
+(1 − ¯αt)2 (73) However note that this is only an approximation to the true discrete sum, which works out instead over a 3 × 3 grid to 
+
+aμν  
+
+> 1,2
+
+= 3¯ αtδμν 
+
+(1 − ¯αt)2 (74) As a check of the explicit EFT formalism above, we next present a different derivation of the same EFT coefficient, from first principles only from our analytic description of the ±1 grid case, which provides a robust check on its validity. We shall see that it produces exactly the same coefficient as our discrete calculation above. A.2 CHECKING AGAINST EXPLICIT ELS EXPANSION IN TWO SAMPLE CASE 
+
+Here instead, we’d have 
+
+π(ϕ, t )( x) = − 1(1 − ¯αt)
+
+"
+
+ϕ(x) − √¯αt tanh 
+
+√¯αt
+
+P 
+
+> y∈Ωx
+
+ϕ(y)1 − ¯αt
+
+!# 
+
+(75) So the differential equation for the reverse process is 
+
+dϕ (x)
+
+dt = ∂t ¯αt
+
+¯αt
+
+11 − ¯αt
+
+−¯αtϕ(x) + √¯αt tanh 
+
+√¯αt
+
+P 
+
+> y∈Ωx
+
+ϕ(y)1 − ¯αt
+
+!! 
+
+(76) Let’s assume to start with, as in the previous section for the sake of comparison, that the neural network’s ’locality’ patches are 3x3 squares around each pixel. Generalisations to higher dimension locality patches will just involve higher order derivatives. Note firstly that 
+
+ϕx+∆ ,y + ϕx−∆,y ≈ ∇ 2
+
+> x
+
+ϕx,y + 2 ϕx,y (77) In the continuum limit. A similar expression can be written down for y, and to take account of the diagonal squares in the patch, note 
+
+ϕx+∆ ,y +∆ + ϕx−∆,y −∆ ≈ (n1 · ∇ )2ϕx,y + 2 ϕx,y (78) 
+
+ϕx+∆ ,y −∆ + ϕx−∆,y +∆ ≈ (n2 · ∇ )2ϕx,y + 2 ϕx,y (79) Where n1 := (1 , 1) , n1 := (1 , −1) . Summing all these together, therefore, we’ll get just (where Ω3
+
+indicates that we’ve specialised to the case of a 3-by-3 locality kernel) 
+
+X
+
+> y∈Ω3
+> x
+
+ϕ(y) ≈ 3∇2ϕ(x) + 9 ϕ(x) (80) 19 (Note that we did not need to assume commutation of derivatives here. A quick check with n1 ·∇, n1 · ∇ in the above suffices to prove this. ) Therefore we can now expand this term in the Taylor series of the tanh . The evolution equation becomes 
+
+dϕ (x)
+
+dt ≈ ∂t ¯αt
+
+¯αt
+
+11 − ¯αt
+
+
+
+−¯αtϕ(x) + √¯αt tanh 
+
+ 9√¯αtϕ(x)1 − ¯αt
+
+
+
++ 3¯ αt∇2ϕ(x)1 − ¯αt
+
+sech 2
+
+ 9√¯αtϕ(x)1 − ¯αt
+
+
+
++ ... 
+
+
+
+(81) Now when ¯αt ≈ 0 near the beginning of the reverse process, 
+
+dϕ (x)
+
+dt ≈ ∂t ¯αt
+
+¯αt
+
+11 − ¯αt
+
+
+
+−¯αtϕ(x) + ¯ αt
+
+9ϕ(x)1 − ¯αt
+
++ 3¯ αt∇2ϕ(x)1 − ¯αt
+
+
+
+(82) Note that this is a consistent expansion because all higher terms are O(¯ α3/2 
+
+> t
+
+), which means they will disappear compared to these. After rewriting, in the limit as ¯αt → 0, we can formulate the equation much more simply: 
+
+∂ ˜ϕ(x, ¯αt)
+
+∂ ¯αt
+
+≈ 3∇2 ˜ϕ(x, ¯αt) (83) Where we’ve reparametrised time t → ¯αt, and where 
+
+˜ϕ = e−8 ¯ αt ϕ (84) Note this time prefactor in front doesn’t mean much: it doesn’t affect the positional part of the solution, which determines the behaviour of spatial correlations. The important number is the coefficient 3¯ αt in front of the diffusion term, which is in precise agree-ment with the answer computed using the previous method (74). Indeed, we can immediately read off the characteristic length scale (normally, ξ ∼ √2Dt for a diffusion equation with diffusion coefficient D - see the following appendix for a derivation): 
+
+ξ(t) ∼ √6¯ αt (85) 
+
+# B DIFFUSION EQUATION EVOLUTION AND SCALING 
+
+Here we show that the diffusion equation starting from pure noise leads to self-similar behaviour for the correlation function. Let us use u(x, t ) as our field to avoid confusion with the samples ϕ(x, t )
+
+in the main body of the paper. We wish to solve 
+
+∂u ∂t = ∇2uu(x, 0) ∼ N (0 , 1) (86) where the initial condition on the second line indicates that each pixel in the starting pure noise sample is an independent identically distributed standard normal random variable. Note firstly that if we take the expectation of this equation, we see that we start at ⟨u(x, t )⟩ = 0 and remain there for all time. Since u(x, t ) itself is ultimately random, we want to instead study its statistics, which are determin-istic; namely, we want to study its two-point correlation function 
+
+Gt(x, y ) := ⟨u(x, t )u(y, t )⟩ (87) It’s important to note that in this context, since the mean ⟨u(x, t )⟩ = 0 for all t, this definition is in this case equivalent to the connected two-point function ⟨u(x, t )u(y, t )⟩ − ⟨ u(x, t )⟩⟨ u(y, t )⟩.Due to the translational invariance of the grid and the problem, Gt(x, y ) must also be translationally equivariant, meaning that it cannot depend on x, y in particular, but only their separation: 
+
+Gt(x, y ) = f (x − y, t ) (88) 20 For some function f . Let us therefore define the variable 
+
+z := x − y (89) Now, we can multiply the x-evolution equation by u(y, t ) and then take the expectation value with respect to the random initial starting grid. This will give us 
+
+ ∂u (x, t )
+
+∂t u(y, t )
+
+
+
+= ⟨u(y, t )∇2
+
+> x
+
+u(x, t )⟩
+
+Now we use the translation equivariance formulated in (88) to realise that on the right hand side, in this case, the derivatives wrt x may be replaced by derivatives in z. therefore, the entire equation is 
+
+12
+
+∂G (z, t )
+
+∂t = ∇2 
+
+> z
+
+G(z, t ) (90) We get the factor of 1/2 on the left hand side since there is another term that comes from the time derivative acting on u(y, t ) from the chain rule, which is however identical to the term we already have because of translation equivariance. Therefore now we want to solve another diffusion equation for the two-point correlation, but now with a deterministic initial condition: 
+
+G(z, 0) = G(x − y, 0) = ⟨u(x, 0) u(y, 0) ⟩ = δ(x − y) = δ(z). (91) Since the pixels were i.i.d. normally distributed. The easiest way to solve this equation explicitly is a Fourier transform in space, wherein 
+
+12
+
+∂ ˜G(k, t )
+
+∂t = −k2 ˜G(k, t )˜G(k, 0) = 1 , (92) which is straightforward to solve, giving 
+
+˜G(k, t ) = e−2k2t . (93) Fourier transforming back to position space finally yields 
+
+G(z, t ) = 
+
+r π
+
+2t e−π2z2/2t. (94) In general, the important feature of all such solutions is the distinctive behaviour 
+
+G(z, t ) = g(t)h(z2/t ) (95) where all spatial behaviour is controlled by the self-similar variable z2/t . This is a consequence of the fact that in the original diffusion equation, z and t scale in such a way that z2/t is a dimensionless variable. 
+
+# C EXPERIMENTAL DETAILS 
+
+In all our experiments, we train a diffusion on model on 2D image data, using a convolutional neural network architecture (details for each experiment below). We use the standard DDPM forward process, and the ODE formulation of the reverse process as laid out in (3), with a simple first-order Euler integrator. C.1 DIFFUSION MODEL TRAINED ON ±1 GRIDS 
+
+Here, we train a diffusion model on two 64 × 64 grids, one consisting of +1 at every pixel, and the other of −1 at every pixel. Due to the highly symmetrical, zero-average nature of the dataset, numerical instability and poor training are easily encountered. To fix this, we trained using v-prediction Salimans & Ho (2022) rather than prediction of the score function π directly. 21 v-prediction works by learning the velocity vector at each moment of the reverse process rather than the score function: 
+
+vt = √¯αtϵ − √1 − ¯αtϕ0 (96) Where ϕ0 are the initial samples. It is also possible to immediately obtain ϵ from learning v, but in practice learning v is more stable. We use a forward process with a finishing time of T = 1000 , with a batch size of 32 with the two samples listed above. The noise is added according to the standard cosine scheduling in Nichol & Dhariwal (2021): 
+
+αt = cos 2
+
+ π
+
+2 
+
+> tT
+
++ s
+
+1 + s
+
+
+
+(97) We amortise over time, but over an interval (0 , 0.8T ), since we deliberately avoid the very end of the forward process, where we are near the pure noise endpoint, and ϵ carries little data, but is instead predominantly noisy. That is, the loss function of training is 
+
+Lv = Et∈(0 ,0.8T ),ϵ ∼N (0 ,I ),ϕ 0∼data 
+
+|vθ (ϕt, t ) − vt|2 (98) where θ are the neural network parameters. Training is carried out over 200 steps, using an ADAM optimiser with learning rate = 2 × 10 −4.The network has a convolutional Z2-equivariant local architecture, with 4 2 D convolutional layers, each with a kernel size of 3, and the number of channels following (1 , 2, 2, 1) for this simple task with two binary homogenous samples. Time is embedded additively after the first Conv2D layer, via a simple MLP with 2 linear layers sandwiching a SiLU activation. Once v is learned, we recover ϵ, ϕ 0 from its definition, and use these to implement the Euler inte-grator reverse process as usual. The score function used in the reverse process is, as per usual score matching, 
+
+sθ (ϕt, t ) = − 1
+
+√1 − ¯αt
+
+ϵθ (ϕt, t ) (99) The reverse process is implemented with 400 steps and an output batch size of 20 , from which statistics on correlation are extracted. C.2 DIFFUSION MODEL TRAINED ON MNIST Next, we train the diffusion model on MNIST, a dataset of 28 × 28 black-and-white images of digits 
+
+0 to 9. Here, we again use a final time in the forward process of T = 1000 .For this more complicated task, we use a more standard UNet architecture, however without Con-vTranspose2D layers, since these break locality and diverge from the theoretical ELS machine pre-dictions. We use a minimal architecture with two downsampling blocks (going up to 128 channels), and two upsampling blocks, with no skip connections. In this case, the dataset is not quite so pathological as in the previous example, and v-prediction is not required. It is simpler to just train the network to learn ϵ, with the standard loss function: 
+
+L = Et∈(0 ,0.8T ),ϵ ∼N (0 ,I ),ϕ 0∼data 
+
+|ϵθ (ϕt, t ) − ϵt|2 (100) The noise is also simpler in this implementation: we use a linear schedule where βt runs linearly across the interval (0 .0001 , 0.02) , and then ¯αt = Qti=0 (1 − βt) as usual. The cosine schedule is not needed. We then use the learned ϵ as usual to drive the reverse process, which is once more a first-order Euler integrator, this time with 200 steps, and an output batch size of 100. C.3 ELS IMPLEMENTATION 
+
+In several cases, we implement the ELS machine exactly to compare against the results of our local models. This serves two purposes: firstly, checking that models are behaving as expected, and also providing a first test that our theory of correlations works in an analytic setting where we have more control and knowledge, as opposed to a trained model. 22 For the ±1 grid example, the analytical description (27) makes implementation of the reverse process exact and straightforward. For MNIST, local 5 × 5 patches (though the size can easily be adjusted) are first extracted using periodic boundary conditions (to keep the theoretical setting of the ELS as simple as possible) from the dataset, before then being used in the weighted sum to calculate the score function. This is the most computationally intensive part of all the code that was run. After this, the score function is used as normal to implement the reverse process. C.4 CALCULATING CORRELATIONS 
+
+The correlation of two pixels (19) is calculated as follows: for each grid, first the standard deviation is calculated across all pixels in the grid, and then the two-point function is calculated. The mean is taken at each separation r of all the two point functions of all pixels separated by the vector (r, 0) ;that is, a distance r along the x-axis. This mean is normalised by the standard deviation to obtain 
+
+ρ(r) for each grid sample, and finally the average is taken across the entire batch of samples to arrive at a final statistic. It is important to calculate ρ per sample first, to ensure that the averages are being evaluated correctly. As stated below the plots in the main body of the texts, the very smallest separations ( r ∼ 1, 2 pixels) are excluded from the plots as our theory is not meaningful at this scale (the effective smearing across a patch, as detailed int the text, now contains the lengthscale we want to examine). However, we also only take r < L/ 2, with L being the total size of the grid, since beyond this scale, periodicity affects the correlation function and makes it increase again after decaying with r. This is outside the scope of the behaviour we study. 23
