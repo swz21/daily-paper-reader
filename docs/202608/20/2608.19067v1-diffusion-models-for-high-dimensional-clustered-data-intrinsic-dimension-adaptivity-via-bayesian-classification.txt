@@ -1,0 +1,5661 @@
+Title: Diffusion Models for High-Dimensional Clustered Data: Intrinsic-Dimension Adaptivity via Bayesian Classification
+
+URL Source: https://arxiv.org/pdf/2608.19067v1
+
+Published Time: Thu, 20 Aug 2026 01:05:33 GMT
+
+Number of Pages: 38
+
+Markdown Content:
+> Research Preprint August 20, 2026
+
+# DIFFUSION MODELS FOR HIGH-DIMENSIONAL CLUSTERED DATA: INTRINSIC-DIMENSION ADAPTIVITY VIA BAYESIAN CLASSIFICATION 
+
+By Yuga Iguchi and Paul Fearnhead 
+
+School of Mathematical Sciences, Lancaster University, Lancaster, UK 
+
+Abstract The empirical success of diffusion models in generative modelling has motivated theoretical work, including quantitative error bounds and qualitative analyses that characterise the different phases of denoising. We bring these two areas together by studying the adaptivity of diffusion models to the structured geometry of multimodal high-dimensional data that consists of multiple clusters in 
+
+R𝐷 , each with its own low-dimensional structure, and inter-cluster separation depending on 𝐷 . We employ 𝐾 -mixture Gaussian distributions as a canonical framework to capture this geometry and establish two theoretical results. First, we interpret denoising as a dynamical Bayesian classifier: the mixture score is a posterior-weighted average of cluster-wise scores, and we show that, with high probability, the posterior class probabilities concentrate on a single cluster once the signal-to-noise ratio reaches the scale Θ(log (𝐾 𝐷 )/ 𝐷 ). Second, by separately analysing the denoising process in its mixing and cluster-commitment phases, we prove that the KL error bound depends linearly on the maximum intrinsic dimension of a cluster, up to a logarithmic factor, even when 𝐾 
+
+grows polynomially with 𝐷 . This improves on ambient-dimensional bounds and extends existing low-dimensional adaptivity analyses to multimodal distributions with heterogeneous, approximately low-rank covariances. 
+
+Key words. Bayesian classification; Diffusion models; Dimensional scaling; Intrinsic dimension; Phase transitions. 
+
+1. Introduction 
+
+Denoising Diffusion Probabilistic Models (DDPMs) [Song and Ermon, 2019, Ho et al., 2020, Song et al., 2020] are general methods for generative modelling that have produced state-of-the-art results across many applications [Dhariwal and Nichol, 2021, Popov et al., 2021, Lugmayr et al., 2022, Trippe et al., 2023]. They define a process that takes data and progressively adds noise to it to produce a realisation from (a close approximation) to some simple distribution. They then learn the reverse, denoising, process, so that we can generate new data examples by denoising realisations from the simple distribution. Relatedly, there has been much interest in understanding why DDPMs are so effective. Much of this work has been theoretical, producing bounds on the accuracy of DDPM. Initial work gave bounds in terms of the Kullback-Leibler (KL) divergence between the true data distribution and the distribution sampled by a DDPM [Benton et al., 2024, Conforti et al., 2025], though these have been extended to other metrics such as total variation distance [Liang et al., 2025, Brešar and Mijatović, 2025], 1-Wasserstein distance [De Bortoli, 2022] or 2-Wasserstein distance [Gao et al., 2025, Silveri and Ocello, 2025, Arsenyan et al., 2026, Koike, 2026]. Within this body of work there has been particular interest in understanding why DDPMs scale well to high-dimensional distributions. Under KL divergence, standard bounds on the accuracy of DDPMs [Benton et al., 2024, Conforti et al., 2025] have terms that, up to a logarithmic factor, scale linearly with the ambient dimension, 𝐷 , and suggest that the computational cost, such as the number of time-steps used 
+
+1arXiv:2608.19067v1 [stat.ML] 19 Aug 2026 2 Y. Iguchi and P. Fearnhead 
+
+when denoising, needs to scale with 𝐷 . While earlier works have established such a bound under minimal conditions on the target, e.g., bounded second moment for data distribution, more recent work has made assumptions that the data lie on a low-dimensional manifold with a bounded support and then shows that in such cases the error can scale with the dimension of the manifold rather than the ambient dimension. For example, Potaptchik et al. [2025] assume that data lies on a bounded manifold of intrinsic dimension 
+
+𝑘 and show that the KL-bound is then linear in 𝑘 . Li and Yan [2024] define the dimension of the manifold, 
+
+𝑘 , in terms of metric entropy (which implicitly also implies the data distribution has bounded support) and show that to bound the total variation error the number of time-steps when denoising needs to scale quadratically in 𝑘 . This was subsequently improved to linearly in 𝑘 by Li and Yan [2025] and Huang et al. [2026]. Separately, work has focussed on whether DDPMs generalise or just memorise the data [Li et al., 2023, Dupuis et al., 2025, Bonnaire et al., 2025, Maillard and Goldt, 2026]. That is, does simulating from a DDPM produce new examples from the underlying data distribution, or just reproduce members of the data set it was trained on. Many applications of DDPMs involve data distributions with separate clusters, for example image data with images of different types. Biroli et al. [2024] studied the noising/denoising process for such data and was able to give rigorous qualitative insight into its behaviour albeit assuming exact simulation of the denoising process using the true empirical score function. They show that the denoising process can be split into three phases, one where there is general exploration, a second where the process fixes the cluster it will sample from, and then a final stage where the process will be attracted to a specific data point from the training sample. The last stage corresponds to memorisation, and can be avoided by early stopping of the denoiser. Achilli et al. [2026] further extended this study of DDPMs for mixture distributions. 
+
+1.1. Our Contributions 
+
+Our focus is on analysing the geometric adaptivity of DDPMs for target data from a 𝐾 -mixture of distributions on R𝐷 , exhibiting both low dimensionality and distinct clustering. This is motivated by the notion of the union of manifolds hypothesis [Brown et al., 2022]: that high-dimensional data such as images lie on a disjoint union of manifolds of varying intrinsic dimensions. Our contributions are summarised as follows: 
+
+• We rigorously extend the general framework of Biroli et al. [2024] and Achilli et al. [2026] to study a situation where each cluster distribution samples from, or is close to, a low-dimensional manifold. Under the structured geometry specified later, we show that the denoising process fixes on a single cluster to sample from with high probability after a suitably defined signal-to-noise ratio (SNR) reaches a threshold Θ(log (𝐾 𝐷 )/ 𝐷 ).
+
+• Exploiting the above characterisation of cluster commitment in terms of SNR, we give rigorous bounds on the error of DDPM accounting for the various approximations such as time-discretisation of the denoising process, which, under suitable regularity conditions, is shown to scale linearly with the maximum intrinsic dimension of any of the clusters, rather than the ambient dimension 𝐷 .As such our work brings together the mixture framework of [Biroli et al., 2024] and Achilli et al. [2026] with the literature on KL-bounds for DDPMs, and the ability of DDPMs to adapt to low-dimensional structure within each distinct cluster. To demonstrate the intrinsic adaptivity in the KL error despite the distinct multimodality, we first characterise the phase transition where the DDPM switches from exploring between clusters to fixing on a single cluster. By leveraging this, and separately analysing the behaviour of the DDPM before and after the phase transition, we are able to show that the KL error bound depends linearly on the intrinsic dimensions up to a logarithmic factor of 𝐷 , even when the number of clusters grows polynomially in the ambient dimension 𝐷 . A detailed description of the link between the phase transition and the intrinsic dimension adaptivity in KL error is provided in Section 3.1. Diffusion Models for Clustered Data 3
+
+In order to get our results, we make a number of assumptions on the data distribution. The strongest of which is that each component of our mixture is Gaussian. i.e., Gaussian mixture models (GMMs). This is in line with recent papers that study simplified models in order to gain insight into DDPMs [Li et al., 2026, Oymak and Gulcu, 2021, Shah et al., 2023, Wu et al., 2024, Wang et al., 2025]. In particular, Li et al. [2026] establish dimension-free convergence of DDPM in total variation under the common isotropic covariance structure. In contrast, we consider GMMs with heterogeneous and anisotropic covariances and assume that each cluster is well-separated, in that the squared distances between cluster means scale linearly with 𝐷 , while each cluster has its own low-dimensional structure. This inter-cluster separation induces the phase transition described above, leading to our intrinsic-dimension adaptivity result under the heterogeneous and anisotropic covariance geometry. In our work, the intrinsic dimensionality is imposed by an assumption that the spectrum of the cluster covariance matrix decays quickly: for cluster 𝑖 ,there is some 𝑀 𝑖 such that the sum of all but the 𝑀 𝑖 -largest eigenvalues is bounded. This is a weaker condition than assuming the data in cluster 𝑖 lies on an 𝑀 𝑖 -dimensional manifold. Importantly, we do not require that the support of the data distribution is bounded. We stress that our main result focuses on the dimensional scaling of the noise or time-discretisation schedule for DDPMs or associated reverse SDEs, given a sufficiently accurate estimate of the score, which analytically explains why a reasonable number of steps is enough in practice to sample from high-dimensional clustered data. In contrast, Wang et al. [2025] focuses on score estimation, and clarifies the relation between the training samples and the intrinsic dimensionality to minimise a training loss when the target is a mixture of exactly low-rank Gaussians. This paper is organised as follows. Section 2 summarises the basic set-up of diffusion models and introduces the structured geometry under GMMs. Section 3 presents our two main analytical results on the phase transition and intrinsic-dimension adaptivity in KL error. We provide empirical experiments using real data in Section 4 to demonstrate that our analytical findings on the phase transition can be observed beyond GMMs. We prove the second main result in Section 5 and then conclude in Section 6. 
+
+Notation. For a vector 𝑥 ∈ R𝐷 and matrix 𝐴 ∈ R𝐷 ×𝐷 , we write ∥𝑥 ∥ 𝐴 = √𝑥 ⊤ 𝐴𝑥 and ∥𝑥 ∥ =√︃ Í𝐷 𝑖 =1 𝑥 2 
+
+> 𝑖
+
+.Denote by 𝜆 𝑖 ( 𝐴 ) the 𝑖 -th largest eigenvalue of the matrix A and write ∥ 𝐴 ∥2 =√︁ 𝜆 1 ( 𝐴 ⊤ 𝐴 ) and 
+
+∥ 𝐴 ∥𝐹 =√︁ tr ( 𝐴 ⊤ 𝐴 ). For two vectors 𝑥, 𝑦 ∈ R𝐷 , ⟨𝑥, 𝑦 ⟩ denotes the inner product. For two matrices 
+
+𝐴, 𝐵 ∈ R𝐷 ×𝐷 , 𝐴 ⪯ 𝐵 mean that 𝐵 − 𝐴 is positive semidefinite. For positive integer 𝑀 , we write 
+
+[𝑀 ] ≡ { 1, . . . , 𝑀 }. For 𝑥 > 0, we write 𝑓 (𝑥 ) = Θ (𝑥 ) if there exist constants 0 < 𝑐 1 ≤ 𝑐 2 < ∞ such that 
+
+𝑐 1𝑥 ≤ 𝑓 (𝑥 ) ≤ 𝑐 2𝑥 . For two sequences {𝑎 𝑛 }𝑛 and {𝑏 𝑛 }𝑛 , we write 𝑎 𝑛 = O( 𝑏 𝑛 ) if there exists a constant 
+
+𝐶 > 0 such that 𝑎 𝑛 ≤ 𝐶𝑏 𝑛 for all sufficiently large 𝑛 . We also write 𝑎 𝑛 = 𝑜 (𝑏 𝑛 ) if lim 𝑛 →∞ 𝑎 𝑛 /𝑏 𝑛 = 0. For any two probability measures P and Q with P being absolutely continuous with respect to Q, we write KL  P || Q = ∫ log 𝑑 P 
+
+> 𝑑 Q
+
+(𝜔 )𝑑 P(𝜔 ) for the KL divergence between them. We write 𝛾 𝐷 : B( R𝐷 ) → [ 0, 1]
+
+as the standard Gaussian measure defined as 𝛾 𝐷 ( 𝐴 ) = (2𝜋 )−𝐷 /2 ∫ 
+
+> 𝐴
+
+exp (− ∥ 𝑧 ∥2 
+
+> 2
+
+)𝑑𝑧, 𝐴 ∈ B( R𝐷 ). Also, for 𝑚 ∈ R𝐷 and 𝑉 ∈ R𝐷 ×𝐷 , N ( 𝑚, 𝑉 ) denotes the normal distribution with mean 𝑚 and covariance 𝑉 .For a random variable 𝑋 , Law (𝑋 ) denotes the probability law of 𝑋 .
+
+2. Setup 
+
+2.1. Score-Based Generative Models 
+
+We first review score-based generative models [Song et al., 2020], which provide a continuous-time framework for sampling from a target distribution. Let (Ω, F , P) be the probability space where the 
+
+𝐷 -dimensional standard Brownian motion (𝐵 𝑡 )𝑡 ≥0 is equipped, and 𝑃 data denote the target distribution on R𝐷 . Denoising diffusion models are designed to generate samples from 𝑃 data by reversing a forward noising process, where the latter process can be formulated as the following Ornstein-Uhlenbeck 4 Y. Iguchi and P. Fearnhead 
+
+(OU)-type SDE: 
+
+𝑑 −→
+
+𝑋 𝑡 = −−→
+
+𝑋 𝑡 𝑑𝑡 + √2𝑑𝐵 𝑡 , −→
+
+𝑋 0 ∼ 𝑃 data , 𝑡 ∈ [ 0, 𝑇 ],
+
+where 𝑇 > 0 is a fixed time horizon. We denote by −→𝑝 𝑡 : B( R𝐷 ) → [ 0, 1] the marginal distribution of 
+
+−→
+
+𝑋 𝑡 , given as 
+
+−→𝑝 𝑡 ( 𝐴 ) =
+
+∫ −→𝑝 𝑡 |0 ( 𝐴 |𝑥 )𝑃 data (𝑑𝑥 ), 𝐴 ∈ B( R𝐷 ),
+
+where −→𝑝 𝑡 |0 ( 𝐴 |𝑥 ) ≡ P −→
+
+𝑋 𝑡 ∈ 𝐴 | −→
+
+𝑋 0 = 𝑥 . The forward noise −→
+
+𝑋 𝑡 conditional on the initial data point −→
+
+𝑋 0
+
+follows a Gaussian distribution, and specifically, the solution is expressed as −→
+
+𝑋 𝑡 = 𝑚 𝑡 
+
+−→
+
+𝑋 0 + 𝜎 𝑡 𝑍, 𝑍 ∼N ( 0, 𝐼 𝐷 ), where 𝑚 𝑡 and 𝜎 𝑡 represent the strength of signal and noise, defined as 
+
+𝑚 𝑡 = exp (− 𝑡 ), 𝜎 𝑡 =√︃ 1 − 𝑚 2 
+
+> 𝑡
+
+. (1) With a slight abuse of notation, we write −→𝑝 𝑡 |0 as the associated Lebesgue density. Similarly, we write −→𝑝 𝑡 
+
+for the Lebesgue density of the marginal law of −→
+
+𝑋 𝑡 if it exists. Then, the denoising SDE is defined as: 
+
+𝑑 ←−
+
+𝑋 𝑡 =  ←−
+
+𝑋 𝑡 + 2∇ log −→𝑝 𝑇 −𝑡 (←−
+
+𝑋 𝑡 ) 𝑑𝑡 + √2𝑑𝐵 𝑡 , ←−
+
+𝑋 0 ∼ Law (−→
+
+𝑋 𝑇 ). (2) The classical results of [Anderson, 1982, Haussmann and Pardoux, 1986] show that (←−
+
+𝑋 𝑡 )𝑡 ∈ [ 0,𝑇 ] admits a weak solution so that Law (←−
+
+𝑋 𝑡 ) = Law (−→
+
+𝑋 𝑇 −𝑡 ) for any 𝑡 ∈ [ 0, 𝑇 ]. In particular Law (←−
+
+𝑋 𝑇 ) = Law (−→
+
+𝑋 0),so exact simulation of the reverse SDE (2) allows for sampling from the target distribution 𝑃 data .DDPMs [Ho et al., 2020] can be viewed as a tractable alternative to (2), which involves three approximations: (i) The use of an estimated score – the intractable score function is replaced with a function ˆ 𝑠 : [0, 𝑇 ] × R𝐷 → R𝐷 parametrised with a neural network, obtained by optimising an appropriate loss function [Yang et al., 2023]; (ii) The use of the Gaussian prior N ( 0, 𝐼 𝐷 ) for initialisation rather than Law (−→
+
+𝑋 𝑇 ); and (iii) Time-discretisation of the continuous-time process (2). Even with these approximations, it can be difficult to approximately simulate from (2) for 𝑡 ≈ 𝑇 as the drift, specifically the term 2 ∇ log −→𝑝 𝑇 −𝑡 (←−
+
+𝑋 𝑡 ), blows-up as 𝑡 → 𝑇 . To overcome this, simulation is often performed up to some time 𝑇 − 𝜀 , for a suitable choice of early-stopping parameter 𝜀 > 0. It is simple to bound the error between Law (←−
+
+𝑋 𝑇 − 𝜀 ) and Law (←−
+
+𝑋 𝑇 ) in terms of 𝜖 [Benton et al., 2024]. 
+
+2.2. Bayesian Classification Perspective and Our Analytic Framework 
+
+Given the above setup, our primary goal is to rigorously investigate the generative mechanism and geometric adaptivity of the reverse process, characterised by (2), when 𝑃 data is a union of 𝐾 clusters, written in the form 
+
+𝑃 data ( 𝐴 ) =
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝜋 𝑘 · 𝑃 [ 𝑘 ] 
+
+> data
+
+( 𝐴 ), 𝐾 ≥ 2, 𝐴 ∈ B( R𝐷 ),
+
+where {𝜋 𝑘 } satisfying Í𝐾 𝑘 =1 𝜋 𝑘 = 1 are the prior weights and 𝑃 [ 𝑘 ] 
+
+> data
+
+denotes the distribution associated with the 𝑘 th class. In the mixture setting, the key observation is that the denoising procedure can be viewed as a dynamical Bayesian classification, as advocated also in recent work [Achilli et al., 2026]. More specifically, the score function ∇ log −→𝑝 𝑇 −𝑡 (·) contained in the drift of (2) is expressed as a weighted Diffusion Models for Clustered Data 5
+
+average of the cluster-wise scores, that is, 
+
+∇ log −→𝑝 𝑇 −𝑡 (𝑥 ) =
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑥 )∇ log −→𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 ), 𝑥 ∈ R𝐷 ,
+
+where −→𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 ) is the Lebesgue density of −→
+
+𝑋 𝑇 −𝑡 given initial data point −→
+
+𝑋 0 belonging to the 𝑘 -th cluster, i.e., 
+
+−→𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 ) =
+
+∫ −→𝑝 𝑇 −𝑡 |0 (𝑥 |𝑧 ) · 𝑃 [ 𝑘 ] 
+
+> data
+
+(𝑑𝑧 )
+
+and 𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑥 ) is the posterior mixture weight or Bayes classifier , i.e., the conditional probability of the label taking 𝑘 given the state −→
+
+𝑋 𝑡 = 𝑥 , specifically, 
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑥 ) = 𝜋 𝑘 · −→𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 )
+
+Í𝐾 ℓ=1 𝜋 ℓ · −→𝑝 [ℓ ]  
+
+> 𝑇 −𝑡
+
+(𝑥 ) . (3) Thus, the reverse process (2) evolves according to the posterior weights given the current denoising state 
+
+←−
+
+𝑋 𝑡 , indicating that it implicitly performs a dynamic Bayesian classification within the clustered data setting. The insight presented above suggests that understanding the generative mechanism of diffusion models for clustered data relies on studying the stochastic behaviour of the posterior weights 𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) for all 𝑡 ∈ [ 0, 𝑇 ). In this paper, we focus on Gaussian mixture models (GMMs) as the target data, as they provide a solid analytical framework for rigorously examining the dynamic Bayesian classification. Under this setting, the marginal distribution of the forward noise also follows a Gaussian mixture. Also, cluster-wise low-dimensional structure can be employed within each covariance. Thus, we define 
+
+𝑃 [ 𝑘 ] 
+
+> data
+
+( 𝐴 ) = N ( 𝐴 ; 𝜇 𝑘 , Σ𝑘 ), 𝐴 ∈ B( R𝐷 ) and specify the target distribution as: 
+
+𝑃 data ( 𝐴 ) =
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝜋 𝑘 · N ( 𝐴 ; 𝜇 𝑘 , Σ𝑘 ), 𝐾 ≥ 2, 𝐴 ∈ B( R𝐷 ), (4) where 𝜇 𝑘 ∈ R𝐷 , Σ𝑘 ∈ R𝐷 ×𝐷 with Σ𝑘 ⪰ 0 and N ( 𝐴 ; 𝜇 𝑘 , Σ𝑘 ) is a Gaussian measure on R𝐷 defined as 
+
+N ( 𝐴 ; 𝜇 𝑘 , Σ𝑘 ) ≡ 𝛾 𝐷  {𝑧 ∈ R𝐷 | 𝜇 𝑘 + Σ1/2 
+
+> 𝑘
+
+𝑧 ∈ 𝐴 }.
+
+The measure admits a well-defined Lebesgue density if Σ𝑘 is positive definite. Also, note that the distribution of the cluster-wise forward noising −→𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(·) , 𝑡 ∈ [ 0, 𝑇 ), 𝑘 ∈ [ 𝐾 ] follows a Gaussian with mean 𝑚 𝑇 −𝑡 𝜇 𝑘 and covariance 𝑆 𝑘 𝑇 −𝑡 given as 
+
+𝑆 𝑘 𝑇 −𝑡 = 𝑚 2  
+
+> 𝑇 −𝑡
+
+Σ𝑘 + 𝜎 2  
+
+> 𝑇 −𝑡
+
+𝐼 𝐷 (5) which is positive definite due to the added noise for 𝑡 ∈ [ 0, 𝑇 ).We now introduce the following structure for the target measure (4): Assumption 1 (Prior Weights). There exists a constant 𝐶 1 ≥ 0 such that max    
+
+> 𝑖, 𝑗 ∈ [ 𝐾 ]
+
+log 𝜋 𝑖  
+
+> 𝜋 𝑗
+
+≤ 𝐶 1.
+
+Assumption 2 (Covariance). (i) Σ𝑖 is symmetric positive semi-definite for any cluster 𝑖 ∈ [ 𝐾 ]. Also, 6 Y. Iguchi and P. Fearnhead 
+
+there exist a constant 𝐶 2 > 0 and 𝛼 ∈ [ 0, 1) such that for all 𝐷 ∈ N,max   
+
+> 𝑖 ∈ [ 𝐾 ]
+
+∥Σ𝑖 ∥2 ≤ 𝐶 2 · 𝐷 𝛼 .
+
+(ii) (Low-dimensional structure) For each cluster 𝑖 ∈ [ 𝐾 ], there exist a positive fixed integer 𝑀 𝑖 < 𝐷 
+
+and 𝜈 𝑖 ≥ 0 such that for all 𝐷 ∈ N, we have 
+
+> 𝐷
+
+∑︁  
+
+> 𝑘 =𝑀 𝑖 +1
+
+𝜆 𝑘 (Σ𝑖 ) ≤ 𝜈 𝑖 , 𝜈 𝑖 
+
+𝑀 𝑖 
+
+≤ 𝑅 (6) for some universal constant 𝑅 ∈ [ 0, 1).Assumption 3 (Mean). For any two clusters 𝑖, 𝑗 ∈ [ 𝐾 ], there exist constants 𝐶 3, 𝐶 4 > 0 such that for all 
+
+𝐷 ∈ N,
+
+𝐶 3 · 𝐷 ≤ ∥ 𝜇 𝑖 − 𝜇 𝑗 ∥2 ≤ 𝐶 4 · 𝐷. (7) The first assumption is weak as it just bounds the ratio of the mixture weights. The second assumption imposes the structure of each component. Assumption 2(i) allows at most sub-linear dependency on 
+
+𝐷 for the maximum eigenvalue of each cluster’s covariance, which is weaker than assuming a uniform bound w.r.t. 𝐷 . Sublinear growth is a technical condition that facilitates the phase transition analysis later in Section 3. Assumption 2(ii) together with (i) covers both exact or approximately low-rank structure; if data from component 𝑖 is confined to a manifold of dimension 𝑀 𝑖 , then (6) would hold with 𝜈 𝑖 = 0. Notably, Assumption 2(ii) is a weaker condition that only requires data from each component to lie close to a low-dimensional manifold, with 𝑅 being a global measure of how close data from each mixture component is to its manifold. Finally, Assumption 3 defines the separation of clusters as a function of the ambient dimension 𝐷 .The square distance between the cluster means is assumed to increase linearly with 𝐷 . It is also natural for image data where increasing 𝐷 corresponds to observing the same image at increasing resolution. We will also empirically assess these data geometries using high-dimensional datasets (images and RNA sequencing data) in Section 4. 
+
+3. Posterior Classification Analysis and Intrinsic Dimension Adaptivity 
+
+3.1. Overview 
+
+This section provides an overview of the generative mechanism of the reverse process within the GMM framework (4) detailed in Section 2.2. We will also explain how the dynamic Bayesian classification perspective can be linked to the KL convergence analysis, thereby demonstrating its ability to adapt to the geometry of the low-dimensional structure within each cluster. Sections 3.2–3.4 analyse the stochastic behaviour of the posterior weights 𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) given in (3), revealing that the denoising process decomposes into the following two phases: In the Phase I – the mixing phase – several posterior weights remain non-negligible, and the trajectory is affected by global inter-cluster geometry. Then, in Phase II – the commitment phase –, one posterior weight becomes dominant, that is the posterior weight concentrates on a single class, i.e., 𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+≈ 1 for some 𝑗 ∈ [ 𝐾 ] and 
+
+𝑊 [𝑖 ] 
+
+> 𝐷
+
+≈ 0, 𝑖 ∈ [ 𝐾 ] \ { 𝑗 }, and the score is effectively reduced to the corresponding cluster-wise score 
+
+∇ log −→𝑝 𝑇 −𝑡 (←−
+
+𝑋 𝑡 ) ≈ ∇ log −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+(←−
+
+𝑋 𝑡 ).
+
+The analytic results presented in Sections 3.3–3.4 demonstrate a key effect of the ambient dimension 𝐷 
+
+on the posterior weight concentration. Roughly, the transition from Phase I to II or mode commitment Diffusion Models for Clustered Data 7
+
+can occur with probability at least 1 − 𝐷 −𝑞 , 𝑞 ≥ 1 after the signal-to-noise ratio (SNR) SNR 𝑇 −𝑡 ≡ 𝑚 2  
+
+> 𝑇 −𝑡
+> 𝜎 2
+> 𝑇 −𝑡
+
+, 𝑡 ∈ [ 0, 𝑇 ), (8) reaches scale log (𝐾 𝐷 )/ 𝐷 , see Theorem 1 in Section 3.4. These observations imply that inter-class separation that scales with the ambient dimension 𝐷 facilitates earlier resolution of the cluster component identification, and the rest of the denoising process then focuses on building fine details from the single cluster. Table 1 summarises this two-phase picture. 
+
+Table 1. Summary of the dynamical regimes of the denoising diffusion for high-dimensional 𝐾 -clustered data.                                  
+
+> Phase I Phase II Phase Characterisation Mixing phase Commitment to a single cluster 𝑗
+> Signal-to-noise ratio (SNR 𝑇 −𝑡 )O log (𝐾 𝐷 )/ 𝐷 O( 1)
+> Posterior Weights 𝑊 [𝑘 ]
+> 𝐷 ≥0, 𝑘 ∈ [ 𝐾 ]
+> (Onset of posterior collapse)
+> 𝑊 [𝑗 ]
+> 𝐷 ≈1, 𝑊 [𝑘 ]
+> 𝐷 ≈0, 𝑘 ≠𝑗
+> (Posterior concentration)
+> Effective Geometry Inter-cluster inference
+> +local covariances Single local covariance (cluster 𝑗 )
+
+Given the above characterisation of the denoising process, we bound the KL error between the target distribution and its approximation realised by DDPM samplers in Section 3.5. The main analytic result therein is that, up to a logarithmic factor, the time-discretisation error component of the KL divergence scales linearly with the intrinsic dimension, i.e., the low-rank property within each cluster, rather than with the ambient dimension 𝐷 . To show this we use different approaches to bound the KL error in Phase I and Phase II: For Phase I we use the fact that the KL error involves terms that depend on the SNR, and in this phase the SNR is O( log (𝐾 𝐷 )/ 𝐷 ), which offsets the inter-cluster separation depending on 𝐷 in the first and second moments. For Phase II, due to cluster-commitment, the denoiser behaves as one targeting a single cluster, so we can bound the error in terms of the cluster’s intrinsic dimension. A more detailed overview of our argument is given in Section 3.6. 
+
+Remark 1. Similar attempts to split the denoising process into distinct phases are considered in [Biroli et al., 2024, Achilli et al., 2026]. One of the focuses in these works is on characterising when the marginal density of the process transitions from a single-well structure (when the process is contractive) to a multi-well one. They study this in an asymptotic manner, i.e., consider a Taylor series expansion of the score function in very small signal 𝑚 𝑇 −𝑡 ≪ 1 and analyse the curvature of the approximate Hessian. In contrast, our analysis proceeds with a probabilistic characterisation of posterior weights concentration without relying on the Taylor expansion in 𝑚 𝑇 −𝑡 .
+
+3.2. High Probability Bounds for Posterior Weights 
+
+We begin by stating the following dynamic characterisation of the posterior weights, which serves as a basis to develop the phase transition arguments hereafter: Lemma 3.1. Let 𝑇 ≥ 1 and 𝛿 ∈ ( 0, 1). Then, for each 𝑖, 𝑗 ∈ [ 𝐾 ], it holds that: 
+
+P
+
+
+
+log 𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) ≤ min −𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 ), 0 | ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+
+
+≥ 1 − 𝛿 8 Y. Iguchi and P. Fearnhead 
+
+for each 𝑡 ∈ [ 0, 𝑇 ), where we have set: 
+
+𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 ) = log 𝜋 𝑗  
+
+> 𝜋 𝑖
+
++ KL   −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+
+
+−√︃ 2𝒯 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) log 2 
+
+> 𝛿
+
+−√︃ 2𝒰 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) log 2 
+
+> 𝛿
+
+− 2𝒱 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) log 2 
+
+> 𝛿
+
+,
+
+(9) 
+
+with 
+
+𝒯 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) = 𝑚 2  
+
+> 𝑇 −𝑡
+
+𝜇 𝑖 − 𝜇 𝑗 2           
+
+> (𝑆 𝑖 𝑇 −𝑡 )−1(𝑆 𝑗 𝑇 −𝑡 ) ( 𝑆 𝑖 𝑇 −𝑡 )−1
+
+;
+
+𝒰 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) = 12 tr 
+
+ 𝐼 𝐷 − 𝑆 𝑗 𝑇 −𝑡 (𝑆 𝑖 𝑇 −𝑡 )−12
+
+;
+
+𝒱 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) = ∥𝐼 𝐷 − 𝑆 𝑗 𝑇 −𝑡 (𝑆 𝑖 𝑇 −𝑡 )−1 ∥2.
+
+The proof of Lemma 3.1 is postponed to Appendix B.1. We further introduce event sets 
+
+𝐴 [𝑖, 𝑗 ] (𝑡, 𝛿 ) =
+
+n
+
+𝜔 ∈ Ω | log 𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) ≤ min −𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 ), 0
+
+o
+
+, 𝑖, 𝑗 ∈ [ 𝐾 ]. (10) Then, the following result is immediate: Proposition 1. Let 𝑇 ≥ 1, 𝛿 ∈ ( 0, 1) and 𝑗 ∈ [ 𝐾 ]. It holds that: 
+
+P
+
+ Ù  
+
+> 𝑖 ∈ [ 𝐾 ]
+
+𝐴 [𝑖, 𝑗 ]  𝑡, 𝛿 𝐾 
+
+ | ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+
+
+≥ 1 − 𝛿, 
+
+for each 𝑡 ∈ [ 0, 𝑇 ).
+
+Proposition 1 tells us that for denoising trajectories {←−
+
+𝑋 𝑡 } eventually sampling from the cluster 𝑗 at the terminal time 𝑇 , the posterior weights 𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) with any cluster index 𝑖 rather than 𝑗 are bounded by min exp  −𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 /𝐾 ), 1 with probability at least 1 − 𝛿 , 𝛿 ∈ ( 0, 1).
+
+Proof of Proposition 1. We have that: 
+
+P
+
+ Ù  
+
+> 𝑖 ∈ [ 𝐾 ]
+
+𝐴 [𝑖, 𝑗 ]  𝑡, 𝛿 𝐾 
+
+𝑐 
+
+| ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+
+
+= P
+
+ Ø  
+
+> 𝑖 ∈ [ 𝐾 ]
+
+
+
+𝐴 [𝑖, 𝑗 ]  𝑡, 𝛿 𝐾 
+
+𝑐 
+
+| ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+
+
+≤∑︁  
+
+> 𝑖 ∈ [ 𝐾 ]
+
+P
+
+ 
+
+𝐴 [𝑖, 𝑗 ]  𝑡, 𝛿 𝐾 
+
+𝑐 
+
+| ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+
+
+≤∑︁   
+
+> 𝑖 ∈ [ 𝐾 ]
+> 𝛿 𝐾
+
+= 𝛿, 
+
+where we used Lemma 3.1 in the last line. The proof is complete. 
+
+3.3. Posterior Weights in High-Dimensional Limit 
+
+Proposition 1 indicates that the decay of the posterior weights is dynamically controlled by how large the signal KL   −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ is compared to the prior ratio and the fluctuation terms. The following result demonstrates how the signal component dominates in the term 𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+in the high-ambient-dimensional regime, 𝐷 → ∞ .Proposition 2. Let 𝑇 ≥ 1 and 𝑗 ∈ [ 𝐾 ]. Also, let Assumptions 1, 2, 3 hold and assume that for each 
+
+𝑡 ∈ [ 0, 𝑇 ) and 𝑖, 𝑗 ∈ [ 𝐾 ], the following limit exists: 
+
+lim  
+
+> 𝐷 →∞
+> 1
+> 𝐷
+
+× KL   −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ ≡ e𝐶 [𝑖, 𝑗 ]∞ (𝑡 ) ≥ 0.Diffusion Models for Clustered Data 9
+
+Then, we have that: conditionally on the event 𝜔 ∈ Ω | ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ] 
+
+> data
+
+,
+
+lim sup  
+
+> 𝐷 →∞
+> 1
+> 𝐷
+
+log 𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) ≤ − e𝐶 [𝑖, 𝑗 ]∞ (𝑡 ), ∀𝑖 ∈ [ 𝐾 ],
+
+holds true almost surely for each 𝑡 ∈ [ 0, 𝑇 ).
+
+Proposition 2 implies that in the high ambient dimensional limit 𝐷 → ∞ , the decay of the posterior weight is mainly governed by the KL divergence between pairs of noised cluster distributions. The data geometry stated in Assumptions 1, 2 and 3 ensure that the KL divergence (signal) eventually dominates the fluctuation terms (noise) specified in (9) as 𝐷 → ∞ . If the clusters in the target distribution are well-separated, e.g., in the sense of the first or second moment, then the signal (KL divergence) is also expected to increase as 𝑡 approaches the terminal time 𝑇 . That is, for small 𝑡 ∈ [ 0, 𝑇 − 𝜀 ], the noised clusters are nearly indistinguishable, but the gap gradually increases as the denoising proceeds, where those differences are measured by the KL divergence. In the early stage of denoising, the posterior weights are basically similar to the prior weights, but, for some classes, these posterior weights start to degenerate toward 0, followed by a rapid posterior concentration for a single cluster 𝑗 . In particular, such a rapid cluster commitment occurs with an exponential rate after the signal KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ reaches a certain level so that −KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ + 𝑜 (𝐷 ) takes a sufficiently large negative value. 
+
+Proof of Proposition 2. Set 𝛿 = 𝐷 −𝑞 , 𝑞 ≥ 2. Recall the definition of the event 𝐴 [𝑖, 𝑗 ] in (10) and define 
+
+𝐸 [ 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 ) = Ñ𝑖 ∈ [ 𝐾 ] 𝐴 [𝑖, 𝑗 ]  𝑡, 𝛿 𝐾 
+
+ and 𝐵 [ 𝑗 ] = {𝜔 ∈ Ω | ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+}. Then, Proposition 1 yields 
+
+> ∞
+
+∑︁ 
+
+> 𝐷 =1
+
+P
+
+ 𝐸 [ 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝐷 −𝑞 )𝑐 | 𝐵 [ 𝑗 ] 
+
+≤
+
+> ∞
+
+∑︁ 
+
+> 𝐷 =1
+
+𝐷 −𝑞 < ∞.
+
+Thus, the first Borel-Cantelli lemma gives that: 
+
+P
+
+
+
+lim inf  
+
+> 𝐷 →∞
+
+𝐸 [ 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝐷 −𝑞 )| 𝐵 [ 𝑗 ] 
+
+= 1,
+
+that is, for P(·| 𝐵 [ 𝑗 ] ) almost every 𝜔 , there exists 𝐷 † ∈ N such that for all 𝐷 ≥ 𝐷 † we have log 𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) + 𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 𝐾 ) ≤ 0 (11) for all 𝑖 ∈ [ 𝐾 ]. Dividing the both sides of (11) by 𝐷 and taking lim sup 𝐷 →∞ gives lim sup  
+
+> 𝐷 →∞
+> 1
+> 𝐷
+
+log 𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) ≤ − lim sup  
+
+> 𝐷 →∞
+> 1
+> 𝐷
+
+𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 𝐾 ).
+
+The proof completes once we show that for 𝛿 = 𝐷 −𝑞 , 𝑞 ≥ 2, lim sup  
+
+> 𝐷 →∞
+> 1
+> 𝐷
+
+𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 𝐾 ) = e𝐶 [𝑖, 𝑗 ]∞ (𝑡 ), (12) where all the fluctuation terms in (9) multiplied by 1 /𝐷 converges to 0 as 𝐷 → ∞ . To this end, we exploit the following upper bounds for the fluctuation terms in (9) whose proof is contained in Appendix D: 10 Y. Iguchi and P. Fearnhead 
+
+Lemma 3.2. It holds that for each 𝑡 ∈ [ 0, 𝑇 ) and all 𝑖, 𝑗 ∈ [ 𝐾 ],
+
+𝒯 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) ≤  1 + SNR 𝑇 −𝑡 · ∥ Σ𝑖 − Σ 𝑗 ∥2
+
+ · 𝑚 2  
+
+> 𝑇 −𝑡
+
+∥𝜇 𝑖 − 𝜇 𝑗 ∥2     
+
+> (𝑆 𝑗 𝑇 −𝑡 )−1
+
+; (13) 
+
+𝒰 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) ≤ 12 SNR 2  
+
+> 𝑇 −𝑡
+
+Σ𝑖 − Σ 𝑗 2 
+
+> 𝐹
+
+; (14) 
+
+𝒱 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) ≤ SNR 𝑇 −𝑡 · ∥ Σ𝑖 − Σ 𝑗 ∥2. (15) Lemma 3.2 with Assumptions 1 – 3 yields that: for each 𝑡 ∈ [ 0, 𝑇 ) with a fixed 𝑇 ≥ 1, 𝒯 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) =
+
+O( 𝐷 𝛼 +1), 𝒰 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) = O( 𝐷 2𝛼 ) and 𝒱 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) = O( 𝐷 𝛼 ), leading to the desired equation (12), where we used ∥Σ𝑖 − Σ 𝑗 ∥2 
+
+> 𝐹
+
+= O( 𝐷 2𝛼 ) shown in (75). The proof of Proposition 2 is now complete. 
+
+3.4. Posterior Concentration and the Scale of SNR 
+
+We hereby examine the time scale at which the posterior weight decay, or concentration, occurs. Inspired by the high-dimensional asymptotics presented in Proposition 2, we analytically identify the point in time after which the main signal consistently outweighs other components in equation (9), such as the ratio of prior weights and fluctuation terms. Specifically, by setting a fixed early stopping criterion 𝜀 ∈ ( 0, 1), we consider the time 𝑡 † ∈ [ 0, 𝑇 − 𝜀 ] such that 𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 /𝐾 ) ≥ 𝜂 KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ for all 𝑡 ≥ 𝑡 †, for a fixed constant 𝜂 ∈ ( 0, 1). To analytically characterise the scale of 𝑡 †, we introduce an additional condition: Assumption 4. There exists a constant 𝐶 5 > 0 such that for all 𝑖, 𝑗 ∈ [ 𝐾 ],max    
+
+> 𝑘 ∈ [ 𝐷 ]
+
+⟨𝜇 𝑖 − 𝜇 𝑗 , 𝑢 𝑘 ( 𝑗 )⟩ ≤ 𝐶 5, (16) where 𝑢 𝑘 ( 𝑗 ) is the eigenvector associated with the eigenvalue 𝜆 𝑘 (Σ 𝑗 ).Assumption 4 states that the projection of the mean difference vector between clusters onto the eigenvectors of one cluster does not concentrate on a few principal components. We then have the following result, whose proof is postponed to Section B.2: Theorem 1 (SNR Scale for Posterior Concentration). Let 𝑇 ≥ 1 and 𝜀 ∈ ( 0, 1) be a fixed early stopping. Also set 𝜂 ∈ ( 0, 1) and 𝑞 ≥ 2. Let Assumptions 1, 2, 3, 4 hold. Then, we have the following: There exists 
+
+𝐷 † = 𝐷 † (𝜂, 𝑞, 𝜀 ) such that for any integer 𝐷 ≥ 𝐷 †,
+
+P
+
+ Ù 
+
+> 𝑖 ∈ [ 𝐾 ]
+
+n
+
+𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) ≤ exp 
+
+
+
+−𝜂 KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+o 
+
+| ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+
+
+≥ 1 − 𝐷 −𝑞 , 𝑗 ∈ [ 𝐾 ], (17) 
+
+for each 𝑡 ∈
+
+h
+
+max 0, 𝑇 + 12 log 𝑆  
+
+> 1+𝑆
+
+, 𝑇 − 𝜀 
+
+i
+
+, equivalently SNR 𝑇 −𝑡 ∈
+
+h
+
+max SNR 𝑇 , 𝑆 , SNR 𝜀 
+
+i
+
+, where 
+
+𝑆 ≡ 𝑆 (𝐷, 𝑞, 𝜂 ) satisfies: 
+
+𝑆 = Θ 
+
+ log (𝐾 𝐷 )
+
+> 𝐷
+
+
+
+. (18) 
+
+Besides, for any 𝛽 ∈ ( 0, 1),
+
+P
+
+ Ù  
+
+> 𝑖 ∈ [ 𝐾 ]
+> 𝑖 ≠𝑗
+
+𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, ←−
+
+𝑋 𝑡 ) ≤ 𝛽 | ←−
+
+𝑋 𝑇 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+
+
+≥ 1 − 𝐷 −𝑞 , 𝑗 ∈ [ 𝐾 ],
+
+whenever the reverse time 𝑡 satisfies 
+
+SNR 𝑇 −𝑡 ≥ 𝐿 · max log (𝐾 𝐷 ), log 1
+
+> 𝛽
+
+𝐷 (19) Diffusion Models for Clustered Data 11 
+
+for some constant 𝐿 > 0 independent of 𝐷 .
+
+Theorem 1 establishes an SNR scaling law for posterior concentration . That is, for trajectories eventually sampling from cluster 𝑗 , the posterior weights assigned to all other classes are sufficiently small with high probability once the SNR reaches a threshold Θ log (𝐾 𝐷 )/ 𝐷 . In the proof, Assumption 3 (mean separation ) together with Assumption 4 plays a role in quantifying the signal KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+,leading to the obtained scale of the SNR threshold 𝑆 .The above result also gives rise to the following key implications on the appropriate scaling of 𝑇 with respect to the ambient dimension 𝐷 and its effect on the length of the mixing phase: Corollary 1. Consider the same setting as the statement in Theorem 1 and let 𝑡 † = max 0, 𝑇 + 12 log 𝑆  
+
+> 1+𝑆
+
+.Then, we have the following: (i). If the time horizon 𝑇 > 0 is a fixed constant, then 𝑡 † → 0 as 𝐷 → ∞ , i.e., (17) holds for each 
+
+𝑡 ∈ [ 0, 𝑇 − 𝜀 ].(ii). If 𝑇 ≥ 12 log 𝐷 , then 𝑡 † ≳ log log 𝐷. Thus, the threshold 𝑡 † does not collapse to 0 as 𝐷 → ∞ , i.e., the mixing phase can remain non-trivial. 
+
+We remark that for 𝑇 ≥ 12 log 𝐷 , we have SNR 𝑇 ≤ 2/𝐷, 𝐷 ≥ 2, and so SNR 𝑇 ≤ S for any sufficiently large 𝐷 . The choice of time interval 𝑇 ≥ 12 log 𝐷 is also reasonable in reducing the gap between −→𝑝 𝑇 and 
+
+N ( 0, 𝐼 𝐷 ) so that the forward noising distribution at time 𝑇 is sufficiently close to the normal distribution. See also Theorem 2 below. 
+
+Proof of Corollary 1. The first statement (i) is immediate by noticing that 𝑇 + 12 log 𝑆  
+
+> 1+𝑆
+
+→ −∞ as 
+
+𝐷 → ∞ given (18). For (ii), 𝑇 ≥ 12 log 𝐷 with (18) gives 𝑇 + 12 log 𝑆  
+
+> 1+𝑆
+
+≥ 12 log 𝐷𝑆  
+
+> 1+𝑆
+
+≳ log log 𝐷 for any sufficiently large 𝐷 . The proof is now complete. 
+
+3.5. KL Convergence Analysis – Intrinsic Dimension Adaptivity via Posterior Concentration 
+
+Given the above arguments on the dynamical regimes, we now argue how the time-discretisation error scales with the ambient dimension 𝐷 and the intrinsic dimensionality 𝑀 𝑖 involved in each cluster specified in Assumption 2. Let 𝜀 ∈ ( 0, 1) be a fixed early stopping. We write the time-discretisation schedule {𝑡 𝑖 }𝑖 ∈ [ 𝑁 ] satisfying 0 = 𝑡 0 < 𝑡 1 < · · · < 𝑡 𝑁 = 𝑇 − 𝜀 with 𝑇 ≥ 1 and the number of steps 𝑁 ∈ N. We define the time-discretised denoising sampler : 
+
+𝑑 ←−
+
+𝑌 𝑡 =
+
+←−
+
+𝑌 𝑡 − 2 ←−  
+
+> 𝑌 𝑡
+> 𝜎 2
+> 𝑇 −𝑡
+
++ 2 𝑚 𝑇 −𝑡  
+
+> 𝜎 2
+> 𝑇 −𝑡
+
+ˆ𝜇 (𝑇 − 𝑡 𝑖 , ←−
+
+𝑌 𝑡 𝑖 )
+
+
+
+𝑑𝑡 + √2𝑑𝐵 𝑡 , 𝑡 ∈ [ 𝑡 𝑖 , 𝑡 𝑖 +1],
+
+with ←−
+
+𝑌 0 ∼ N ( 0, 𝐼 𝐷 ), where ˆ 𝜇 𝑇 −𝑡 𝑖 (𝑦 ) is an estimator of the true posterior mean 𝜇 𝑇 −𝑡 𝑖 (𝑦 ) = E[−→
+
+𝑋 0 |−→
+
+𝑋 𝑇 −𝑡 𝑖 =
+
+𝑦 ]. We write −→
+
+P 𝑡 and ←−
+
+Q𝑡 𝑖 as the law of −→
+
+𝑋 𝑡 and ←−
+
+𝑌 𝑡 𝑖 , respectively and study the upper bound for KL  −→
+
+P 𝜀 || ←−
+
+Q𝑡 𝑁 
+
+. We then need to decide the schedule for the time discretisation. In this work, we adopt the following clear and simple update rule for grid points: for a precision parameter 𝜏 ∈ ( 0, 1/4],
+
+𝑡 0 = 0; 
+
+𝑡 𝑗 +1 = min 𝑡 𝑗 + 𝜏𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+, 𝑇 − 𝜀 , 𝑗 ∈ { 0, . . . , 𝑁 − 1} (20) where 𝑁 is the minimum integer s.t. 𝑡 𝑁 −1 + 𝜏𝜎 2   
+
+> 𝑇 −𝑡 𝑁 −1
+
+≥ 𝑇 − 𝜀 . The design of the schedule is determined by the local noise 𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+, but is independent of the geometry of multimodal distributions. Let ℎ 𝑗 +1 = 𝑡 𝑗 +1 − 𝑡 𝑗 , 𝑗 = 0, 1, . . . , 𝑁 − 1, then this schedule has two properties. First, we have 
+
+ℎ 𝑗 +1 ≤ 2𝜏 min {1, 𝑇 − 𝑡 𝑗 }, which aligns with the exponential-decreasing-type schedules often employed in convergence analyses; see, e.g., Benton et al. [2024], Potaptchik et al. [2025], Huang et al. [2026]. The 12 Y. Iguchi and P. Fearnhead 
+
+second property is that the number of time-steps 𝑁 increases as 1 /𝜏 , as shown in the following lemma, whose proof is postponed to Appendix A: Lemma 3.3. For a given precision parameter 𝜏 ∈ ( 0, 1/4], the number of steps 𝑁 specified in the time-discretisation schedule (20) satisfies 
+
+𝑁 = Θ 
+
+
+
+1 + 1
+
+> 𝜏
+
+ 𝑇 − 1 + log 1
+
+> 𝜀
+
+
+
+. (21) To state our main result, we introduce the following assumption regarding the accuracy of score estimation. Assumption 5 (Score Estimate Accuracy). There exists 𝜀 score > 0 such that 1
+
+𝑇  
+
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =0
+
+ℎ 𝑗 +1 × E∥∇ log 𝑝 𝑇 −𝑡 𝑗 (←−
+
+𝑋 𝑡 𝑗 ) − ˆ𝑠 (𝑇 − 𝑡 𝑗 , ←−
+
+𝑋 𝑡 𝑗 )∥ 2 ≤ 𝜀 2score ,
+
+where ˆ𝑠 (𝑇 − 𝑡 𝑗 , 𝑥 ) ≡ − 𝑥 − 𝑚 𝑇 −𝑡 𝑗 ˆ𝜇 (𝑇 − 𝑡 𝑗 , 𝑥 )
+
+𝜎 2 
+
+> 𝑇 −𝑡 𝑗
+
+, 𝑥 ∈ R𝐷 . (22) Treating the accuracy as a black box, as per this assumption, is commonly adopted in diffusion model convergence analysis [Benton et al., 2024, Potaptchik et al., 2025, Huang et al., 2026]. We now have the following KL convergence guarantee: Theorem 2 (KL Convergence under Dynamical Regimes). Let 𝑇 ≥ max 1, 12 log 𝐷 and 𝜀 ∈ ( 0, 1)
+
+be a fixed early stopping parameter. Consider the time-discretisation schedule (20) with 𝜏 ∈ ( 0, 1/4].Let Assumptions 1, 2, 3, 4 and 5 hold. Also, assume E𝑃 data [∥ 𝑋 ∥2] < ∞, 𝐾 ≲ 𝐷 𝛾 for a fixed 𝛾 > 0 and 
+
+𝜀 ≳ 𝑅 /𝑇 , where 𝑅 ∈ [ 0, 1) is found in Assumption 2. Set 𝑀 † = max 𝑘 ∈ [ 𝐾 ] 𝑀 𝑘 . Then, there exists 𝐷 † ∈ N
+
+such that for all 𝐷 ≥ 𝐷 †, we have KL (−→
+
+P 𝜀 || ←−
+
+Q𝑡 𝑁 ) ≲ E1 + E 2 + E 3, where 
+
+E1 ≡ 𝜏𝑀 † 
+
+𝑇 + log 1
+
+> 𝜀
+
+
+
+, E2 ≡ 𝑇 𝜀 2score , E3 ≡  𝐷 + E𝑃 data [∥ 𝑋 ∥2]𝑒 −2𝑇 . (23) The proof of Theorem 2 is postponed to Section 5. The bound (23) shows the three sources of errors – E1: time-discretisation error; E2: score-estimation error; and E3: prior gap – which aligns well with the standard theoretical results in the literature. The main highlight is that the discretisation error scales with the intrinsic dimension 𝑀 †, rather than the ambient dimension 𝐷 , despite the O( 𝐷 )
+
+inter-class separation, while the number of mixture components 𝐾 is allowed to grow with 𝐷 polynomially. Moreover, combining (21) with Theorem 2 gives the following complexity bound: Corollary 2. Consider the setting of Theorem 2 and set 𝐴 ≡ 𝑀 †  𝑇 + log 1
+
+> 𝜀
+
+. For any 𝜒 ∈  0, 𝐴 /4,choosing 𝜏 = 𝜒 /𝐴 ∈ ( 0, 1/4] leads to E1 = 𝜒 , where the number of steps 𝑁 satisfies 
+
+𝑁 = O
+
+
+
+> 𝑀 †
+> 𝜒
+
+
+
+𝑇 + log 1
+
+> 𝜀
+
+2
+
+.
+
+Remark 2. The requirement for the early stopping criterion 𝜀 ≳ 𝑅 /𝑇 gives insight into the role of 𝜀 and its relation to the geometry of the data. When 𝜈 † = max 𝑘 ∈ [ 𝐾 ] 𝜈 𝑘 is exactly 0 (each cluster’s covariance is exactly low-rank) or nearly 0, i.e., data within clusters concentrates on each thin subspace, then the corresponding 𝑅 is exactly or nearly 0, and one can choose a very small 𝜀 . If 𝑅 is large, i.e., clusters no longer have a low-dimensional structure, then one instead obtains an error bound depending on 𝐷 
+
+linearly without relying on such a requirement for 𝜀 .Diffusion Models for Clustered Data 13 
+
+3.6. Overview of the Proof of Theorem 2 
+
+We briefly outline the main arguments for the proof of Theorem 2 and highlight how the phase transition analysis is employed to obtain the intrinsic-dimension ( 𝑀 †) scaling in the time-discretisation error, even when the number of clusters 𝐾 grows polynomially with 𝐷 .The proof consists of five main steps. The first step in Section 5.1 uses standard arguments [Benton et al., 2024, Conforti et al., 2025, Huang et al., 2026] to bound KL (−→
+
+P 𝜀 || ←−
+
+Q𝑡 𝑁 ) as the sum of three terms that correspond to the error from approximating the score, the error in how we initiate the denoiser and the time-discretisation error. The main novelty in our proof is how we bound the time-discretisation error, which is covered in Steps 2 to 4 and outlined below. Step 5 then collects together all the error terms, and obtains the simplified bound presented in (23). In Step 2 (see Section 5.2) we provide an upper bound on the time-discretisation error involving the following term: 
+
+𝜏  
+
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =1
+
+
+
+SNR 𝑇 −𝑡 𝑗 +1 − SNR 𝑇 −𝑡 𝑗 
+
+
+
+· E
+
+h
+
+tr  Σ𝑇 −𝑡 𝑗 (−→
+
+𝑋 𝑇 −𝑡 𝑗 )i
+
+,
+
+where Σ𝑇 −𝑡 (𝑦 ) = Cov [−→
+
+𝑋 0 |−→
+
+𝑋 𝑇 −𝑡 = 𝑦 ], (𝑡, 𝑦 ) ∈ [ 0, 𝑇 ) × R𝐷 , is the posterior covariance. Under the GMM framework, the posterior covariance can be decomposed as shown by the following lemma. Lemma 3.4. It holds that for all (𝑡, 𝑦 ) ∈ [ 0, 𝑇 ) × R𝐷 , Σ𝑇 −𝑡 (𝑦 ) = Σ 𝐼 𝑇 −𝑡 (𝑦 ) + Σ𝐼 𝐼 𝑇 −𝑡 (𝑦 ) with 
+
+Σ𝐼 𝑇 −𝑡 (𝑦 ) =
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )𝜎 2  
+
+> 𝑇 −𝑡
+
+Σ𝑘 (𝑆 𝑘 𝑇 −𝑡 )−1;
+
+Σ𝐼 𝐼 𝑇 −𝑡 (𝑦 ) = 12∑︁ 𝑗,𝑘 ∈ [ 𝐾 ]
+
+𝑊 [ 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )  𝜇 [ 𝑗 ] (𝑡, 𝑦 ) − 𝜇 [ 𝑘 ] (𝑡, 𝑦 ) ⊗2,
+
+(24) 
+
+where we have set 
+
+𝜇 [ 𝑗 ] (𝑡, 𝑦 ) = E[−→
+
+𝑋 0 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦, −→
+
+𝑋 0 ∼ 𝑃 [ 𝑗 ]
+
+> data
+
+] = 𝜎 2 
+
+> 𝑇 −𝑡
+
+𝑚 𝑇 −𝑡 
+
+∇ log −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+(𝑦 ) + 𝑦 𝑚 𝑇 −𝑡 
+
+. (25) The proof of Lemma 3.4 is provided in Appendix E.1. The term Σ𝐼 𝑇 −𝑡 captures the local within-cluster geometry, whereas Σ𝐼 𝐼 𝑇 −𝑡 reflects the between-cluster geometry and may therefore scale with 𝐷 through differences between components. In Section 5.3 (Step 3), we show the upper bound on the term Etr  Σ𝐼 𝑇 −𝑡 𝑗 (−→
+
+𝑋 𝑇 −𝑡 𝑗 ) depends linearly on 𝑀 † but is independent of 𝐾 . Section 5.4 (Step 4) deals with the inter-class term Etr  Σ𝐼 𝐼 𝑇 −𝑡 𝑗 (−→
+
+𝑋 𝑇 −𝑡 𝑗 ) 
+
+by exploiting the phase transition. Roughly, we divide the time interval [0, 𝑇 − 𝜀 ] into two regimes according to whether SNR 𝑇 −𝑡 𝑗 ≤ 𝐿  log (𝐾 𝐷 )/𝐷 for an arbitrary fixed constant 𝐿 > 0. During the first regime (mixing phase), the small SNR offsets the mismatches in the first and second moments that can grow polynomially with 𝐷 . For the latter regime (cluster commitment phase), Theorem 1 implies that, conditional on a trajectory terminating in a cluster 𝑘 , at least one of the two posterior weights 
+
+𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡 𝑗 , −→
+
+𝑋 𝑇 −𝑡 𝑗 ), 𝑊 [ 𝑗 ] 
+
+> 𝐷
+
+(𝑡 𝑗 , −→
+
+𝑋 𝑇 −𝑡 𝑗 ), 𝑖 ≠ 𝑗 , is exponentially small in 𝐷 with high probability, thereby suppressing the inter-class difference. Furthermore, the dependence on 𝐾 is shown to be logarithmic via a finite exponential-moment bound for the maximum over the Gaussian components. 
+
+4. Numerical Experiments of Posterior Commitments in Real Data 
+
+So far, we have studied the intrinsic dimension adaptivity of diffusion models for target distributions formulated as a union of distinct (linear) manifolds within a Gaussian mixture framework. The key ingredient for showing such adaptivity in the KL error analysis (Theorem 2) is that the scale of the SNR 14 Y. Iguchi and P. Fearnhead 
+
+for posterior weights concentration is approximately Θ(1/𝐷 ), as shown in Theorem 1 under cluster separation. This section provides empirical evidence that this SNR scale at posterior concentration can also be observed for high-dimensional data beyond the GMM setting. All technical details of the implementation can be found in Appendix F, and the code to reproduce the experiments is available at 
+
+https://github.com/YugaIgu/diffusion_models_phase_transition 
+
+4.1. Set-Up 
+
+We consider two types of high-dimensional data, which are typical examples of the application of diffusion models: (a) Single cell RNA sequencing (scRNA-seq) of peripheral blood mononuclear cells (PBMCs) with 32738 genes and (b) Image data (STL-10) consisting of a resolution of 96 by 96 pixels with 3 colour channels (RGB). For dataset (a), we vary the ambient dimension 𝐷 by retaining the top 
+
+𝐷 ∈ { 500 , 1000 , 2000 , 4000 , 8000 } highly variable genes (HVGs). For the STL-10 image data, we construct lower-resolution versions to obtain three resolutions: 𝐷 = 32 × 32 × 3, 𝐷 = 64 × 64 × 3, and 𝐷 = 96 × 96 × 3 (raw data), by using bilinear interpolation, implemented in PyTorch. Then, we select three classes (labels), specifically, CPBMC = {CD4 T , CD14 + Monocytes , CD19 + B} and 
+
+Cimage = {dog , cat , airplane } for datasets (a) and (b). We simulate the denoising SDE to sample from the target clusters. We directly use the score of the noised empirical distribution rather than a trained neural-network score, in the spirit of the exact-empirical-score setting considered in Biroli et al. [2024]. This allows us to isolate the dynamical phase transition from the uncertainty due to score estimation error. We perform the following four steps to observe the empirical SNR at the posterior weight concentration: I. Simulating trajectories. We set the terminal time as 𝑇 = 6 and simulate 𝑀 = 500 independent backward trajectories { ¯𝑋 [ 𝑘 ] 
+
+> 𝑡 𝑗
+
+}1≤ 𝑗 ≤𝑛, 1≤ 𝑘 ≤ 𝑀 using the Euler-Maruyama discretisation with a uniform time-step 
+
+ℎ = 𝑡 𝑗 +1 − 𝑡 𝑗 = 0.003 and so the number of steps 𝑛 = 𝑇 /ℎ = 2000. These are used as numerical approximations for the exact backward process. II. Labelling. For each trajectory, we assign a label of the class from which the path eventually samples, which is obtained as the argument of the maximum of the posterior weight (3): 𝐶 [ 𝑘 ] ≡
+
+argmax 𝑐 ∈ C 𝑊 [𝑐 ] 
+
+> 𝐷
+
+(𝑡 𝐽 , ¯𝑋 [ 𝑘 ] 
+
+> 𝑡 𝐽
+
+), 𝑘 = 1, . . . , 𝑀, where 𝐽 = 𝑛 − 10 (to avoid numerical instability) and C is 
+
+CPBMC or Cimage .III. Sorting. Those paths are sorted within the three distinct classes as X𝑐 =  ¯𝑋 [ 𝑘 ]  
+
+> 𝑡 𝑗 𝑗 =1,...,𝐽
+
+| 𝐶 [ 𝑘 ] =
+
+𝑐, 𝑘 = 1, . . . , 𝑀 , 𝑐 ∈ C , that is, the set of paths eventually sampling from the class 𝑐 .IV. Recording. We then record the values of three types of posterior weights 𝑊 [𝑐 ] 
+
+> 𝐷
+
+, 𝑐 ∈ C , evaluated with the trajectories contained in X𝑐 †
+
+for some target class 𝑐 † ∈ C at each time-step 𝑗 = 1, . . . , 𝐽 .In the above procedure, the prior weights are assumed to be equal across the classes, and the (intractable) posterior weights are estimated by plugging an empirical approximation of the forward noised density into the definition of the weight (3). 
+
+4.2. Results 
+
+We first present the data geometry for the datasets (a) and (b) in Tables 2 and 3. Table 2 indicates that for the STL-10 datasets the 90% effective rank is stable for varying ambient dimension 𝐷 , while the maximum eigenvalue 𝜆 max seems to grow approximately linearly with 𝐷 . On the other hand, 𝜆 max for PBMC data exhibits O( 𝐷 𝛼 ) growth with 𝛼 < 1. We observe from Table 3 that the mean separation of STL-10 datasets scales linearly with 𝐷 and that covariance separations are very clear. The pairwise geometry for PBMC data also exhibits a similar separation growth as 𝐷 increases – presented in Appendix F. Diffusion Models for Clustered Data 15 Table 2. Empirical covariance geometry for PBMC and STL-10 across ambient dimensions. For each class, we report the maximum covariance eigenvalue ( 𝜆 max ), the trace (tr (bΣ)), and the 90% effective rank ( 𝑟 eff ,90 ), computed from the empirical data.                                                                                 
+
+> PBMC
+> Class 𝐷 𝜆 max tr (bΣ)𝑟 eff ,90
+> CD4 T 500 3.42 469 .88 313 1000 5.41 943 .59 507 2000 9.85 1807 .21 686 4000 16 .30 3600 .29 817 8000 25 .72 7465 .22 903 CD14+ Mono. 500 8.41 485 .49 209 1000 14 .14 985 .57 289 2000 23 .32 2057 .65 339 4000 36 .64 4001 .79 372 8000 57 .85 7781 .14 395 CD19+ B 500 9.03 554 .19 182 1000 13 .03 1050 .05 229 2000 22 .68 2177 .58 254 4000 37 .03 4723 .49 272 8000 55 .90 9230 .85 285
+> STL-10
+> Class 𝐷 𝜆 max tr (bΣ)𝑟 eff ,90
+> Dog 3072 160 .69 783 .73 145 12288 638 .36 3022 .54 130 27648 1437 .94 7061 .82 154 Cat 3072 132 .58 700 .49 150 12288 531 .07 2679 .13 134 27648 1195 .06 6308 .94 163 Airplane 3072 193 .60 756 .55 105 12288 778 .14 2920 .58 97 27648 1750 .48 6823 .12 119
+
+Table 3. Pairwise data geometry of the STL-10 clusters across image resolutions. For each pair and ambient dimension 𝐷 , we report the squared mean separation, the maximum mean difference projection defined in (16), and the squared Frobenius covariance separation, computed from empirical data.                                         
+
+> Pair 𝐷 ∥b𝜇 𝑖 −b𝜇 𝑗 ∥2𝑀 𝜇 ∥bΣ𝑖 −bΣ𝑗 ∥2
+> 𝐹
+> Dog–Cat 3072 9.20 2.09 4.03 ×10 3
+> 12288 35 .10 4.10 5.98 ×10 4
+> 27648 80 .46 6.17 3.19 ×10 5
+> Cat–Airplane 3072 232 .68 12 .81 1.35 ×10 4
+> 12288 928 .48 25 .59 2.12 ×10 5
+> 27648 2091 .26 38 .39 1.09 ×10 6
+> Dog–Airplane 3072 189 .10 10 .74 1.18 ×10 4
+> 12288 753 .39 21 .46 1.85 ×10 5
+> 27648 1697 .45 32 .19 9.55 ×10 5
+
+Figure 1 demonstrates the dynamical concentration or decay of the posterior weights, evaluated for trajectories committing to a particular class, in the case of (a) PBMC data. Note that the reverse process proceeds from the left (low SNR) to the right (high SNR). The lines labelled with a target class 𝑐 † ∈ C 
+
+(‘class name’ (target) in the legend) indicate the lower envelope of the posterior probability 𝑊 [𝑐 † ] 
+
+> 𝐷
+
+achieved by 99% of the paths in X𝑐 †
+
+, while the lines with competing classes 𝑐 ∈ C \ { 𝑐 †} indicate the upper envelope of 𝑊 [𝑐 ] 
+
+> 𝐷
+
+by 99% of the paths in X𝑐 †
+
+. As expected, for trajectories labelled with the chosen target cluster 𝑐 † (e.g., ‘CD4 T’), the posterior weight 𝑊 [𝑐 † ] 
+
+> 𝐷
+
+eventually concentrates on 1 as the SNR increases (as the physical time 𝑡 approaches the terminal 𝑇 ) while the others 𝑊 [𝑐 ] 
+
+> 𝐷
+
+(e.g., ‘CD14+ Monocyte’ and ‘CD19+ B’) degenerate to 0. More importantly, these plots showcase the rapid posterior concentration, or the phase transition, for each ambient dimension 𝐷 , and its timing and corresponding SNR shifts earlier as 𝐷 increases. In particular, the sudden decay of non-target posterior weights, followed by the sharp rise of the target posterior weight, is interpreted as a sign that the KL signal between the corresponding noisy clusters begins to dominate the fluctuation terms in the log-posterior ratio. 16 Y. Iguchi and P. Fearnhead             
+
+> Figure 1. Posterior probability dynamics in the PBMC experiment. We construct increasing-dimensional representations by retaining the top-𝐷 highly variable genes, with 𝐷 ∈ { 500 ,1000 ,2000 ,4000 ,8000 }.The posterior concentration timing shifts to lower SNR as 𝐷 increases.
+
+In Figure 2, we show the dynamical behaviour of the posterior probability for the image datasets with a fixed ambient dimension 𝐷 = 96 × 96 × 3, but now with plots of the KL divergence between the noised target cluster 𝑐 † and the competing class 𝑐 ∈ C \ { 𝑐 †}, precisely, KL  −→𝑝 [𝑐 † ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [𝑐 ] 
+
+> 𝑇 −𝑡 𝑗
+
+, 𝑗 = 1, . . . , 𝑛 .The KL divergence is not available in closed form and is therefore estimated from empirical data. The left panel of Figure 2 shows that, for trajectories eventually committing to the Dog class, the posterior weight of Airplane decays earlier than that of Cat. This behaviour is also reflected in the noised KL curves: the noised KL divergence between Dog and Airplane is already larger than that between Dog and Cat in the early-SNR phase. This also agrees with the pairwise class separation presented in Table 3. Thus, the reverse trajectories committing to Dog first rule out the Airplane class, while the finer ambiguity between Dog and Cat persists until a larger SNR. By contrast, in the right panel of Figure 2, for trajectories committing to Airplane, the KL curves against Dog and Cat are much closer to each other. Correspondingly, the Dog and Cat posterior weights decay in a more symmetric manner. These observations are consistent with the phase-transition analysis in Section 3, where the decay of non-target posterior weights is shown to be governed by the KL divergence between noised clusters. Finally, Figure 3 shows the mean and standard deviation of the first SNR level after which the lower 1% quantile of the target posterior weight 𝑊 [𝑐 † ] 
+
+> 𝐷
+
+, evaluated among trajectories eventually assigned to the target cluster 𝑐 †, remains above a threshold 0 .99 for all subsequent time steps. This indicates that for at Diffusion Models for Clustered Data 17 
+
+Figure 2. Posterior commitment in the STL-10 experiment. Posterior probabilities are evaluated using the reverse trajectories, grouped by their final committed class. Solid curves show the posterior probabilities of the three classes, while dashed curves show the corresponding noised KL divergences from the target class to competing classes.  
+
+> (a) PBMC single-cell data. (b) STL-10 image data.
+
+Figure 3. Average empirical SNR at the posterior probability concentration over five repetitions of experiments, with the error bar showing their standard deviations. The plots show the SNR at which the lower 1 % quantile of the posterior weight among trajectories assigned to a given cluster permanently exceeds 0.99. In both STL-10 and PBMC experiments, the transition SNR exhibits an approximately O( 1/𝐷 ) decay. 
+
+least 99% of the trajectories, the posterior weights permanently exceed the threshold after that time. The mean and standard deviation are computed over five independent repetitions of the four-step procedure explained in Section 4.1. The metric provides an empirical proxy for the phase transition timing analysed in Section 3. In both the STL-10 and PBMC experiments, the SNR at the phase transition decreases as the ambient dimension 𝐷 increases, exhibiting an empirical O( 1/𝐷 ) scaling, in agreement with the posterior-commitment scaling predicted by the theory for GMMs (Theorem 1) up to logarithmic factors. 
+
+5. Proof of Theorem 2 
+
+We write the measures of path ←−
+
+𝑋 and ←−
+
+𝑌 over time interval T = [𝑎, 𝑏 ], 0 < 𝑎 < 𝑏, as ←−
+
+P T and ←−
+
+QT,respectively, and SNR 𝑗 ≡ 𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+
+/𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+, 𝑗 = 0, 1, . . . , 𝑁 , for ease of notation. 18 Y. Iguchi and P. Fearnhead 
+
+5.1. Step 1: Error Decomposition of KL Divergence 
+
+We first decompose the KL divergence into three sources of error by following the arguments in convergence analysis for diffusion models [Benton et al., 2024, Conforti et al., 2025, Huang et al., 2026]. First, the data processing inequality and the equivalence of measures −→
+
+P 𝜀 ≡ ←−
+
+P 𝑇 − 𝜀 lead to KL (−→
+
+P 𝜀 || ←−
+
+Q𝑡 𝑁 ) ≤ KL (←−
+
+P [0,𝑇 − 𝜀 ] || ←−
+
+Q [0,𝑇 − 𝜀 ] ).
+
+Further, employing the arguments in [Benton et al., 2024, Section 3.3], together with the use of Girsanov’s theorem (see e.g., [Benton et al., 2024, Appendix F] or [Chen et al., 2023b, Section 5.2]), we get KL  ←−
+
+P [0,𝑇 − 𝜀 ] || ←−
+
+Q [0,𝑇 − 𝜀 ]
+
+ = 𝑅 1 + 𝑅 2 with 
+
+𝑅 1 ≡ KL  −→
+
+P 𝑇 || N ( 0, 𝐼 𝐷 ), 𝑅 2 ≡ 
+
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =0
+
+∫ 𝑡 𝑗 +1  
+
+> 𝑡 𝑗
+> 𝑚 2
+> 𝑇 −𝑡
+> 𝜎 4
+> 𝑇 −𝑡
+
+× E 𝜇 (𝑇 − 𝑡, ←−
+
+𝑋 𝑡 ) − ˆ𝜇 (𝑇 − 𝑡 𝑗 , ←−
+
+𝑋 𝑡 𝑗 ) 2 𝑑𝑡, 
+
+where we recall 𝜇 (𝑡, 𝑥 ) = E[−→
+
+𝑋 0 |−→
+
+𝑋 𝑡 = 𝑥 ]. For the first term 𝑅 1, following the proof arguments of [Chen et al., 2023a, Lemma 9] or [Benton et al., 2024, Proposition 9], we have: 
+
+𝑅 1 ≲ (𝐷 + E𝑃 data 
+
+∥ 𝑋 ∥2)𝑒 −2𝑇 . (26) The second term 𝑅 2 is further decomposed as 𝑅 2 ≲ 𝑅 𝐼  
+
+> 2
+
++ 𝑅 𝐼 𝐼  
+
+> 2
+
+, with 
+
+𝑅 𝐼  
+
+> 2
+
+= 
+
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =0
+
+∫ 𝑡 𝑗 +1  
+
+> 𝑡 𝑗
+> 𝑚 2
+> 𝑇 −𝑡
+> 𝜎 4
+> 𝑇 −𝑡
+
+× E ˆ𝜇 (𝑇 − 𝑡 𝑗 , ←−
+
+𝑋 𝑡 𝑗 ) − 𝜇 (𝑇 − 𝑡 𝑗 , ←−
+
+𝑋 𝑡 𝑗 ) 2 𝑑𝑡 ;
+
+𝑅 𝐼 𝐼  
+
+> 2
+
+= 
+
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =0
+
+∫ 𝑡 𝑗 +1  
+
+> 𝑡 𝑗
+> 𝑚 2
+> 𝑇 −𝑡
+> 𝜎 4
+> 𝑇 −𝑡
+
+× E 𝜇 (𝑇 − 𝑡 𝑗 , ←−
+
+𝑋 𝑡 𝑗 ) − 𝜇 (𝑇 − 𝑡, ←−
+
+𝑋 𝑡 ) 2 𝑑𝑡. (27) For the term 𝑅 𝐼 
+
+> 2
+
+, we have from (22), Tweedie’s formula and Assumption 5 that 
+
+𝑅 𝐼  
+
+> 2
+
+≲ 
+
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =0
+
+ℎ 𝑗 +1 × E ˆ𝑠 (𝑇 − 𝑡 𝑗 , ←−
+
+𝑋 𝑡 𝑗 ) − ∇ log −→𝑝 𝑇 −𝑡 𝑗 (←−
+
+𝑋 𝑡 𝑗 ) 2 ≤ 𝑇 𝜀 2score . (28) where we also used 𝑚 2  
+
+> 𝑇 −𝑡
+> 𝜎 4
+> 𝑇 −𝑡
+
+· 𝜎 4  
+
+> 𝑇 −𝑡 𝑗
+> 𝑚 2
+> 𝑇 −𝑡 𝑗
+
+≤ 𝑚 2  
+
+> 𝑇 −𝑡 𝑗 +1
+> 𝜎 4
+> 𝑇 −𝑡 𝑗 +1
+
+· 𝜎 4  
+
+> 𝑇 −𝑡 𝑗
+> 𝑚 2
+> 𝑇 −𝑡 𝑗
+
+≤ 4 exp (2𝜏 ) from Lemma A.1. 
+
+5.2. Step 2. Decomposition of the Time-Discretisation Error 
+
+Our main focus is thus on bounding the term 𝑅 𝐼 𝐼  
+
+> 2
+
+in (27). We exploit the following result established in the literature. The proof can be found, e.g., in [Huang et al., 2026, Lemma 9]. Lemma 5.1. Let 𝑗 ∈ [ 𝑁 ]. It then holds that for any 𝑡 ∈ [ 𝑡 𝑗 −1, 𝑡 𝑗 ],
+
+E
+
+h
+
+𝜇 (𝑇 − 𝑡 𝑗 −1, ←−
+
+𝑋 𝑡 𝑗 −1 ) − 𝜇 (𝑇 − 𝑡, ←−
+
+𝑋 𝑡 ) 2i
+
+= E
+
+h
+
+tr  Σ𝑇 −𝑡 𝑗 −1 (←−
+
+𝑋 𝑡 𝑗 −1 )i
+
+− E
+
+h
+
+tr  Σ𝑇 −𝑡 (←−
+
+𝑋 𝑡 )i
+
+.
+
+Lemma 5.1 implies that 𝑡 ↦ → E
+
+h
+
+tr  Σ𝑇 −𝑡 (←−
+
+𝑋 𝑡 )i
+
+is a non-increasing function, thus 
+
+E
+
+h
+
+𝜇 (𝑇 − 𝑡 𝑗 −1, ←−
+
+𝑋 𝑡 𝑗 −1 ) − 𝜇 (𝑇 − 𝑡, ←−
+
+𝑋 𝑡 ) 2i
+
+≤ E
+
+h
+
+tr  Σ𝑇 −𝑡 𝑗 −1 (←−
+
+𝑋 𝑡 𝑗 −1 )i
+
+− E
+
+h
+
+tr  Σ𝑇 −𝑡 𝑗 (←−
+
+𝑋 𝑡 𝑗 )i
+
+,
+
+for any 𝑡 ∈ [ 𝑡 𝑗 −1, 𝑡 𝑗 ]. Recall ℎ 𝑗 +1 ≤ 𝜏𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+where the equality holds for 𝑗 = 0, 1, . . . , 𝑁 − 2. Then, we Diffusion Models for Clustered Data 19 
+
+apply Lemma 5.1 to the term 𝑅 𝐼 𝐼 
+
+2 and obtain 
+
+𝑅 𝐼 𝐼 
+
+2 ≤
+
+𝑁 −1∑︁ 
+
+𝑗 =0
+
+ℎ 𝑗 +1
+
+𝑚 2 
+
+> 𝑇 −𝑡 𝑗 +1
+
+𝜎 4 
+
+> 𝑇 −𝑡 𝑗 +1
+
+·
+
+
+
+Etr  Σ𝑇 −𝑡 𝑗 (←−
+
+𝑋 𝑡 𝑗 ) − Etr  Σ𝑇 −𝑡 𝑗 +1 (←−
+
+𝑋 𝑡 𝑗 +1 ) 
+
+≤ 2𝜏 
+
+𝑁 −1∑︁ 
+
+𝑗 =0
+
+SNR 𝑗 +1
+
+
+
+Etr  Σ𝑇 −𝑡 𝑗 (←−
+
+𝑋 𝑡 𝑗 ) − Etr  Σ𝑇 −𝑡 𝑗 +1 (←−
+
+𝑋 𝑡 𝑗 +1 ) 
+
+≲ 𝜏 SNR 1 · Etr  Σ𝑇 (−→
+
+𝑋 𝑇 ) + 𝜏 
+
+𝑁 −1∑︁ 
+
+𝑗 =1
+
+ SNR 𝑗 +1 − SNR 𝑗 
+
+ · Etr  Σ𝑇 −𝑡 𝑗 (−→
+
+𝑋 𝑇 −𝑡 𝑗 ) ≡ T , (29) where in the second line we used the bound 𝜎 2
+
+𝑇 −𝑡 𝑗 /𝜎 2
+
+𝑇 −𝑡 𝑗 +1 ≤ 2, which is presented in Lemma A.1. For the ease of notation, we write: 
+
+Δ 𝑗 = (SNR 𝑗 +1 − SNR 𝑗 ), 𝑍 𝑗 = (𝑡 𝑗 , −→
+
+𝑋 𝑇 −𝑡 𝑗 ), 𝑗 = 0, . . . , 𝑁 − 1. (30) Using the closed-form expression of posterior covariance (24) in Lemma 3.4, we decompose the term T
+
+as T = T1 + T 2, where 
+
+T1 = 𝜏 
+
+𝑁 −1∑︁ 
+
+𝑗 =0
+
+
+
+SNR 11 𝑗 =0 + Δ 𝑗 1 𝑗 ≥1
+
+ 𝐾 ∑︁ 
+
+𝑘 =1
+
+E𝑊 [ 𝑘 ]
+
+𝐷 (𝑍 𝑗 ) · 𝜎 2
+
+𝑇 −𝑡 𝑗 tr 
+
+
+
+Σ𝑘 
+
+ 𝑚 2
+
+𝑇 −𝑡 𝑗 Σ𝑘 + 𝜎 2
+
+𝑇 −𝑡 𝑗 𝐼 𝐷 
+
+ −1
+
+; (31) 
+
+T2 = 𝜏 
+
+2
+
+𝑁 −1∑︁ 
+
+𝑗 =0
+
+
+
+SNR 11 𝑗 =0 + Δ 𝑗 1 𝑗 ≥1
+
+ 𝐾 ∑︁ 
+
+𝑘 1 ,𝑘 2=1
+
+𝑘 1≠𝑘 2
+
+E
+
+h
+
+𝑊 [ 𝑘 1 ]
+
+𝐷 (𝑍 𝑗 )𝑊 [ 𝑘 2 ]
+
+𝐷 (𝑍 𝑗 ) 𝜇 [ 𝑘 1 ] (𝑍 𝑗 ) − 𝜇 [ 𝑘 2 ] (𝑍 𝑗 ) 2i
+
+(32) where we recall that for 𝑧 ≡ ( 𝑡, 𝑥 ) ∈ [ 0, 𝑇 ) × R𝐷 , 𝜇 [𝑖 ] (𝑧 ) = E −→
+
+𝑋 0 |−→
+
+𝑋 𝑇 −𝑡 = 𝑥, −→
+
+𝑋 0 ∼ 𝑃 [𝑖 ]
+
+data 
+
+, 𝑖 ∈ [ 𝐾 ].
+
+5.3. Step 3. Bounding the Term T1
+
+The eigen-decomposition Σ𝑘 ≡ 𝑈 Λ𝑘 𝑈 ⊤ together with Assumption 2 gives that: for 𝑗 = 0, 1, . . . , 𝑁 − 1, 
+
+𝜎 2
+
+𝑇 −𝑡 𝑗 tr 
+
+
+
+Σ𝑘 
+
+
+
+𝑚 2
+
+𝑇 −𝑡 𝑗 Σ𝑘 + 𝜎 2
+
+𝑇 −𝑡 𝑗 𝐼 𝐷 
+
+ −1
+
+= 𝜎 2
+
+𝑇 −𝑡 𝑗 tr 
+
+
+
+Λ𝑘 
+
+
+
+𝑚 2
+
+𝑇 −𝑡 𝑗 Λ𝑘 + 𝜎 2
+
+𝑇 −𝑡 𝑗 𝐼 𝐷 
+
+ −1
+
+= 𝜎 2
+
+𝑇 −𝑡 𝑗 
+
+𝐷 ∑︁ 
+
+ℓ=1
+
+𝜆 ℓ (Σ𝑘 )
+
+𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+
+𝜆 ℓ (Σ𝑘 )+ 𝜎 2 
+
+> 𝑇 −𝑡 𝑗
+
+≤ 𝜎 2 
+
+> 𝑇 −𝑡 𝑗
+
+𝑚 2 
+
+> 𝑇 −𝑡 𝑗
+
+𝑀 𝑘 + 𝜈 𝑘 . (33) Thus, we get 
+
+T1 ≤ 𝜏 SNR 1
+
+𝐾 ∑︁ 
+
+𝑘 =1
+
+E𝑊 [ 𝑘 ]
+
+𝐷 (𝑍 0) ·
+
+ 𝜎 2
+
+> 𝑇
+
+𝑚 2
+
+> 𝑇
+
+𝑀 𝑘 + 𝜈 𝑘 
+
+
+
++ 𝜏 
+
+𝑁 −1∑︁ 
+
+𝑗 =1
+
+Δ 𝑗 𝐾 ∑︁ 
+
+𝑘 =1
+
+E𝑊 [ 𝑘 ]
+
+𝐷 (𝑍 𝑗 ) ·
+
+ 𝜎 2 
+
+> 𝑇 −𝑡 𝑗
+
+𝑚 2 
+
+> 𝑇 −𝑡 𝑗
+
+𝑀 𝑘 + 𝜈 𝑘 
+
+
+
+≤ 𝜏 
+
+ SNR 1
+
+SNR 0 + SNR 1 𝑅 
+
+
+
+𝑀 † + 𝜏 
+
+𝑁 −1∑︁ 
+
+𝑗 =1
+
+Δ 𝑗 
+
+SNR 𝑗 
+
+ 1 + SNR 𝑗 𝑅  𝑀 †
+
+= 𝜏 
+
+ SNR 1
+
+SNR 0 +
+
+𝑁 −1∑︁ 
+
+𝑗 =1
+
+Δ 𝑗 
+
+SNR 𝑗 
+
+
+
+𝑀 † + 𝜏 SNR 𝑁 𝑅, 20 Y. Iguchi and P. Fearnhead 
+
+where 𝑀 † = max 𝑘 ∈ [ 𝐾 ] 𝑀 𝑘 , 𝑅 ∈ [ 0, 1) is a universal constant defined in Assumption 2 and we used 
+
+Í𝐾 𝑘 =1 𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑥 ) = 1 for all (𝑡, 𝑥 ) ∈ [ 0, 𝑇 ) × R𝐷 . We then get under 𝜀 ≳ 𝑅 /𝑇 that 
+
+T1 ≲ 𝜏 
+
+
+
+1 + log SNR 𝑁 
+
+> SNR 1
+
+
+
+𝑀 † + 𝜏 𝑅 𝜀 ≲ 𝜏 
+
+
+
+log 1 
+
+> 𝜀
+
++ 𝑇 
+
+
+
+𝑀 †, (34) since it follows that for 𝑗 ∈ [ 𝑁 − 1],   
+
+> Δ𝑗
+> SNR 𝑗
+
+= SNR 𝑗 +1 
+
+> SNR 𝑗
+
+∫ SNR 𝑗 +1   
+
+> SNR 𝑗
+> 1SNR 𝑗 +1
+
+𝑑𝑦 ≤ SNR 𝑗 +1 
+
+> SNR 𝑗
+
+∫ SNR 𝑗 +1  
+
+> SNR 𝑗
+> 1
+> 𝑦
+
+𝑑𝑦 ≲ log SNR 𝑗 +1  
+
+> SNR 𝑗
+
+(35) with SNR 𝑘 +1/SNR 𝑘 ≤ 4, 𝑘 = 0, 1, . . . , 𝑁 − 1 from Lemma A.1 and log 1SNR 1 ≤ − log 𝑚 2  
+
+> 𝑇 −𝑡 1
+
+= 2(𝑇 − 𝑡 1) ≲ 𝑇, 
+
+log SNR 𝑁 = log 
+
+ 1exp (2𝜀 ) − 1
+
+
+
+≤ log 1 
+
+> 𝜀
+
+,  ∵ exp (𝑥 ) − 1 ≥ 𝑥, ∀𝑥 > 0.
+
+5.4. Step 4. Bounding the Term T2
+
+We hereby focus on bounding the term involving the inter-class difference between clusters, i.e., 
+
+𝜇 [ 𝑘 1 ] (𝑍 𝑗 ) − 𝜇 [ 𝑘 2 ] (𝑍 𝑗 ) 2 that can depend on ∥𝜇 𝑖 − 𝜇 𝑗 ∥2 = O( 𝐷 ) under Assumption 3. To avoid the polynomial dependence on 𝐷 in the bound, we make use of the phase transition from mixing to single-cluster commitment, as argued in Section 3. We thus separate the time interval [0, 𝑇 − 𝜀 ] into two parts and get T2 = T 𝐼  
+
+> 2
+
++ T 𝐼 𝐼  
+
+> 2
+
+with 
+
+T 𝐼  
+
+> 2
+
+= 𝜏  
+
+> 2
+> 𝑁 1−1
+
+∑︁ 
+
+> 𝑗 =0
+
+ SNR 11 𝑗 =0 + Δ 𝑗 1 𝑗 ≥1
+
+ 𝐾 ∑︁  
+
+> 𝑘 1,𝑘 2=1
+
+E
+
+h
+
+𝑊 [ 𝑘 1 ] 
+
+> 𝐷
+
+(𝑍 𝑗 )𝑊 [ 𝑘 2 ] 
+
+> 𝐷
+
+(𝑍 𝑗 ) 𝜇 [ 𝑘 1 ] (𝑍 𝑗 ) − 𝜇 [ 𝑘 2 ] (𝑍 𝑗 ) 2i
+
+; (36) 
+
+T 𝐼 𝐼  
+
+> 2
+
+= 𝜏  
+
+> 2
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =𝑁 1
+
+Δ 𝑗 𝐾 ∑︁  
+
+> 𝑘 1,𝑘 2=1
+
+E
+
+h
+
+𝑊 [ 𝑘 1 ] 
+
+> 𝐷
+
+(𝑍 𝑗 )𝑊 [ 𝑘 2 ] 
+
+> 𝐷
+
+(𝑍 𝑗 ) 𝜇 [ 𝑘 1 ] (𝑍 𝑗 ) − 𝜇 [ 𝑘 2 ] (𝑍 𝑗 ) 2i
+
+, (37) where in the above we have set: 
+
+𝑁 1 ≡ inf 
+
+n
+
+𝑗 ∈ [ 𝑁 ] | SNR 𝑗 > 𝐿 log (𝐾 𝐷 )
+
+> 𝐷
+
+o
+
+(38) for an arbitrary fixed constant 𝐿 > 0 satisfying 𝐿 log (𝐾 𝐷 )/ 𝐷 ≥ 𝑆 , with 𝑆 specified in the statement of Theorem 1. We note that 𝑁 1 ≥ 1 under 𝑇 ≥ 12 log 𝐷 due to Corollary 1 and SNR 𝑗 ≲ log (𝐾 𝐷 ) 
+
+> 𝐷
+
+for 
+
+𝑗 ∈ { 1, . . . , 𝑁 1 − 1}. In what follows, we write 𝑍 [𝑖 ] 
+
+> 𝑗
+
+= (𝑡 𝑗 , −→
+
+𝑋 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+), 𝑗 ∈ { 0, 1, . . . , 𝑁 − 1}, 𝑖 ∈ [ 𝐾 ] where 
+
+−→
+
+𝑋 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+follows the distribution −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+.
+
+5.4.1. Bounding the term T 𝐼 
+
+> 2
+
+We begin with the term T 𝐼  
+
+> 2
+
+, that is, the error during the mixing phase. We then get that 
+
+T 𝐼  
+
+> 2
+
+= 𝜏  
+
+> 2
+> 𝑁 1−1
+
+∑︁ 
+
+> 𝑗 =0
+
+ SNR 11 𝑗 =0 + Δ 𝑗 1 𝑗 ≥0
+
+∑︁  
+
+> 𝑖 ∈ [ 𝐾 ]
+
+∑︁ 𝑘 1 ,𝑘 2=1
+
+𝜋 𝑖 · 𝑄 [𝑖 ]  
+
+> 𝑘 1,𝑘 2
+
+( 𝑗 )
+
+with 
+
+𝑄 [𝑖 ]  
+
+> 𝑘 1,𝑘 2
+
+( 𝑗 ) = E
+
+h
+
+𝑊 [ 𝑘 1 ] 
+
+> 𝐷
+
+(𝑍 [𝑖 ] 
+
+> 𝑗
+
+)𝑊 [ 𝑘 2 ] 
+
+> 𝐷
+
+(𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i
+
+,Diffusion Models for Clustered Data 21 
+
+where the expectation operator acts on the second component of the variable 𝑍 [𝑖 ] 
+
+> 𝑗
+
+under the law of −→
+
+𝑋 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+.We have that ∑︁    
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+𝑄 [𝑖 ]  
+
+> 𝑘 1,𝑘 2
+
+( 𝑗 ) ≤ E max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2 
+
+∵∑︁   
+
+> 𝑘 ∈ [ 𝐾 ]
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑍 [𝑖 ] 
+
+> 𝑗
+
+) = 1
+
+
+
+= 1 
+
+> 𝜉 𝑗
+
+log exp 
+
+
+
+E𝜉 𝑗 · max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2 
+
+≤ 1 
+
+> 𝜉 𝑗
+
+log 
+
+
+
+E
+
+h
+
+exp 
+
+
+
+𝜉 𝑗 max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i   ∵ Jensen ′s inequality 
+
+= 1 
+
+> 𝜉 𝑗
+
+log 
+
+
+
+E
+
+h
+
+max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+exp 
+
+
+
+𝜉 𝑗 𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i  
+
+(39) for any 𝜉 𝑗 > 0 and for each fixed 𝑖 ∈ [ 𝐾 ] and 𝑗 ∈ { 0, 1, . . . , 𝑁 1 − 1}. To further bound the above term, we exploit the following result whose proof is postponed to Appendix E.2: Lemma 5.2. Under Assumptions 2, 3, we have the following: for any 𝑖 ∈ [ 𝐾 ], 𝑗 ∈ { 0, 1, . . . , 𝑁 − 1} and any 𝜌 ∈  0, 𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+
+/( 16 𝜎 4  
+
+> 𝑇 −𝑡 𝑗
+
+max 𝑖,𝑘 ∈ [ 𝐾 ] ∥𝐻 𝑘,𝑖 ( 𝑗 )∥ 2), it holds 
+
+log 
+
+
+
+E
+
+h
+
+max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+exp 
+
+
+
+𝜌 𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i  
+
+≲ log 𝐾 + 𝜌  𝐷 + SNR 𝑗 𝑀 † 𝐷 2𝛼 
+
+where we have set 
+
+𝐻 𝑘,𝑖 ( 𝑗 ) = 𝑚 4 
+
+> 𝑇 −𝑡 𝑗
+
+(𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 (Σ𝑘 − Σ𝑖 )( 𝑆 𝑖 𝑇 −𝑡 𝑗 )−1 (Σ𝑘 − Σ𝑖 )( 𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 . (40) Setting 𝜉 𝑗 = 𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+
+/( 16 𝜎 4  
+
+> 𝑇 −𝑡 𝑗
+
+max 𝑖,𝑘 ∈ [ 𝐾 ] ∥𝐻 𝑘,𝑖 ( 𝑗 )∥ 2) in (39), we apply Lemma 5.2 to get 
+
+T 𝐼  
+
+> 2
+
+≲ 𝜏 SNR 1
+
+> 𝜉 0
+
+ log 𝐾 + 𝜉 0 (𝐷 + SNR 𝑗 𝑀 † 𝐷 2𝛼 ) + 𝜏  
+
+> 𝑁 1−1
+
+∑︁  
+
+> 𝑗 =1
+> Δ𝑗
+> 𝜉 𝑗
+
+ log 𝐾 + 𝜉 𝑗 (𝐷 + SNR 𝑗 𝑀 † 𝐷 2𝛼 )
+
+≲ 𝜏 
+
+
+
+SNR 1 + 
+
+> 𝑁 1−1
+
+∑︁ 
+
+> 𝑗 =1
+
+Δ 𝑗 
+
+  
+
+(log 𝐾 )SNR 𝑁 1 −1 𝐷 2𝛼 + 𝐷 + SNR 𝑁 1 −1 𝑀 † 𝐷 2𝛼 
+
+= 𝜏 SNR 𝑁 1
+
+
+
+SNR 𝑁 1 −1
+
+ log 𝐾 + 𝑀 † 𝐷 2𝛼 + 𝐷 
+
+
+
+≲ 𝜏 SNR 𝑁 1 −1
+
+
+
+SNR 𝑁 1 −1
+
+ log 𝐾 + 𝑀 † 𝐷 2𝛼 + 𝐷 
+
+  ∵ Lemma A .1
+
+≲ 𝜏 
+
+h log (𝐾 𝐷 ) 
+
+> 𝐷 1−𝛼
+
+2  log 𝐾 + 𝑀 † + log (𝐾 𝐷 )
+
+i  ∵ SNR 𝑁 1 −1 ≲ log (𝐾 𝐷 )
+
+> 𝐷
+
+ (41) where in the second line we used  
+
+> 1
+> 𝜉 𝑗
+
+≲ 𝜎 4  
+
+> 𝑇 −𝑡 𝑗
+> 𝑚 2
+> 𝑇 −𝑡 𝑗
+
+max    
+
+> 𝑖,𝑘 ∈ [ 𝐾 ]
+
+∥𝐻 𝑘,𝑖 ∥2 ≲ SNR 𝑗 𝐷 2𝛼 ≲ SNR 𝑁 1 −1 𝐷 2𝛼 . (42) 
+
+5.4.2. Bounding the term T 𝐼 𝐼 
+
+> 2
+
+We then consider the error during the cluster commitment phase, that is, T 𝐼 𝐼  
+
+> 2
+
+defined in (37). In this phase, we can exploit the high-probability concentration of the posterior weight stated in Theorem 1. 22 Y. Iguchi and P. Fearnhead 
+
+Introducing an event set 𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 ) ⊆ Ω, 𝜂 ∈ ( 0, 1) as 
+
+𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 ) =
+
+n
+
+𝜔 ∈ Ω |
+
+Ù  
+
+> 𝑘 ∈ [ 𝐾 ]\{ 𝑖 }
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑍 [𝑖 ] 
+
+> 𝑗
+
+) ≤ exp  −𝜂 KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡 𝑗
+
+ o
+
+,
+
+we express the term T 𝐼 𝐼  
+
+> 2
+
+as T 𝐼 𝐼  
+
+> 2
+
+= T 𝐼 𝐼,𝐸  
+
+> 2
+
++ T 𝐼 𝐼,𝐸 𝑐  
+
+> 2
+
+with 
+
+T 𝐼 𝐼,𝐸  
+
+> 2
+
+= 𝜏  
+
+> 2
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =𝑁 1
+
+Δ 𝑗 ∑︁  
+
+> 𝑖 ∈ [ 𝐾 ]
+
+∑︁ 𝑘 1 ,𝑘 2 ∈ [ 𝐾 ]
+
+𝜋 𝑖 · 𝑄 [𝑖 ],𝑘 1 ,𝑘 2
+
+> 𝑗
+
+ 𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 ); (43) 
+
+T 𝐼 𝐼,𝐸 𝑐  
+
+> 2
+
+= 𝜏  
+
+> 2
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =𝑁 1
+
+Δ 𝑗 ∑︁  
+
+> 𝑖 ∈ [ 𝐾 ]
+
+∑︁ 𝑘 1 ,𝑘 2 ∈ [ 𝐾 ]
+
+𝜋 𝑖 · 𝑄 [𝑖 ],𝑘 1 ,𝑘 2
+
+> 𝑗
+
+ 𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 )𝑐 , (44) where we have set: for an event 𝐴 ⊆ Ω,
+
+𝑄 [𝑖 ],𝑘 1 ,𝑘 2 
+
+> 𝑗
+
+( 𝐴 ) = E
+
+h
+
+𝑊 [ 𝑘 1 ] 
+
+> 𝐷
+
+(𝑍 [𝑖 ] 
+
+> 𝑗
+
+)𝑊 [ 𝑘 2 ] 
+
+> 𝐷
+
+(𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2 1𝐴 
+
+i
+
+.
+
+For notational simplicity, we write: 
+
+𝐷 [𝑖 ] 
+
+> 𝑘
+
+( 𝑗 ) = E
+
+h
+
+𝜇 [ 𝑘 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [𝑖 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i
+
+, 𝑘 ∈ { 𝑘 1, 𝑘 2}.
+
+Then, for the term T 𝐼 𝐼,𝐸  
+
+> 2
+
+, we have the following bound on the event set 𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 ):
+
+𝑄 [𝑖 ],𝑘 1 ,𝑘 2 
+
+> 𝑗
+
+(𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 )) ≲ exp 
+
+
+
+−𝜂 KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 1 ] 
+
+> 𝑇 −𝑡 𝑗
+
+ + KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 2 ] 
+
+> 𝑇 −𝑡 𝑗
+
+ 
+
+· 𝐷 [𝑖 ] 
+
+> 𝑘 1
+
+( 𝑗 ) + 𝐷 [𝑖 ] 
+
+> 𝑘 2
+
+( 𝑗 )
+
+≲  ∥Σ𝑖 ∥2 + SNR −1
+
+> 𝑗
+
+ exp 
+
+
+
+−𝜂 KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 1 ] 
+
+> 𝑇 −𝑡 𝑗
+
+ + KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 2 ] 
+
+> 𝑇 −𝑡 𝑗
+
+ 
+
+×
+
+n
+
+KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 1 ] 
+
+> 𝑇 −𝑡 𝑗
+
+ + KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 2 ] 
+
+> 𝑇 −𝑡 𝑗
+
+o
+
+≲  ∥Σ𝑖 ∥2 + SNR −1
+
+> 𝑗
+
+ exp 
+
+
+
+−e𝜂 · KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 1 ] 
+
+> 𝑇 −𝑡 𝑗
+
+ + KL  −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 2 ] 
+
+> 𝑇 −𝑡 𝑗
+
+ 
+
+≤  ∥Σ𝑖 ∥2 + SNR −1
+
+> 𝑗
+
+ exp 
+
+
+
+−e𝜂 ·
+
+ e𝐶 2SNR 𝑗 𝐷 2      
+
+> SNR 𝑗 max 𝑘 ∈ [ 𝐾 ]tr (Σ𝑘 )+ 𝐷
+
+   ∵ Lemma 𝐶. 2 
+
+for some e𝜂 ∈ ( 0, 𝜂 ) and e𝐶 = 𝐶 3/𝐶 5, where in the second line above we used the following result whose proof is postponed to Appendix E.3: Lemma 5.3. It holds that: 
+
+𝐷 [𝑖 ] 
+
+> 𝑘
+
+( 𝑗 ) ≤ 4 ∥Σ𝑖 ∥2 + SNR −1
+
+> 𝑗
+
+ · KL   −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡 𝑗
+
+. (45) To further bound the term 𝑄 [𝑖 ],𝑘 1 ,𝑘 2 
+
+> 𝑗
+
+(𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 )) under the case 𝑗 ∈ { 𝑁 1, . . . , 𝑁 − 1}, we define an integer 
+
+𝑁 2 as 
+
+𝑁 2 =
+
+
+
+inf  𝑗 = 𝑁 1, 𝑁 1 + 1, . . . , 𝑁 | SNR 𝑗 > 𝐷 /max 𝑘 ∈ [ 𝐾 ] tr (Σ𝑘 ) , if the set is not empty; 
+
+𝑁, otherwise . (46) We then consider the following two cases for 𝑗 : (a). 𝑗 = 𝑁 1, . . . , 𝑁 2 − 1 and (b). 𝑗 = 𝑁 2, . . . , 𝑁 − 1, where case (b) is understood to be empty when 𝑁 2 = 𝑁 . For case (a), we have SNR 𝑗 ∥Σ𝑖 ∥2 ≤Diffusion Models for Clustered Data 23 
+
+SNR 𝑗 max 𝑘 ∈ [ 𝐾 ] tr (Σ𝑘 ) ≤ 𝐷 and thus 
+
+𝑄 [𝑖 ],𝑘 1 ,𝑘 2 
+
+> 𝑗
+
+(𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 )) ≲ SNR −1 
+
+> 𝑗
+
+(𝐷 + 1) exp 
+
+
+
+− e𝜂 e𝐶 2 
+
+> 2
+
+SNR 𝑗 𝐷 
+
+
+
+≤ SNR −1
+
+> 𝑗
+
+ 𝐷 + 1 · ( 𝐾 𝐷 )−𝑐𝐿 ,  ∵ SNR 𝑗 ≥ 𝐿 log (𝐾 𝐷 )/ 𝐷 , (47) where 𝑐 = e𝜂 e𝐶 2/2. On the other hand, under case (b), we have 
+
+𝑄 [𝑖 ],𝑘 1 ,𝑘 2 
+
+> 𝑗
+
+(𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 )) 
+
+≲ SNR −1
+
+> 𝑗
+
+ SNR 𝑗 𝐷 𝛼 + 1 exp 
+
+
+
+− e𝜂 e𝐶 2 
+
+> 2
+
+· 𝐷 2    
+
+> max 𝑘 ∈ [ 𝐾 ]tr (Σ𝑘 )
+
+   ∵ Assumption 2 
+
+≲ SNR −1 
+
+> 𝑗
+
+· 𝐷 𝛼  
+
+> 𝜀
+
+· exp 
+
+
+
+− e𝜂 e𝐶 2 
+
+> 2
+
+· 𝐷 2   
+
+> 𝑀 †(𝐶 2𝐷 𝛼 +𝑅 )
+
+   ∵ Assumption 2 & SNR 𝑗 ≤ SNR 𝜀 ≲ 1
+
+> 𝜀
+
+
+
+≤ SNR −1 
+
+> 𝑗
+
+· 𝐷 𝛼  
+
+> 𝜀
+
+· exp 
+
+
+
+− e𝜂 e𝐶 2 
+
+> 4𝑀 †𝐶 2
+
+· 𝐷 2− 𝛼 
+
+≲ SNR −1 
+
+> 𝑗
+
+· 𝐷 2𝛼 −2 
+
+> 𝜀
+
+· exp 
+
+
+
+−e𝑐 · 𝐷 2− 𝛼 
+
+(48) for some e𝑐 ∈ ( 0, e𝜂 e𝐶 2/4𝑀 †𝐶 2). Substituting the bounds (47) and (48) into (43), we obtain 
+
+T 𝐼 𝐼,𝐸  
+
+> 2
+
+≲ 𝜏 
+
+"
+
+𝐾 2 𝐷 (𝐾 𝐷 )−𝑐𝐿 · 
+
+> 𝑁 2−1
+
+∑︁    
+
+> 𝑗 =𝑁 1
+> Δ𝑗
+> SNR 𝑗
+
++ 𝐾 2 
+
+> 𝜀
+
+exp (− e𝑐 𝐷 2− 𝛼 ) ·  
+
+> 𝑁 −1
+
+∑︁   
+
+> 𝑗 =𝑁 2
+> Δ𝑗
+> SNR 𝑗
+
+#
+
+≲ 𝜏 
+
+h log 1 
+
+> 𝜀
+
++ log 𝐷  ·
+
+n
+
+𝐾 2 𝐷 (𝐾 𝐷 )−𝑐𝐿 + 𝐾 2 
+
+> 𝜀
+
+exp (− e𝑐 𝐷 2− 𝛼 )
+
+oi 
+
+, (49) where we used max 
+
+n𝑁 2 −1∑︁    
+
+> 𝑗 =𝑁 1
+> Δ𝑗
+> SNR 𝑗
+
+, 
+
+> 𝑁 −1
+
+∑︁   
+
+> 𝑗 =𝑁 2
+> Δ𝑗
+> SNR 𝑗
+
+o
+
+≤ 
+
+> 𝑁 −1
+
+∑︁    
+
+> 𝑗 =𝑁 1
+> Δ𝑗
+> SNR 𝑗
+
+≤ log 1 
+
+> 𝜀
+
++ log 𝐷. (50) We now consider the term T 𝐼 𝐼,𝐸 𝑐  
+
+> 2
+
+defined in (44). For ease of notation, we write 𝐵 = (𝐸 [𝑖 ] 
+
+> 𝑗
+
+(𝜂 )) 𝑐 and 
+
+P1 = −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+, and introduce a probability measure P2 defined as d P2 = 1𝐵   
+
+> P1(𝐵 )
+
+dP1. We then get 
+
+> 𝐾
+
+∑︁  
+
+> 𝑘 1,𝑘 2=1
+
+𝑄 [𝑖 ],𝑘 1 ,𝑘 2 
+
+> 𝑗
+
+(𝐵 ) ≤ EP1
+
+h
+
+max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2 · 1𝐵 
+
+i
+
+= P1
+
+ 𝐵 
+
+ 
+
+> 𝜉 𝑗
+
+· EP2
+
+h
+
+𝜉 𝑗 max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i
+
+≤ P1
+
+ 𝐵 
+
+ 
+
+> 𝜉 𝑗
+
+·
+
+(
+
+log EP1
+
+h
+
+exp 
+
+
+
+𝜉 𝑗 max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i 
+
++ KL  P2 || P1
+
+)
+
+,
+
+for 𝜉 𝑗 > 0 such that EP1
+
+h
+
+exp 
+
+
+
+𝜉 𝑗 max 𝑘 1 ,𝑘 2 ∈ [ 𝐾 ] 𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i 
+
+< ∞, where the second bound is obtained via Donsker-Varadhan’s variational formula [Dupuis and Ellis, 1997]. We im-mediately have KL  P2 || P1
+
+ = − log P1 (𝐵 ). Also, Theorem 1 gives that for any 𝑞 ≥ 1, 𝜂 ∈ ( 0, 1),there exists 𝐷 † ∈ N such that for any 𝐷 ≥ 𝐷 †, we have P1 (𝐵 ) ≤ 𝐷 −𝑞 . Thus, by setting 𝜉 𝑗 =24 Y. Iguchi and P. Fearnhead 
+
+𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+
+/( 16 𝜎 4  
+
+> 𝑇 −𝑡 𝑗
+
+max 𝑖,𝑘 ∈ [ 𝐾 ] ∥𝐻 𝑘,𝑖 ( 𝑗 )∥ 2), we obtain: 
+
+> 𝐾
+
+∑︁  
+
+> 𝑘 1,𝑘 2=1
+
+𝑄 [𝑖 ],𝑘 1 ,𝑘 2 
+
+> 𝑗
+
+(𝐵 ) ≲ P 1 (𝐵 ) · 
+
+n 1 
+
+> 𝜉 𝑗
+
+log 𝐾 + 𝐷 + SNR 𝑗 𝑀 † 𝐷 2𝛼 + 1 
+
+> 𝜉 𝑗
+
+log 1 
+
+> P1(𝐵 )
+
+o  ∵ Lemma 5 .2
+
+≲ 𝐷 2𝛼 −𝑞 · SNR 𝑗 ·  log 𝐾 + 𝑀 † + 𝐷 1−𝑞 + SNR 𝑗 𝐷 2𝛼 P1 (𝐵 ) log 1 
+
+> P1(𝐵 )
+
+  ∵ (42 )
+
+≲ 𝐷 2𝛼 −𝑞 · SNR 𝑗 ·  log 𝐾 + 𝑀 † + 𝐷 1−𝑞 + 𝐷 2𝛼 −𝑞 · SNR 𝑗 · log 𝐷 
+
+≲ SNR −1
+
+> 𝑗
+
+ 𝐷 2𝛼 −𝑞 · 𝜀 −2 · ( log 𝐾 + 𝑀 † + log 𝐷 ) + 𝐷 1−𝑞 · 𝜀 −1, (51) where we used for 𝑥 log (1/𝑥 ) ≤ 𝑟 log (1/𝑟 ) 𝑥 ∈ [ 0, 𝑟 ], 𝑟 ≤ 𝑒 −1, and SNR 𝑗 ≲ 𝜀 −1 in the third and fourth inequality, respectively. Thus, the bound (51) together with (50) leads to 
+
+T 𝐼 𝐼,𝐸 𝑐  
+
+> 2
+
+≲ 𝜏 
+
+h 𝐷 2𝛼 −𝑞 · 𝜀 −2 · ( log 𝐾 + 𝑀 † + log 𝐷 ) + 𝐷 1−𝑞 · 𝜀 −1 𝑁 ∑︁   
+
+> 𝑗 =𝑁 1
+> Δ𝑗
+> SNR 𝑗
+
+i
+
+≲ 𝜏 
+
+h 𝐷 2𝛼 −𝑞 · 𝜀 −2 · ( log 𝐾 + 𝑀 † + log 𝐷 ) + 𝐷 1−𝑞 · 𝜀 −1   log 1 
+
+> 𝜀
+
++ log 𝐷 i
+
+. (52) 
+
+5.5. Step 5: Final Bound 
+
+Combining the upper bounds (34), (41), (49) and (52) into the term 𝑅 𝐼 𝐼  
+
+> 2
+
+defined in (29), the time-discretisation error is bounded as follows: 
+
+𝑅 𝐼 𝐼  
+
+> 2
+
+≲ T1 + T 𝐼  
+
+> 2
+
++ T 𝐼 𝐼,𝐸  
+
+> 2
+
++ T 𝐼 𝐼,𝐸 𝑐 
+
+> 2
+
+≲ 𝜏 
+
+h
+
+𝑀 † 
+
+log 1 
+
+> 𝜀
+
++ 𝑇 
+
+
+
++
+
+ log (𝐾 𝐷 ) 
+
+> 𝐷 1−𝛼
+
+2  log 𝐾 + 𝑀 † + log (𝐾 𝐷 )+  log 1 
+
+> 𝜀
+
++ log 𝐷  ·
+
+n
+
+𝐾 2 𝐷 (𝐾 𝐷 )−𝑐𝐿 + 𝐾 2 
+
+> 𝜀
+
+exp (− e𝑐 𝐷 2− 𝛼 )
+
+o
+
++  𝐷 2𝛼 −𝑞 · 𝜀 −2 · ( log 𝐾 + 𝑀 † + log 𝐷 ) + 𝐷 1−𝑞 · 𝜀 −1   log 1 
+
+> 𝜀
+
++ log 𝐷 i
+
+.
+
+(53) For the number mixture of 𝐾 that grows polynomially in 𝐷 , by choosing sufficiently large 𝑞 ≥ 2 and 
+
+𝐿 > 0, we have under 𝑇 ≥ 12 log 𝐷 that for any sufficiently large 𝐷 ,
+
+𝑅 𝐼 𝐼  
+
+> 2
+
+≲ 𝜏𝑀 † 
+
+log 1 
+
+> 𝜀
+
++ 𝑇 
+
+
+
+. (54) We thus conclude Theorem 2 from (26), (28) and (54). 
+
+6. Conclusion and Discussion 
+
+This work has analytically studied the geometric adaptivity of denoising diffusion models when the target distributions to sample from are characterised as a union of well-separated classes with their own low-dimensional structure, motivated by the union of manifolds hypothesis [Brown et al., 2022]. By focusing on 𝐾 -Gaussian mixture models, our analysis has focused on the dynamical behaviour of the score function and, in particular, the behaviour of the posterior weights for sampling from each cluster component. Under the conditions, particularly the Θ(𝐷 ) inter-class separation in cluster means, we have shown that the concentration of the posterior weights occurs with high probability after the SNR reaches a threshold Θ log (𝐾 𝐷 )/ 𝐷 . We then use this result to obtain a KL divergence error bound, where the time-discretisation error is shown to scale linearly with the intrinsic dimensionality rather than the ambient dimensionality 𝐷 . The main difference between our analysis and the literature (e.g., Benton et al. [2024], Conforti et al. [2025]) is that our analysis accounts for the dynamical regimes of the denoising process. Specifically, during the mixing phase (before the posterior commitment), the small Diffusion Models for Clustered Data 25 
+
+SNR suppresses the effect of the inter-class separation of means and covariances in terms of 𝐷 ; whereas after the cluster commitment, when the SNR is no longer sufficiently small, the posterior weight decay neutralises the large cluster separations. We also note that the literature on diffusion models targeting GMMs [Li et al., 2026] establishes a dimension-free bound under shared isotropic covariances, while our work treats GMMs with heterogeneous anisotropic covariances and derives a desirable error bound by employing the phase transition. Our analysis exploits Θ(𝐷 ) separation in the mean vectors to induce the phase transition, with the key SNR scaling with 𝐷 , but it could be extended to cases where covariance separation plays a central role in the transition. The numerical experiments in Section 4 demonstrate the SNR scaling Θ(log 𝐷 /𝐷 ) in the phase transition for real high-dimensional datasets beyond our geometric framework (GMMs). Given this, our phase transition-driven error analysis can be applied to a wider class of mixture models where we believe similar intrinsic-dimension adaptivity would hold, provided we can still prove concentration results on the posterior weights and the score function for each mixture component is sufficiently well-behaved. The former is likely to hold if the mixture components are sub-Gaussian, while the latter would apply under assumptions such as strong log-concavity of the cluster densities. Another interesting extension would be to hierarchical clusters. For a mixture model with ‘super-components’, each of which is a Gaussian mixture model, with O( 𝐷 ) separation between the super-component means, and smaller separation, say O( 1), between the means of cluster components within each super-component. For this setting, we would still get concentration of the posterior weights to a super-component with high probability. Then, the KL divergence error is controlled by the intrinsic dimensionality in a similar manner, so that the relatively small separation within each super-component does not degrade the dimensional scaling in the error bound. 
+
+Acknowledgement 
+
+We thank Prof Kenji Fukumizu and Prof Paul Jenkins for detailed comments and feedback on this work. The authors acknowledge support from EPSRC grant EP/Y028783/1. 
+
+References 
+
+Beatrice Achilli, Marco Benedetti, Giulio Biroli, and Marc Mézard. Theory of speciation transitions in diffusion models with general class structure. arXiv preprint arXiv:2602.04404 , 2026. Brian D.O. Anderson. Reverse-time diffusion equation models. Stochastic Processes and their Applications , 12(3):313–326, May 1982. ISSN 0304-4149. doi: 10.1016/0304-4149(82)90051-5. Vahan Arsenyan, Elen Vardanyan, and Arnak Dalalyan. Assessing the quality of denoising diffusion models in Wasserstein distance: noisy score and optimal bounds. Advances in Neural Information Processing Systems , 38:19548–19591, 2026. Joe Benton, Valentin De Bortoli, Arnaud Doucet, and George Deligiannidis. Nearly 𝑑 -linear convergence bounds for diffusion models via stochastic localization. In The Twelfth International Conference on Learning Representations , 2024. Giulio Biroli, Tony Bonnaire, Valentin De Bortoli, and Marc Mézard. Dynamical regimes of diffusion models. Nature Communications , 15(1):9957, 2024. Tony Bonnaire, Raphaël Urfin, Giulio Biroli, and Marc Mezard. Why diffusion models don’t memorize: The role of implicit dynamical regularization in training. In D. Belgrave, C. Zhang, H. Lin, R. Pascanu, P. Koniusz, M. Ghassemi, and N. Chen, editors, Advances in Neural Information Processing Systems ,volume 38, pages 141266–141286. Curran Associates, Inc., 2025. Miha Brešar and Aleksandar Mijatović. Nonasymptotic bounds for forward processes in denoising diffusions: Ornstein–uhlenbeck is hard to beat. The Annals of Applied Probability , 35(6):4439–4463, 2025. 26 Y. Iguchi and P. Fearnhead 
+
+Bradley CA Brown, Anthony L Caterini, Brendan Leigh Ross, Jesse C Cresswell, and Gabriel Loaiza-Ganem. Verifying the union of manifolds hypothesis for image data. arXiv preprint arXiv:2207.02862 ,2022. Hongrui Chen, Holden Lee, and Jianfeng Lu. Improved analysis of score-based generative modeling: User-friendly bounds under minimal smoothness assumptions. In International Conference on Machine Learning , pages 4735–4763. PMLR, 2023a. Sitan Chen, Sinho Chewi, Jerry Li, Yuanzhi Li, Adil Salim, and Anru R Zhang. Sampling is as easy as learning the score: theory for diffusion models with minimal data assumptions. International Conference on Learning Representations , 2023b. Giovanni Conforti, Alain Durmus, and Marta Gentiloni Silveri. KL convergence guarantees for score diffusion models under minimal data assumptions. SIAM Journal on Mathematics of Data Science , 7 (1):86–109, 2025. Valentin De Bortoli. Convergence of denoising diffusion models under the manifold hypothesis. 
+
+Transactions on Machine Learning Research , 2022. Prafulla Dhariwal and Alexander Nichol. Diffusion models beat gans on image synthesis. Advances in Neural Information Processing Systems , 34:8780–8794, 2021. Benjamin Dupuis, Dario Shariatian, Maxime Haddouche, Alain Durmus, and Umut Simsekli. Algorithm-and data-dependent generalization bounds for diffusion models. In D. Belgrave, C. Zhang, H. Lin, R. Pascanu, P. Koniusz, M. Ghassemi, and N. Chen, editors, Advances in Neural Information Processing Systems , volume 38, pages 101897–101936. Curran Associates, Inc., 2025. Paul Dupuis and Richard S. Ellis. A Weak Convergence Approach to the Theory of Large Deviations . Wiley Series in Probability and Statistics. John Wiley & Sons, New York, 1997. doi: 10.1002/9781118165904. Xuefeng Gao, Hoang M Nguyen, and Lingjiong Zhu. Wasserstein convergence guarantees for a general class of score-based generative models. Journal of Machine Learning Research , 26(43):1–54, 2025. U. G. Haussmann and E. Pardoux. Time reversal of diffusions. The Annals of Probability , 14(4), October 1986. ISSN 0091-1798. doi: 10.1214/aop/1176992362. Jonathan Ho, Ajay Jain, and Pieter Abbeel. Denoising diffusion probabilistic models. Advances in Neural Information Processing Systems , 33:6840–6851, 2020. Daniel Hsu, Sham Kakade, and Tong Zhang. A tail inequality for quadratic forms of subGaussian random vectors. Electronic Communications in Probability , 17(none), January 2012. ISSN 1083-589X. doi: 10.1214/ecp.v17-2079. URL http://dx.doi.org/10.1214/ecp.v17-2079 .Zhihan Huang, Yuting Wei, and Yuxin Chen. Denoising diffusion probabilistic models are optimally adaptive to unknown low dimensionality. Mathematics of Operations Research , March 2026. ISSN 1526-5471. doi: 10.1287/moor.2024.0769. Yuta Koike. Wasserstein bounds for denoising diffusion probabilistic models via the Föllmer process. 
+
+arXiv preprint arXiv:2605.18069 , 2026. Gen Li and Yuling Yan. Adapting to unknown low-dimensional structures in score-based diffusion models. Advances in Neural Information Processing Systems , 37:126297–126331, 2024. Gen Li and Yuling Yan. 𝑂 (𝑑 /𝑇 ) convergence theory for diffusion probabilistic models under minimal assumptions. Journal of Machine Learning Research , 26(292):1–55, 2025. Gen Li, Changxiao Cai, and Yuting Wei. Dimension-free convergence of diffusion models for approximate Gaussian mixtures. 2026. Puheng Li, Zhong Li, Huishuai Zhang, and Jiang Bian. On the generalization properties of diffusion models. In A. Oh, T. Naumann, A. Globerson, K. Saenko, M. Hardt, and S. Levine, editors, Advances in Neural Information Processing Systems , volume 36, pages 2097–2127. Curran Associates, Inc., 2023. Diffusion Models for Clustered Data 27 
+
+Jiadong Liang, Zhihan Huang, and Yuxin Chen. Low-dimensional adaptation of diffusion models: Convergence in total variation (extended abstract). In Nika Haghtalab and Ankur Moitra, editors, 
+
+Proceedings of Thirty Eighth Conference on Learning Theory , volume 291 of Proceedings of Machine Learning Research , pages 3723–3729. PMLR, 30 Jun–04 Jul 2025. Andreas Lugmayr, Martin Danelljan, Andres Romero, Fisher Yu, Radu Timofte, and Luc Van Gool. Repaint: Inpainting using denoising diffusion probabilistic models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 11461–11471, 2022. Antoine Maillard and Sebastian Goldt. Memorisation, convergence and generalisation in generative models, 2026. Samet Oymak and Talha Cihad Gulcu. A theoretical characterization of semi-supervised learning with self-training for Gaussian mixture models. In International Conference on Artificial Intelligence and Statistics , pages 3601–3609. PMLR, 2021. Kaare Brandt Petersen, Michael Syskind Pedersen, et al. The matrix cookbook. Technical University of Denmark , 7(15):510, 2008. Vadim Popov, Ivan Vovk, Vladimir Gogoryan, Tasnima Sadekova, and Mikhail Kudinov. Grad-tts: A diffusion probabilistic model for text-to-speech. In Marina Meila and Tong Zhang, editors, Proceedings of the 38th International Conference on Machine Learning , volume 139 of Proceedings of Machine Learning Research , pages 8599–8608. PMLR, 18–24 Jul 2021. Peter Potaptchik, Iskander Azangulov, and George Deligiannidis. Linear convergence of diffusion models under the manifold hypothesis. In The Thirty Eighth Annual Conference on Learning Theory , pages 4668–4685. PMLR, 2025. Rahul Satija, Jeffrey A. Farrell, David Gennert, Alexander F. Schier, and Aviv Regev. Spatial reconstruction of single-cell gene expression data. Nature Biotechnology , 33(5):495–502, 2015. Kulin Shah, Sitan Chen, and Adam Klivans. Learning mixtures of Gaussians using the DDPM objective. 
+
+Advances in Neural Information Processing Systems , 36:19636–19649, 2023. Marta Gentiloni Silveri and Antonio Ocello. Beyond log-concavity and score regularity: Improved convergence bounds for score-based generative models in W2-distance. In Forty-second International Conference on Machine Learning , 2025. Yang Song and Stefano Ermon. Generative modeling by estimating gradients of the data distribution. In H. Wallach, H. Larochelle, A. Beygelzimer, F. d 'Alché-Buc, E. Fox, and R. Garnett, editors, Advances in Neural Information Processing Systems , volume 32. Curran Associates, Inc., 2019. Yang Song, Jascha Sohl-Dickstein, Diederik P Kingma, Abhishek Kumar, Stefano Ermon, and Ben Poole. Score-based generative modeling through stochastic differential equations. arXiv preprint arXiv:2011.13456 , 2020. Tim Stuart, Andrew Butler, Paul Hoffman, Christoph Hafemeister, Efthymia Papalexi, William M. Mauck, Yuhan Hao, Marlon Stoeckius, Peter Smibert, and Rahul Satija. Comprehensive integration of single-cell data. Cell , 177(7):1888–1902.e21, 2019. Brian L. Trippe, Jason Yim, Doug Tischer, David Baker, Tamara Broderick, Regina Barzilay, and Tommi S. Jaakkola. Diffusion probabilistic modeling of protein backbones in 3d for the motif-scaffolding problem. In The Eleventh International Conference on Learning Representations , 2023. Peng Wang, Huijie Zhang, Zekai Zhang, Siyi Chen, Yi Ma, and Qing Qu. Diffusion Models Learn Low-Dimensional Distributions VIA Subspace Clustering. In 2025 IEEE 10th International Workshop on Computational Advances in Multi-Sensor Adaptive Processing (CAMSAP) , page 211–215, 2025. F. Alexander Wolf, Philipp Angerer, and Fabian J. Theis. SCANPY: large-scale single-cell gene expression data analysis. Genome Biology , 19(1):15, 2018. 28 Y. Iguchi and P. Fearnhead 
+
+Yuchen Wu, Minshuo Chen, Zihao Li, Mengdi Wang, and Yuting Wei. Theoretical insights for diffusion guidance: A case study for Gaussian mixture models. In International Conference on Machine Learning , pages 53291–53327. PMLR, 2024. Ling Yang, Zhilong Zhang, Yang Song, Shenda Hong, Runsheng Xu, Yue Zhao, Wentao Zhang, Bin Cui, and Ming-Hsuan Yang. Diffusion models: A comprehensive survey of methods and applications. 
+
+ACM Computing Surveys , 56(4):1–39, 2023. 
+
+Appendix A. Property of Time-Discretisation Schedule 
+
+To show Lemma 3.3, we first prove the following result, which is also key in the proof of Theorem 2: Lemma A.1. For the time-discretisation schedule (20), it holds that:   
+
+> 𝜎 2
+> 𝑇 −𝑡 𝑗
+> 𝜎 2
+> 𝑇 −𝑡 𝑗 +1
+
+≤ 2, SNR 𝑇 −𝑡 𝑗 +1 
+
+> SNR 𝑇 −𝑡 𝑗
+
+≤ 4, 𝑗 = 0, . . . , 𝑁 − 1.
+
+Proof. Noticing that ℎ𝑖 +1 = 𝜏𝜎 2  
+
+> 𝑇 −𝑡 𝑖
+
+, 𝑖 = 0, 1, . . . , 𝑁 − 2 and ℎ𝑁 ≤ 𝜏𝜎 2   
+
+> 𝑇 −𝑡 𝑁 −1
+
+, we have that for all 
+
+𝑗 = 0, 1, . . . , 𝑁 − 1, 
+
+𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+− 𝜎 2  
+
+> 𝑇 −𝑡 𝑗 +1
+
+=
+
+∫ 𝑇 −𝑡 𝑗   
+
+> 𝑇 −𝑡 𝑗 +1
+> 𝑑 𝑑𝑠
+
+𝜎 2 
+
+> 𝑠
+
+𝑑𝑠 ≤ 2ℎ 𝑗 +1 ≤ 2𝜏𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+,
+
+which leads to 𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+/𝜎 2  
+
+> 𝑇 −𝑡 𝑗 +1
+
+≤ 1/( 1 − 2𝜏 ) ≤ 2 for 𝜏 ∈ ( 0, 1/4]. For the latter inequality, using 
+
+𝑚 2  
+
+> 𝑇 −𝑡 𝑗 +1
+
+/𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+
+≤ exp  2ℎ 𝑗 +1
+
+ ≤ exp (2𝜏 ), we get   
+
+> SNR 𝑇 −𝑡 𝑗 +1
+> SNR 𝑇 −𝑡 𝑗
+
+= 𝑚 2  
+
+> 𝑇 −𝑡 𝑗 +1
+> 𝑚 2
+> 𝑇 −𝑡 𝑗
+
+· 𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+> 𝜎 2
+> 𝑇 −𝑡 𝑗 +1
+
+≤ 2 exp (2𝜏 ) ≤ 4,
+
+which concludes the proof. □
+
+(Proof of Lemma 3.3 ) We consider the term 𝑇 𝑗 ≡ ∫ 𝑡 𝑗 +1 
+
+> 𝑡 𝑗
+> 𝑑𝑠 𝜎 2
+> 𝑇 −𝑠
+
+, 𝑗 = 0, 1, . . . , 𝑁 − 1. Because 𝑠 ↦ → 1/𝜎 2 
+
+> 𝑇 −𝑠
+
+is an increasing function, (20) and Lemma A.1 give that 𝑇 𝑗 ≤ 𝜏𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+/𝜎 2  
+
+> 𝑇 −𝑡 𝑗 +1
+
+≤ 2𝜏, 𝑗 = 0, 1, . . . , 𝑁 − 1where for 𝑗 = 𝑁 − 1 we considered ℎ𝑁 ≤ 𝜏𝜎 2   
+
+> 𝑇 −𝑡 𝑁 −1
+
+. On the other hand, we have 
+
+𝑇 𝑗 ≥
+
+(𝜏 𝑗 = 0, 1, . . . , 𝑁 − 2; 0 𝑗 = 𝑁 − 1.
+
+Taking summation, we get 𝜏 (𝑁 − 1) ≤ Í𝑁 −1 
+
+> 𝑗 =0
+
+𝑇 𝑗 ≤ 2𝑁 · 𝜏 and  
+
+> 𝑁 −1
+
+∑︁ 
+
+> 𝑗 =0
+
+𝑇 𝑗 =
+
+∫ 𝑇 − 𝜀  
+
+> 0
+> 𝑑𝑠 𝜎 2
+> 𝑇 −𝑠
+
+= 𝑇 − 𝜀 + 12 log 1 − exp (− 2𝑇 )
+
+1 − exp (− 2𝜀 ) = Θ  𝑇 − 1 + log 1
+
+> 𝜀
+
+,
+
+which concludes Lemma 3.3. Diffusion Models for Clustered Data 29 
+
+B. Proofs for Posterior Classification Analysis 
+
+B.1. Proof of Lemma 3.1 
+
+The definition of posterior weight yields log 𝑊 [𝑖 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 ) = log 𝜋 𝑖 ·−→𝑝 [𝑖 ]             
+
+> 𝑇 −𝑡 (𝑦 )
+> Íℓ∈ [ 𝐾 ]𝜋 ℓ·−→𝑝 [ℓ]
+> 𝑇 −𝑡 (𝑦 )
+
+≤ min log 𝜋 𝑖  
+
+> 𝜋 𝑗
+
++ 𝑍 (𝑖, 𝑗 ) 
+
+> 𝑡
+
+(𝑦 ), 0 , 𝑦 ∈ R𝐷 , 𝑗 ∈ [ 𝐾 ],
+
+with 𝑍 (𝑖, 𝑗 ) 
+
+> 𝑡
+
+(𝑦 ) = log N ( 𝑦 ; 𝑚 𝑇 −𝑡 𝜇 𝑖 ,𝑆 𝑖 𝑇 −𝑡 )N ( 𝑦 ; 𝑚 𝑇 −𝑡 𝜇 𝑗 ,𝑆 𝑗 𝑇 −𝑡 ) . The conditional random variable can be expressed as e𝑌 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+∼N ( 𝑚 𝑇 −𝑡 𝜇 𝑗 , 𝑆 𝑗 𝑇 −𝑡 ) due to Law (−→
+
+𝑋 𝑡 ) = Law (←−
+
+𝑋 𝑇 −𝑡 ), where we recall 𝑆 𝑗 𝑇 −𝑡 in (5). We then decompose 
+
+𝑍 (𝑖, 𝑗 ) 
+
+> 𝑡
+
+(e𝑌 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+) = Ψ 1 + Ψ2 + Ψ3 where 
+
+Ψ1 ≡ − 𝑚 𝑇 −𝑡 (e𝑌 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+− 𝑚 𝑇 −𝑡 𝜇 𝑗 )⊤ (𝑆 𝑖 𝑇 −𝑡 )−1 (𝜇 𝑗 − 𝜇 𝑖 );
+
+Ψ2 ≡ 12 (e𝑌 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+− 𝑚 𝑇 −𝑡 𝜇 𝑗 )⊤  (𝑆 𝑗 𝑇 −𝑡 )−1 − ( 𝑆 𝑖 𝑇 −𝑡 )−1 (e𝑌 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+− 𝑚 𝑇 −𝑡 𝜇 𝑗 );
+
+Ψ3 ≡ 12 log det 𝑆 𝑗 𝑇 −𝑡   
+
+> det 𝑆 𝑖 𝑇 −𝑡
+
+− 𝑚 2  
+
+> 𝑇 −𝑡
+> 2
+
+(𝜇 𝑗 − 𝜇 𝑖 )⊤ (𝑆 𝑖 𝑇 −𝑡 )−1 (𝜇 𝑗 − 𝜇 𝑖 ).
+
+The first term follows a Gaussian distribution with mean 0 and variance given as Var [Ψ1] = 𝑚 2  
+
+> 𝑇 −𝑡
+
+(𝜇 𝑗 − 𝜇 𝑖 )⊤ (𝑆 𝑖 𝑇 −𝑡 )−1 (𝑆 𝑗 𝑇 −𝑡 )( 𝑆 𝑖 𝑇 −𝑡 )−1 (𝜇 𝑗 − 𝜇 𝑖 ) ≡ 𝒯 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ).
+
+Thus, the standard high probability argument for the Gaussian variable gives: for 𝛿 ∈ ( 0, 1),
+
+P
+
+
+
+|Ψ1 | ≥ √︃ 2Var [Ψ1] log 2
+
+> 𝛿
+
+
+
+≤ 𝛿  
+
+> 2
+
+.
+
+The second term Ψ2, quadratic w.r.t. the Gaussian e𝑌 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+− 𝑚 𝑇 −𝑡 𝜇 𝑗 ∼ N ( 0, 𝑆 𝑗 𝑇 −𝑡 ) is expressed as 
+
+Ψ2 = 𝑧 ⊤ 𝐴𝑧 with 
+
+𝐴 ≡ 12
+
+ 𝐼 𝐷 − ( 𝑆 𝑗 𝑇 −𝑡 )1/2 (𝑆 𝑖 𝑇 −𝑡 )−1 (𝑆 𝑗 𝑇 −𝑡 )1/2, 𝑧 ∼ N ( 0, 𝐼 𝐷 ).
+
+Then, application of the concentration inequality [Hsu et al., 2012, Proposition 1] to Ψ2 yields: for 
+
+𝛿 ∈ ( 0, 1),
+
+P
+
+
+
+Ψ2 ≥ tr ( 𝐴 ) + √︃ 4tr ( 𝐴 2) log 2 
+
+> 𝛿
+
++ 2∥ 𝐴 ∥2 log 2
+
+> 𝛿
+
+
+
+≤ 𝛿  
+
+> 2
+
+.
+
+Thus with probability at least 1 − 𝛿 , we have: 
+
+𝑍 (𝑖, 𝑗 ) 
+
+> 𝑡
+
+(e𝑌 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+) ≤ Ψ3 + tr ( 𝐴 ) + √︃ 2Var [Ψ1] log 2 
+
+> 𝛿
+
++√︃ 2Var [Ψ2] log 2 
+
+> 𝛿
+
++ 2∥ 𝐴 ∥2 log 2
+
+> 𝛿
+
+= −KL   −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ +√︃ 2𝒯 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) log 2 
+
+> 𝛿
+
++√︃ 2𝒰 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) log 2 
+
+> 𝛿
+
++ 2𝒱 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) log 2 
+
+> 𝛿
+
+,
+
+where we used: Var [Ψ2] = 2tr ( 𝐴 2) ≡ 𝒰 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) and 
+
+Ψ3 + tr ( 𝐴 ) = −KL   −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+,
+
+which completes the proof of Lemma 3.1. 30 Y. Iguchi and P. Fearnhead 
+
+B.2. Proof of Theorem 1 
+
+Recall the definition of 𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+in (9). We set 𝛿 = 𝐷 −𝑞 , 𝑞 ≥ 2 and write 𝑟 ≡ log 2𝐾 𝛿 = Θ  log (𝐾 𝐷 ), and 
+
+𝑆 = SNR 𝑇 −𝑡 for convenience. We also write 𝒯 (𝑡 ) = 𝒯 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ), 𝒰 (𝑡 ) = 𝒰 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) and 𝒱 (𝑡 ) = 𝒱 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 )
+
+whose definitions are found in (9). Then, the inequality 
+
+𝐶 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡, 𝛿 /𝐾 ) ≥ 𝜂 KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ (55) is equivalent to (1 − 𝜂 ) ≥ 𝐺 (𝑡 ) with 𝐺 (𝑡 ) = 𝑁 (𝑡 )/ 𝐷 (𝑡 ), where 
+
+𝑁 (𝑡 ) ≡ log 𝜋 𝑖  
+
+> 𝜋 𝑗
+
++√︁ 2𝒯 (𝑡 )𝑟 +√︁ 2𝒰 (𝑡 )𝑟 + 2𝒱 (𝑡 )𝑟 ; (56) 
+
+𝐷 (𝑡 ) ≡ KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+. (57) We will derive a sufficient condition for (55). To this end, we consider a simplified upper bound for 𝐺 (𝑡 ),denoted by e𝐺 (𝑡 ), that involves only 𝑆 = SNR 𝑇 −𝑡 as a function of time 𝑡 , and then solve the inequality 1 − 𝜂 ≥ e𝐺 (𝑡 ), which is sufficient for the original condition (55). First, we consider an upper bound of the term 𝑁 (𝑡 ). Noticing that KL   −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ = KL 𝑚 
+
+  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ + KL 𝑐 
+
+  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ with KL 𝑚 
+
+  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ := 𝑚 2  
+
+> 𝑇 −𝑡
+> 2
+
+∥𝜇 𝑖 − 𝜇 𝑗 ∥2    
+
+> (𝑆 𝑖 𝑇 −𝑡 )−1
+
+; (58) KL 𝑐 
+
+ −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ := 12
+
+
+
+tr  𝑆 𝑗 𝑇 −𝑡 (𝑆 𝑖 𝑇 −𝑡 )−1 − 𝐷 − log det 𝑆 𝑗 𝑇 −𝑡   
+
+> det 𝑆 𝑖 𝑇 −𝑡
+
+
+
+, (59) we deduce from the bound (13) in Lemma 3.2 that √︁ 
+
+2𝒯 (𝑡 )𝑟 ≤√︃ 4𝑟  1 + 𝑆 · ∥ Σ𝑖 − Σ 𝑗 ∥2
+
+KL 𝑚 
+
+ −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+
+
+≤ 2𝑟 
+
+ 1+𝑆 · ∥ Σ𝑖 −Σ 𝑗 ∥2
+
+  
+
+> (1−𝜂 )
+
++ 1− 𝜂  
+
+> 2
+
+KL 𝑚 
+
+ −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+, (60) where we used Arithmetic/Geometric Mean inequality: √𝑎𝑏 ≤ 𝑎   
+
+> 2(1−𝜂 )
+
++ (1− 𝜂 )𝑏  
+
+> 2
+
+, 𝑎, 𝑏 > 0. Similarly, we obtain from Lemma C.1 in Appendix C that √︁ 
+
+2𝒰 (𝑡 )𝑟 ≤ 2𝑟 
+
+ 1+𝑆 · ∥ Σ 𝑗 ∥2
+
+  
+
+> (1−𝜂 )
+
++ 1− 𝜂  
+
+> 2
+
+KL 𝑐 
+
+ −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+. (61) Substitution of the bounds (60–61) and (15) into (56) with Assumptions 1, 2, 3 leads to 
+
+𝑁 (𝑠 ) ≤ 𝐶 1 + 4𝑟   
+
+> 1−𝜂
+
++ 𝐶 2 𝐷 𝛼  10 −4𝜂  
+
+> 1−𝜂
+
+
+
+𝑟 · 𝑆 + 1− 𝜂  
+
+> 2
+
+KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+,
+
+where the constants 𝐶 1, 𝐶 2 are collected in Assumptions 1 and 2. Thus, we obtain 
+
+𝐺 (𝑡 ) ≤ 𝐶 1+ 4𝑟     
+
+> 1−𝜂 +𝐶 2𝐷 𝛼
+
+ 10 −4𝜂  
+
+> 1−𝜂
+
+ 
+
+> 𝑟 ·𝑆
+> KL
+
+ −→𝑝 [ 𝑗 ]    
+
+> 𝑇 −𝑡 | | −→𝑝 [𝑖 ]
+> 𝑇 −𝑡
+
+ + 1− 𝜂  
+
+> 2
+
+≤ 𝐶 1+ 4𝑟     
+
+> 1−𝜂 +𝐶 2𝐷 𝛼
+
+ 10 −4𝜂  
+
+> 1−𝜂
+
+ 
+
+> 𝑟 ·𝑆 𝑆
+> 2
+
+ 𝐶 3
+
+> 𝐶 5
+
+2  
+
+> ·𝐷 2
+> 𝑆 ·tr (Σ𝑖 )+ 𝐷
+
++ 1− 𝜂  
+
+> 2
+
+≡ e𝐺 (𝑡 ),
+
+where in the second inequality we used Lemma C.2 under Assumptions 3 and 4, provided in Appendix C. Then, 1 − 𝜂 ≥ 𝐺 (𝑡 ) is satisfied if 1 − 𝜂 ≥ e𝐺 (𝑡 ) holds, which is simplified as:   
+
+> 1−𝜂
+> 2
+
+· e𝐶 2 𝐷 2  
+
+> 𝑆 ·tr (Σ𝑖 )+ 𝐷
+
+· 𝑆  
+
+> 2
+
+≥ ℬ + 𝒞 𝑆, Diffusion Models for Clustered Data 31 
+
+where we have set: 
+
+ℬ ≡ 𝐶 1 + 4𝑟   
+
+> 1−𝜂
+
+> 0, 𝒞 ≡ 𝐶 2 𝐷 𝛼  10 −4𝜂  
+
+> 1−𝜂
+
+
+
+𝑟 > 0, e𝐶 ≡ 𝐶 3 
+
+> 𝐶 5
+
+> 0.
+
+Rearranging the terms with respect to 𝑆 , we obtain the following quadratic inequality: 
+
+𝒞 tr (Σ𝑖 ) 𝑆 2 − 𝒜 𝑆 + ℬ𝐷 ≤ 0, where 𝒜 ≡ 1− 𝜂  
+
+> 4
+
+e𝐶 2 𝐷 2 − 𝒞 𝐷 − ℬ tr (Σ𝑖 ). (62) Under Assumption 2, we have tr (Σ𝑖 ) =
+
+> 𝐷
+
+∑︁ 
+
+> 𝑘 =1
+
+𝜆 𝑘 (Σ𝑖 ) ≤ 𝐶 2 𝑀 𝑖 𝐷 𝛼 + 𝜈 𝑖 ≤ 𝐶 2 (𝐷 𝛼 + 𝑅 )𝑀 † (63) where the constants 𝐶 2 > 0, 𝜈 𝑖 ≥ 0, 𝑅 ∈ [ 0, 1) are collected in Assumption 2. Thus, there exists 𝐷 1 ∈ N
+
+such that for all 𝐷 ≥ 𝐷 1, we have the discriminant strictly positive, i.e., 
+
+Δ ≡ 𝒜 2 − 4𝒞 tr (Σ𝑖 )ℬ𝐷 > 0.
+
+This is because 𝒜 2 = Θ (𝐷 4) and 𝒞 tr (Σ𝑖 )ℬ𝐷 = O( 𝐷 1+2𝛼 (log 𝐷 )2), and thus the leading term dominates the lower-order term for any 𝛼 ∈ [ 0, 1). Under Δ > 0, solving (62) under 𝑆 ≥ SNR 𝑇 leads to 
+
+𝑆 ∈ max {SNR 𝑇 , 𝑆 }, 𝑆 , where 
+
+𝑆 = 𝒜 −√Δ  
+
+> 2𝒞 tr (Σ𝑖 )
+
+, 𝑆 = 𝒜 +√Δ  
+
+> 2𝒞 tr (Σ𝑖 )
+
+.
+
+First, we note from (63) that for all sufficiently large 𝐷 ,
+
+𝑆 > 𝒜   
+
+> 2𝒞 tr (Σ𝑖 )
+
+≳ 𝐷 2   
+
+> 𝐷 2𝛼 log 𝐷
+
+= 𝐷 2−2𝛼   
+
+> log 𝐷
+
+,
+
+where the right-hand side is an increasing function of 𝐷 since 𝛼 < 1. Therefore, we have: for any fixed early stopping criterion 𝜀 ∈ ( 0, 1), there exists 𝐷 2 such that for all 𝐷 ≥ 𝐷 2, the upper root 𝑆 
+
+is strictly larger than the early stopping threshold 𝑆 𝜀 = SNR 𝜀 = 𝑚 2 
+
+> 𝜀
+
+/𝜎 2 
+
+> 𝜀
+
+, which is independent of 
+
+𝐷 . Notice that 𝑆 = SNR 𝑇 −𝑡 is a non-decreasing function of the physical time 𝑡 . Thus, we have: for all 𝐷 ≥ 𝐷 † = max {𝐷 1, 𝐷 2}, the target condition (55) holds for all 𝑡 ∈ [ 0, 𝑇 − 𝜀 ] satisfying SNR 𝑇 −𝑡 ∈ max {SNR 𝑇 , 𝑆 }, SNR 𝜀 
+
+, equivalently to 𝑡 ∈ max {0, 𝑇 + 12 log 𝑆  
+
+> 1+𝑆
+
+}, 𝑇 − 𝜀 .We now study the scale of the threshold 𝑆 . We multiply the numerator and denominator by the conjugate 𝒜 + √Δ and have from Δ > 0 and the definition of terms ℬ and 𝒜 that 
+
+𝑆 = 2ℬ𝐷  
+
+> 𝒜 +√Δ
+
+≤ 2ℬ𝐷  
+
+> 𝒜
+
+= O
+
+ 𝐷 log (𝐾 𝐷 )
+
+> 𝐷 2
+
+
+
+= O
+
+ log (𝐾 𝐷 )
+
+> 𝐷
+
+
+
+, (64) where we used 𝑟 = Θ  log (𝐾 𝐷 ). Similarly, we have 𝑆 ≥ ℬ𝐷  
+
+> 𝒜
+
+≳ log (𝐾 𝐷 ) 
+
+> 𝐷
+
+. The first part of the statement has now been proved. Finally, we prove the second part of the statement. For any 𝛽 ∈ (0, 1), directly solving exp  −𝜂 KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ ≤ 𝛽 gives KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ ≥ 1 
+
+> 𝜂
+
+log 1 
+
+> 𝛽
+
+(65) under 𝑡 ∈ max 0, 𝑇 + 12 log 𝑆  
+
+> 1+𝑆
+
+, 𝑇 − 𝜀 . We see that the inequality (65) is satisfied if the lower bound of left-hand-side given in Lemma C.2 is no lower than 1 
+
+> 𝜂
+
+log 1 
+
+> 𝛽
+
+, that is, SNR 𝑇 −𝑡 
+
+> 2
+
+ 𝐶 3
+
+> 𝐶 5
+
+2
+
+· 𝐷 2    
+
+> SNR 𝑇 −𝑡 ·tr (Σ𝑖 )+ 𝐷
+
+≥ 
+
+> 1
+> 𝜂
+
+log 1 
+
+> 𝛽
+
+. Solving the latter inequality with respect to SNR 𝑇 −𝑡 under the range SNR 𝑇 −𝑡 ∈ [ 𝑆, SNR 𝜀 ]32 Y. Iguchi and P. Fearnhead 
+
+leads to (19), and then the second part of the statement has been shown due to the high probability bound (17). Proof of Theorem 1 is now complete. 
+
+C. Auxiliary Results for Theorem 1 
+
+C.1. First Result 
+
+Lemma C.1. Let 𝑖, 𝑘 ∈ [ 𝐾 ] and 𝑌 = (𝑆 𝑖 𝑇 −𝑡 )1/2 (𝑆 𝑘 𝑇 −𝑡 )−1 (𝑆 𝑖 𝑇 −𝑡 )1/2 − 𝐼 𝐷 . We have: 
+
+tr (𝑌 2) ≤ 4
+
+
+
+SNR 𝑇 −𝑡 ∥Σ𝑖 ∥2 + 1
+
+
+
+· KL 𝑐 
+
+ −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡
+
+,
+
+where KL 𝑐 
+
+ −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡
+
+ is defined in (59). Proof. Let {𝜂 𝑙 }𝑙 =1,...,𝐷 be the eigenvalues of (𝑆 𝑖 𝑇 −𝑡 )1/2 (𝑆 𝑘 𝑇 −𝑡 )−1 (𝑆 𝑖 𝑇 −𝑡 )1/2. Then, the eigen-values of 𝑌 are {𝜂 𝑙 − 1}𝑙 , yielding tr (𝑌 2) = Í𝐷 𝑙 =1 (𝜂 𝑙 − 1)2. Because 𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑘 𝑇 −𝑡 )−1 is sim-ilar to (𝑆 𝑖 𝑇 −𝑡 )1/2 (𝑆 𝑘 𝑇 −𝑡 )−1 (𝑆 𝑖 𝑇 −𝑡 )1/2, they share the identical eigenvalues 𝜂 𝑙 . We thus get KL 𝑐 
+
+ −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡
+
+ = 12
+
+Í𝐷 𝑙 =1 (𝜂 𝑙 − 1 − log 𝜂 𝑙 ). The maximum eigenvalue 𝜂 1 is bounded by 
+
+𝑆 𝑖 𝑇 −𝑡 2 (𝑆 𝑘 𝑇 −𝑡 )−1 
+
+> 2
+
+≤ 𝐶 𝜂 (𝑡 ) with 𝐶 𝜂 (𝑡 ) ≡ (SNR 𝑇 −𝑡 ∥Σ𝑖 ∥2 + 1). By elementary calculus, the algebraic inequality (𝜂 − 1)2 ≤ 2𝐶 𝜂 (𝑡 )( 𝜂 − 1 − log 𝜂 ) holds strictly for all 𝜂 ∈ ( 0, 𝐶 𝜂 (𝑡 )] . Applying this inequality to each eigenvalue 𝜂 𝑙 and summing them completes the proof. □
+
+C.2. Second Result 
+
+Lemma C.2 (Upper and lower bounds for KL divergence). It holds under Assumptions 3 and 4 that: for any 𝑖, 𝑗 ∈ [ 𝐾 ],  
+
+> SNR 𝑇 −𝑡
+> 2
+
+·
+
+ 𝐶 3
+
+> 𝐶 5
+
+2 𝐷 2   
+
+> SNR 𝑇 −𝑡 tr (Σ𝑖 )+ 𝐷
+
+≤ KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ ≤ SNR 𝑇 −𝑡  
+
+> 2
+
+· 𝐶 4 𝐷 + SNR 2  
+
+> 𝑇 −𝑡
+> 4
+
+· ∥ Σ𝑖 − Σ 𝑗 ∥2 
+
+> 𝐹
+
+,
+
+(66) 
+
+where the constants 𝐶 3, 𝐶 4, 𝐶 5 > 0 are collected in Assumptions 3 and 4. Proof. We begin with proving the lower bound of (66). Since the covariance matrix Σ𝑖 is symmetric due to Assumption 2, its eigen-decomposition gives Σ𝑖 = 𝑈 (𝑖 ) Λ(𝑖 )𝑈 (𝑖 ),⊤ with the orthogonal matrix 
+
+𝑈 (𝑖 ) ≡ [ 𝑢 1 (𝑖 ), . . . , 𝑢 𝐷 (𝑖 )] and Λ(𝑖 ) = diag  𝜆 1 (Σ𝑖 ), . . . , 𝜆 𝐷 (Σ𝑖 ). For notational simplicity, we write 
+
+𝑣 𝑘 = ⟨𝜇 𝑗 − 𝜇 𝑖 , 𝑢 𝑘 (𝑖 )⟩ . Then, 𝑆 𝑖 𝑇 −𝑡 = 𝑈 (𝑖 )  𝑚 2  
+
+> 𝑇 −𝑡
+
+Λ(𝑖 ) + 𝜎 2  
+
+> 𝑇 −𝑡
+
+𝐼 𝐷 
+
+𝑈 (𝑖 ),⊤ and (58) yield that KL  −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ ≥ KL 𝑚 
+
+ −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ = 𝑚 2 
+
+> 𝑇 −𝑡
+> 2
+> 𝐷
+
+∑︁      
+
+> 𝑘 =1
+> 𝑣 2
+> 𝑘
+> 𝑚 2
+> 𝑇 −𝑡 𝜆 𝑘 (Σ𝑖 )+ 𝜎 2
+> 𝑇 −𝑡
+
+. (67) Further, the Cauchy-Schwarz inequality gives 
+
+> 𝐷
+
+∑︁      
+
+> 𝑘 =1
+> 𝑣 2
+> 𝑘
+> 𝑚 2
+> 𝑇 −𝑡 𝜆 𝑘 (Σ𝑖 )+ 𝜎 2
+> 𝑇 −𝑡
+
+≥
+
+Í𝐷 𝑘 =1 |𝑣 𝑘 |
+
+2        
+
+> Í𝐷 𝑘 =1(𝑚 2
+> 𝑇 −𝑡 𝜆 𝑘 (Σ𝑖 )+ 𝜎 2
+> 𝑇 −𝑡 )
+
+=
+
+Í𝐷 𝑘 =1 |𝑣 𝑘 |
+
+2      
+
+> 𝑚 2
+> 𝑇 −𝑡 tr (Σ𝑖 )+ 𝜎 2
+> 𝑇 −𝑡 𝐷
+
+. (68) For the numerator in the above lower bound, we have Í𝐷 𝑘 =1 |𝜈 𝑘 | ≥ 𝐶 3 
+
+> 𝐶 5
+
+𝐷 under Assumption 3, which comes from 
+
+> 𝐷
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑣 2 
+
+> 𝑘
+
+= ∥𝜇 𝑖 − 𝜇 𝑗 ∥2 ≥ 𝐶 3 𝐷, 
+
+> 𝐷
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑣 2 
+
+> 𝑘
+
+≤ 𝐶 5
+
+> 𝐷
+
+∑︁ 
+
+> 𝑘 =1
+
+|𝑣 𝑘 |.Diffusion Models for Clustered Data 33 
+
+We thus obtain the desired lower bound by recalling the definition of SNR: SNR 𝑇 −𝑡 = 𝑚 2  
+
+> 𝑇 −𝑡
+
+/𝜎 2  
+
+> 𝑇 −𝑡
+
+. We now show the upper bound of (66). The upper bound for the mean part of the KL (58) is immediately obtained from (67) with Assumption 3 as: KL 𝑚 
+
+ −→𝑝 [ 𝑗 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [𝑖 ] 
+
+> 𝑇 −𝑡
+
+ ≤ 𝑚 2  
+
+> 𝑇 −𝑡
+> 2𝜎 2
+> 𝑇 −𝑡
+> 𝐷
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑣 2 
+
+> 𝑘
+
+= SNR 𝑇 −𝑡  
+
+> 2
+
+∥𝜇 𝑖 − 𝜇 𝑗 ∥2 ≤ SNR 𝑇 −𝑡  
+
+> 2
+
+· 𝐶 4 𝐷. 
+
+We now consider the covariance part of the KL divergence, given in (59). Introducing e𝑆 𝜆 = 𝐼 𝐷 +
+
+𝜆 (𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑘 𝑇 −𝑡 )−1 − 𝐼 𝐷 ), 𝜆 ∈ [ 0, 1], we use standard matrix calculus [Petersen et al., 2008] to get: log det  𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑘 𝑇 −𝑡 )−1 =
+
+∫ 10 
+
+> 𝑑 𝑑𝜆
+
+log det e𝑆 𝜆 𝑑𝜆 =
+
+∫ 10
+
+tr 
+
+h
+
+(e𝑆 𝜆 )−1  𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑘 𝑇 −𝑡 )−1 − 𝐼 𝐷 
+
+i
+
+𝑑𝜆. 
+
+Thus, (59) is expressed as: KL 𝑐 
+
+ −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡
+
+ = 12
+
+∫ 10
+
+tr 
+
+h 𝐼 𝐷 − ( e𝑆 𝜆 )−1   𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑘 𝑇 −𝑡 )−1 − 𝐼 𝐷 
+
+i
+
+𝑑𝜆 
+
+= 12
+
+∫ 10
+
+𝜆 · tr 
+
+h
+
+(e𝑆 𝜆 )−1  𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑘 𝑇 −𝑡 )−1 − 𝐼 𝐷 
+
+2i
+
+𝑑𝜆. (69) The expression e𝑆 𝜆 =  𝜆𝑆 𝑖 𝑇 −𝑡 + ( 1 − 𝜆 )𝑆 𝑘 𝑇 −𝑡 
+
+ (𝑆 𝑘 𝑇 −𝑡 )−1 and the cycliciy of the trace operator yield tr 
+
+h
+
+(e𝑆 𝜆 )−1  𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑘 𝑇 −𝑡 )−1 − 𝐼 𝐷 
+
+2i
+
+= tr 
+
+h 𝜆𝑆 𝑖 𝑇 −𝑡 + ( 1 − 𝜆 )𝑆 𝑘 𝑇 −𝑡 
+
+ −1 (𝑆 𝑖 𝑇 −𝑡 − 𝑆 𝑘 𝑇 −𝑡 )( 𝑆 𝑘 𝑇 −𝑡 )−1 (𝑆 𝑖 𝑇 −𝑡 − 𝑆 𝑘 𝑇 −𝑡 )
+
+i
+
+≤ ∥ 𝑆 𝑖 𝑇 −𝑡 − 𝑆 𝑘 𝑇 −𝑡 ∥2 
+
+> 𝐹
+
+· ∥( 𝑆 𝑘 𝑇 −𝑡 )−1 ∥2 · ∥( 𝜆𝑆 𝑖 𝑇 −𝑡 + ( 1 − 𝜆 )𝑆 𝑘 𝑇 −𝑡 )−1 ∥2 ≤ ∥ 𝑆 𝑖 𝑇 −𝑡 − 𝑆 𝑘 𝑇 −𝑡 ∥2 
+
+> 𝐹
+
+· 1 
+
+> 𝜎 4
+> 𝑇 −𝑡
+
+, (70) where we used (𝑆 𝑘 𝑇 −𝑡 )−1 ⪯ 1 
+
+> 𝜎 2
+> 𝑇 −𝑡
+
+𝐼 𝐷 and the operator convexity of 𝑧 ↦ → 𝑧 −1 for positive definite matrices to get 
+
+(𝜆𝑆 𝑖 𝑇 −𝑡 + ( 1 − 𝜆 )𝑆 𝑘 𝑇 −𝑡 )−1 ⪯ 𝜆 (𝑆 𝑖 𝑇 −𝑡 )−1 + ( 1 − 𝜆 )( 𝑆 𝑘 𝑇 −𝑡 )−1 ⪯ 1 
+
+> 𝜎 2
+> 𝑇 −𝑡
+
+𝐼 𝐷 .
+
+Substitution of (70) into (69) together with 𝑆 𝑖 𝑇 −𝑡 − 𝑆 𝑘 𝑇 −𝑡 = 𝑚 2  
+
+> 𝑇 −𝑡
+
+(Σ𝑖 − Σ𝑘 ) yields KL 𝑐 
+
+ −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡
+
+ ≤ SNR 2  
+
+> 𝑇 −𝑡
+> 4
+
+∥Σ𝑖 − Σ𝑘 ∥2 
+
+> 𝐹
+
+,
+
+which completes the proof. □
+
+D. Proof of Lemma 3.2 
+
+Proof of (15) . We start with the easiest term 𝒱 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) = ∥𝐼 𝐷 − 𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑗 𝑇 −𝑡 )−1 ∥2. We have 
+
+𝐼 𝐷 − 𝑆 𝑖 𝑇 −𝑡 (𝑆 𝑗 𝑇 −𝑡 )−1 =  𝑆 𝑗 𝑇 −𝑡 − 𝑆 𝑖 𝑇 −𝑡 
+
+ (𝑆 𝑗 𝑇 −𝑡 )−1 = 𝑚 2 
+
+> 𝑇 −𝑡
+
+ Σ 𝑗 − Σ𝑖 
+
+ (𝑆 𝑗 𝑇 −𝑡 )−1 (71) and immediately get the desired bound from (𝑆 𝑗 𝑇 −𝑡 )−1 ⪯ 1 
+
+> 𝜎 2
+> 𝑇 −𝑡
+
+𝐼 𝐷 .34 Y. Iguchi and P. Fearnhead 
+
+Proof of (13) . We have 
+
+𝒯 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) := 𝑚 2  
+
+> 𝑇 −𝑡
+
+𝜇 𝑖 − 𝜇 𝑗 2          
+
+> (𝑆 𝑖 𝑇 −𝑡 )−1(𝑆 𝑗 𝑇 −𝑡 ) ( 𝑆 𝑖 𝑇 −𝑡 )−1
+
+= 𝑚 2  
+
+> 𝑇 −𝑡
+
+𝜇 𝑖 − 𝜇 𝑗 2    
+
+> (𝑆 𝑖 𝑇 −𝑡 )−1
+
++ 𝑚 2  
+
+> 𝑇 −𝑡
+
+𝜇 𝑖 − 𝜇 𝑗 2               
+
+> (𝑆 𝑖 𝑇 −𝑡 )−1(𝑆 𝑗 𝑇 −𝑡 ) ( 𝑆 𝑖 𝑇 −𝑡 )−1− ( 𝑆 𝑖 𝑇 −𝑡 )−1
+
+. (72) and 
+
+(𝑆 𝑖 𝑇 −𝑡 )−1 (𝑆 𝑗 𝑇 −𝑡 )( 𝑆 𝑖 𝑇 −𝑡 )−1 − ( 𝑆 𝑖 𝑇 −𝑡 )−1
+
+= 𝑚 2  
+
+> 𝑇 −𝑡
+
+(𝑆 𝑖 𝑇 −𝑡 )−1  Σ 𝑗 − Σ𝑖 
+
+ (𝑆 𝑖 𝑇 −𝑡 )−1 ⪯ SNR 𝑇 −𝑡 ∥Σ𝑖 − Σ 𝑗 ∥2 (𝑆 𝑖 𝑇 −𝑡 )−1.
+
+Substitution of this into (72) yields the desired bound. 
+
+Proof of (14 ). The formula (71) gives 
+
+𝒰 [𝑖, 𝑗 ] 
+
+> 𝐷
+
+(𝑡 ) := 12 tr    𝐼 𝐷 − 𝑆 𝑗 𝑇 −𝑡 (𝑆 𝑖 𝑇 −𝑡 )−12 = 𝑚 4  
+
+> 𝑇 −𝑡
+> 2
+
+tr 
+
+ Σ𝑖 − Σ 𝑗 
+
+2 (𝑆 𝑖 𝑇 −𝑡 )−2
+
+≤ SNR 2  
+
+> 𝑇 −𝑡
+> 2
+
+∥Σ𝑖 − Σ 𝑗 ∥2 
+
+> 𝐹
+
+,
+
+which completes the proof of Lemma 3.2. 
+
+E. Proofs of the Auxiliary Results for Theorem 2 
+
+E.1. Proof of Lemma 3.4 
+
+From the definition of posterior covariance, we have Σ𝑇 −𝑡 (𝑦 ) ≡ Cov [−→
+
+𝑋 0 |−→
+
+𝑋 𝑇 −𝑡 = 𝑦 ] =
+
+E[( −→
+
+𝑋 0)⊗2 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦 ] −  E[−→
+
+𝑋 0 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦 ] ⊗2. Using the posterior weights and (25), we express the conditional means as: 
+
+E[( −→
+
+𝑋 0)⊗2 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦 ] =
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 ) · 
+
+n
+
+Cov [−→
+
+𝑋 0 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦, −→
+
+𝑋 0 ∼ 𝑃 [ 𝑘 ]
+
+> data
+
+] +  𝜇 [ 𝑘 ] (𝑡, 𝑦 ) ⊗2o
+
+;
+
+E[−→
+
+𝑋 0 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦 ] =
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )𝜇 [ 𝑘 ] (𝑡, 𝑦 ).
+
+Substituting these into the formula of Σ𝑇 −𝑡 (𝑦 ) gives 
+
+Σ𝑇 −𝑡 (𝑦 ) =
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 ) Cov [−→
+
+𝑋 0 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦, −→
+
+𝑋 0 ∼ 𝑃 [ 𝑘 ]
+
+> data
+
+] + 
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )  𝜇 [ 𝑘 ] (𝑡, 𝑦 ) ⊗2
+
+−
+
+> 𝐾
+
+∑︁  
+
+> 𝑘 1,𝑘 2=1
+
+𝑊 [ 𝑘 1 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )𝑊 [ 𝑘 2 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )𝜇 [ 𝑘 1 ] (𝑡, 𝑦 )𝜇 [ 𝑘 2 ] (𝑡, 𝑦 )⊤
+
+=
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑊 [ 𝑘 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 ) Cov [−→
+
+𝑋 0 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦, −→
+
+𝑋 0 ∼ 𝑃 [ 𝑘 ]
+
+> data
+
+]+ 12
+
+> 𝐾
+
+∑︁  
+
+> 𝑘 1,𝑘 2=1
+
+𝑊 [ 𝑘 1 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )𝑊 [ 𝑘 2 ] 
+
+> 𝐷
+
+(𝑡, 𝑦 )  𝜇 [ 𝑘 1 ] (𝑡, 𝑦 ) − 𝜇 [ 𝑘 2 ] (𝑡, 𝑦 ) ⊗2.
+
+Finally, the conditional covariance formula for joint Gaussian distributions deduces that Cov [−→
+
+𝑋 0 | −→
+
+𝑋 𝑇 −𝑡 = 𝑦, −→
+
+𝑋 0 ∼ 𝑃 [ 𝑘 ]
+
+> data
+
+] = Σ 𝑘 − 𝑚 2  
+
+> 𝑇 −𝑡
+
+Σ𝑘 (𝑆 𝑘 𝑇 −𝑡 )−1Σ𝑘 = 𝜎 2  
+
+> 𝑇 −𝑡
+
+Σ𝑘 (𝑆 𝑘 𝑇 −𝑡 )−1,
+
+which concludes Lemma 3.4. Diffusion Models for Clustered Data 35 
+
+E.2. Proof of Lemma 5.2 
+
+First, we have for 𝜌 > 0log 
+
+
+
+E
+
+h
+
+max     
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+exp 
+
+
+
+𝜌 · 𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i  
+
+≤ log 
+
+∑︁    
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+Eexp  𝜌 · 𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2 
+
+≤ log 
+
+∑︁    
+
+> 𝑘 1,𝑘 2∈ [ 𝐾 ]
+
+Ö    
+
+> 𝑘 ∈ { 𝑘 1,𝑘 2}
+
+√︃ 
+
+Eexp  4𝜌 · 𝜇 [ 𝑘 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [𝑖 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2 
+
+.
+
+where in the last line we used ∥𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+)∥ 2 ≤ 2∥𝜇 [ 𝑘 1 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [𝑖 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+)∥ 2 +∥𝜇 [ 𝑘 2 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [𝑖 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+)∥ 2 and Cauchy-Schwartz inequality. For notational simplicity, we write 
+
+𝑟 𝑗 = 𝜎 2  
+
+> 𝑇 −𝑡 𝑗
+
+/𝑚 𝑇 −𝑡 𝑗 and recall 𝜇 [ 𝑘 ] (𝑡, 𝑥 ) = E[−→
+
+𝑋 0 |−→
+
+𝑋 𝑇 −𝑡 = 𝑥, −→
+
+𝑋 0 ∼ 𝑃 [ 𝑘 ]
+
+> data
+
+]. Then, Tweedie’s formula for 
+
+∇ log −→𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 ), (𝑡, 𝑥 ) ∈ [ 0, 𝑇 ) × R𝐷 gives 
+
+𝜇 [ 𝑘 ] (𝑡, 𝑥 ) = 1  
+
+> 𝑚 𝑇 −𝑡
+
+·  𝑥 + 𝜎 2  
+
+> 𝑇 −𝑡
+
+∇ log −→𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 )
+
+and then 
+
+𝜇 [ 𝑘 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [𝑖 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) = 𝑟 𝑗 
+
+
+
+∇ log −→𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡 𝑗
+
+(−→
+
+𝑋 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+) − ∇ log −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+(−→
+
+𝑋 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+)
+
+
+
+> 𝑑
+
+= 𝑟 𝑗 ·  𝐹 𝑘,𝑖 ( 𝑗 ) + 𝐺 𝑘,𝑖 ( 𝑗 ) (73) where 
+
+𝐹 𝑘,𝑖 ( 𝑗 ) = 𝑚 𝑇 −𝑡 𝑗 · ( 𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 (𝜇 𝑘 − 𝜇 𝑖 ), 𝐺 𝑘,𝑖 ( 𝑗 ) ∼ N  0, 𝐻 𝑘,𝑖 ( 𝑗 )
+
+with 𝐻 𝑘,𝑖 ( 𝑗 ) defined in (40). The moment generating function for the quadratic of Gaussians under the expression (73) gives log E
+
+h
+
+exp 
+
+
+
+4𝜌 · 𝜇 [ 𝑘 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) − 𝜇 [𝑖 ] (𝑍 [𝑖 ] 
+
+> 𝑗
+
+) 2i 
+
+= − 12 log det  𝐼 𝐷 − 8𝜌𝑟 2 
+
+> 𝑗
+
+𝐻 𝑘,𝑖 ( 𝑗 ) + 4𝜌𝑟 2 
+
+> 𝑗
+
+(𝐹 𝑘,𝑖 ( 𝑗 )) ⊤  𝐼 𝐷 − 8𝜌𝑟 2 
+
+> 𝑗
+
+𝐻 𝑘,𝑖 ( 𝑗 ) −1 𝐹 𝑘,𝑖 ( 𝑗 ) (74) for any 𝜌 > 0 such that 𝐼 𝐷 − 8𝜌𝑟 2 
+
+> 𝑗
+
+𝐻 𝑘,𝑖 ( 𝑗 ) is positive definite, which is satisfied if 𝜌 < 1/( 8𝑟 2 
+
+> 𝑗
+
+∥𝐻 𝑘,𝑖 ( 𝑗 )∥ 2).Thus, under 𝜌 ≤ 1/( 16 𝑟 2 
+
+> 𝑗
+
+max 𝑘,𝑖 ∈ [ 𝐾 ] ∥𝐻 𝑘,𝑖 ( 𝑗 )∥ 2), we have 
+
+− 12 log det  𝐼 𝐷 − 8𝜌𝑟 2 
+
+> 𝑗
+
+𝐻 𝑘,𝑖 ( 𝑗 ) = − 12
+
+> 𝐷
+
+∑︁ 
+
+> ℓ=1
+
+log  1 − 8𝜌𝑟 2 
+
+> 𝑗
+
+𝜆 ℓ (𝐻 𝑘,𝑖 ( 𝑗 ))  ≤ 8𝜌𝑟 2 
+
+> 𝑗
+
+· tr  𝐻 𝑘,𝑖 ( 𝑗 ),
+
+because − log (1 − 𝑥 ) ≤ 2𝑥 for 𝑥 ∈ [ 0, 1/2]. We have tr (𝐻 𝑘,𝑖 ( 𝑗 )) = 𝑚 4  
+
+> 𝑇 −𝑡
+
+tr  (𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 (Σ𝑘 − Σ𝑖 )( 𝑆 𝑖 𝑇 −𝑡 𝑗 )−1 (Σ𝑘 − Σ𝑖 )( 𝑆 𝑘 𝑇 −𝑡 𝑗 )−1
+
+≤ 𝑚 4  
+
+> 𝑇 −𝑡 𝑗
+> 𝜎 6
+> 𝑇 −𝑡 𝑗
+
+∥Σ𝑘 − Σ𝑖 ∥2 
+
+> 𝐹
+
+≲ 𝑚 4  
+
+> 𝑇 −𝑡 𝑗
+> 𝜎 6
+> 𝑇 −𝑡 𝑗
+
+𝑀 † 𝐷 2𝛼 
+
+where we used (𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 ⪯ 1 
+
+> 𝜎 2
+> 𝑇 −𝑡
+
+𝐼 𝐷 in the first inequality and the following bound in the second: 
+
+∥Σ𝑘 − Σ𝑖 ∥2 
+
+> 𝐹
+
+≲ ∥Σ𝑘 ∥2 
+
+> 𝐹
+
++ ∥ Σ𝑖 ∥2 
+
+> 𝐹
+
+≤ 2𝐶 2 𝐷 𝛼 (𝐶 2 𝐷 𝛼 + 𝑅 )𝑀 † ≲ 𝐷 2𝛼 𝑀 †. (75) 36 Y. Iguchi and P. Fearnhead 
+
+where the constants 𝐶 2 > 0, 𝑅 ∈ [0, 1) are collected in Assumption 2. In the above, we used 
+
+∥Σ𝑘 ∥2 
+
+> 𝐹
+
+= tr  Σ⊤ 
+
+> 𝑘
+
+Σ𝑘 
+
+ = tr  Λ⊤ 
+
+> 𝑘
+
+Λ𝑘 
+
+ ≤ 𝜆 1 (Σ𝑘 ) · tr (Λ𝑘 ) ≤ 𝐶 2 𝐷 𝛼 (𝐶 2 𝐷 𝛼 𝑀 𝑘 + 𝜈 𝑘 ) ≤ 𝐶 2 𝐷 𝛼 (𝐶 2 𝐷 𝛼 +
+
+𝑅 )𝑀 † under Assumption 2 with decomposition Σ𝑘 = 𝑈 Λ𝑘 𝑈 ⊤. We thus have that for 𝜌 ≤
+
+1/( 16 𝑟 2 
+
+> 𝑗
+
+max 𝑘,𝑖 ∈ [ 𝐾 ] ∥𝐻 𝑘,𝑖 ( 𝑗 )∥ 2),
+
+− 12 log det  𝐼 𝐷 − 8𝜌𝑟 2 
+
+> 𝑗
+
+𝐻 𝑘,𝑖 ( 𝑗 ) ≤ 𝜌 SNR 𝑗 𝑀 † 𝐷 2𝛼 . (76) Similarly, we also have that for 𝜌 ≤ 1/( 16 𝑟 2 
+
+> 𝑗
+
+max 𝑘,𝑖 ∈ [ 𝐾 ] ∥𝐻 𝑘,𝑖 ( 𝑗 )∥ 2),
+
+𝜌𝑟 2 
+
+> 𝑗
+
+(𝐹 𝑘,𝑖 ( 𝑗 )) ⊤  𝐼 𝐷 − 8𝜌𝑟 2 
+
+> 𝑗
+
+𝐻 𝑘,𝑖 ( 𝑗 ) −1 𝐹 𝑘,𝑖 ( 𝑗 ) ≤ 2𝜌𝑟 2 
+
+> 𝑗
+
+∥𝐹 𝑘,𝑖 ( 𝑗 )∥ 2 ≲ 𝜌𝐷.  ∵ Assumption 3  (77) Substituting (76) and (77) into (74), we conclude Lemma 5.2. 
+
+E.3. Proof of Lemma 5.3 
+
+Writing −→
+
+𝑋 [𝑖 ]  
+
+> 𝑇 −𝑡 𝑗
+
+as 𝑚 𝑇 −𝑡 𝑗 𝜇 𝑖 + 𝑍 with 𝑍 ∼ N ( 0, 𝑆 𝑖 𝑇 −𝑡 𝑗 ), we have 
+
+𝐷 [𝑖 ] 
+
+> 𝑘
+
+( 𝑗 ) = 𝜎 4  
+
+> 𝑇 −𝑡 𝑗
+> 𝑚 2
+> 𝑇 −𝑡 𝑗
+
+× E
+
+h
+
+𝑚 𝑇 −𝑡 𝑗 (𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 (𝜇 𝑖 − 𝜇 𝑘 ) + (𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 − ( 𝑆 𝑖 𝑇 −𝑡 𝑗 )−1 𝑍 2i
+
+= 𝜎 4  
+
+> 𝑇 −𝑡 𝑗
+> 𝑚 2
+> 𝑇 −𝑡
+
+×
+
+n
+
+𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+
+∥𝜇 𝑖 − 𝜇 𝑘 ∥2    
+
+> (𝑆 𝑘 𝑇 −𝑡 𝑗 )−2
+
++ tr   (𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 − ( 𝑆 𝑖 𝑇 −𝑡 𝑗 )−1) 2𝑆 𝑖 𝑇 −𝑡 𝑗 
+
+o
+
+, (78) where in the first equation, we used: for any (𝑡, 𝑥 ) ∈ [ 0, 𝑇 ) × R𝐷 ,
+
+𝜇 [ 𝑘 ] (𝑇 − 𝑡, 𝑥 ) − 𝜇 [𝑖 ] (𝑇 − 𝑡, 𝑥 ) = 𝜎 2  
+
+> 𝑇 −𝑡
+> 𝑚 𝑇 −𝑡
+
+ ∇ log 𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 ) − ∇ log 𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 ),
+
+with ∇ log 𝑝 [ 𝑘 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 ) = −( 𝑆 𝑘 𝑇 −𝑡 )−1  𝑥 − 𝑚 𝑇 −𝑡 𝜇 𝑘 
+
+. The matrix inequality (𝑆 𝑖 𝑇 −𝑡 𝑗 )−1 ⪯ 1 
+
+> 𝜎 2
+> 𝑇 −𝑡
+
+𝐼 𝐷 together with (58) yields 
+
+𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+
+∥𝜇 𝑖 − 𝜇 𝑘 ∥2    
+
+> (𝑆 𝑘 𝑇 −𝑡 𝑗 )−2
+
+≤ 𝑚 2  
+
+> 𝑇 −𝑡 𝑗
+> 𝜎 2
+> 𝑇 −𝑡 𝑗
+
+∥𝜇 𝑖 − 𝜇 𝑘 ∥2    
+
+> (𝑆 𝑘 𝑇 −𝑡 𝑗 )−1
+
+= 2 
+
+> 𝜎 2
+> 𝑇 −𝑡 𝑗
+
+KL m
+
+ −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡
+
+. (79) By setting 𝑌 := (𝑆 𝑖 𝑇 −𝑡 𝑗 )1/2 (𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 (𝑆 𝑖 𝑇 −𝑡 𝑗 )1/2 − 𝐼 𝐷 , we have tr   (𝑆 𝑘 𝑇 −𝑡 𝑗 )−1 − ( 𝑆 𝑖 𝑇 −𝑡 𝑗 )−1 2𝑆 𝑖 𝑇 −𝑡 𝑗 
+
+ = tr  (𝑆 𝑖 𝑇 −𝑡 𝑗 )−1𝑌 2 ≤ 1 
+
+> 𝜎 2
+> 𝑇 −𝑡 𝑗
+
+tr (𝑌 2)≤ 4 
+
+> 𝜎 2
+> 𝑇 −𝑡 𝑗
+
+ 𝑚 2  
+
+> 𝑇 −𝑡
+> 𝜎 2
+> 𝑇 −𝑡
+
+∥Σ𝑖 ∥2 + 1
+
+
+
+· KL c
+
+ −→𝑝 [𝑖 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝑘 ] 
+
+> 𝑇 −𝑡
+
+ (80) where in the last line we used Lemma C.1 provided in Appendix C. Substituting the inequalities (79) and (80) into (78), we conclude. 
+
+F. Details on Numerical Experiments 
+
+This section provides details of the numerical experiments presented in Section 4, and additional information to support the arguments of the section. 
+
+F.1. Implementation details Data processing For the scRNA-seq experiments on PBMC, we use the PBMC3K cell-by-gene count matrix as the raw data and apply a standard single-cell preprocessing workflow; see e.g., Satija et al. [2015] and Stuart et al. [2019]. First, we remove genes expressed in fewer than three cells and apply total-count normalisation with a target sum of 10 4, followed by log-transformation. Then, for each Diffusion Models for Clustered Data 37 
+
+ambient dimension 𝐷 ∈ { 500 , 1000 , 2000 , 4000 , 8000 }, we select the top 𝐷 highly variable genes using the Seurat-flavour procedure implemented in the Python package Scanpy [Wolf et al., 2018]. We retain the CD4 T, CD14+ Monocyte, and CD19+ B populations with the number of samples 1144, 480 and 342 respectively. We then apply gene-wise standardisation, and the resulting 𝐷 -dimensional gene-expression vectors are used as the empirical target distribution for the reverse trajectories. For the image experiment, we use the training split of the STL-10 dataset, whose images contain 96 × 96 pixels with 3 RGB channels. We retain three classes: Dog, Cat, and Airplane, and use 500 images from each class. To vary the ambient dimension, we construct three image resolutions 𝑠 ∈ { 32 , 64 , 96 },corresponding to 𝐷 = 3𝑠 2. For 𝑠 = 32 and 𝑠 = 64, the original images are downsampled using bilinear interpolation implemented by torch.nn.functional.interpolate in PyTorch. For 𝑠 = 96, we use the original STL-10 resolution. Finally, pixel intensities are rescaled from [0, 255 ] to [− 1, 1].
+
+Calculation of posterior weights and KL divergence We approximate the true intractable KL divergence between two noised clusters, using a Monte Carlo approximation based on the empirical target distribution. That is, for two distinct clusters 𝐴, 𝐵 ∈ C PBMC or Cimage and 𝑡 ∈ [ 0, 𝑇 ),KL  −→𝑝 [ 𝐴 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝐵 ] 
+
+> 𝑇 −𝑡
+
+ =
+
+∫
+
+log −→𝑝 [ 𝐴 ]        
+
+> 𝑇 −𝑡 (𝑥 )−→𝑝 [𝐵 ]
+> 𝑇 −𝑡 (𝑥 )
+
+· −→𝑝 [ 𝐴 ]  
+
+> 𝑇 −𝑡
+
+(𝑥 )𝑑𝑥 ≈
+
+∫
+
+log −→𝑝 [ 𝐴 ], 𝑁 𝐴 𝑇 −𝑡 ( 𝑥 )−→𝑝 [𝐵 ], 𝑁 𝐵 𝑇 −𝑡 ( 𝑥 ) · −→𝑝 [ 𝐴 ], 𝑁 𝐴   
+
+> 𝑇 −𝑡
+
+(𝑥 )𝑑𝑥, 
+
+where 𝑁 𝐴 and 𝑁 𝐵 denote the numbers of empirical samples in classes 𝐴 and 𝐵 , respectively, and we define 
+
+−→𝑝 [𝑖 ], 𝑁 𝑖   
+
+> 𝑇 −𝑡
+
+(𝑥 ) ≡ 1
+
+> 𝑁 𝑖
+> 𝑁 𝑖
+
+∑︁ 
+
+> 𝑗 =1
+
+−→𝑝 𝑇 −𝑡 |0 (𝑥 |𝑍 𝑗 ), {𝑍 𝑗 } 𝑗 i.i.d.
+
+∼ 𝑝 [𝑖 ] 
+
+> 0
+
+, 𝑖 ∈ { 𝐴, 𝐵 }, (81) where 𝑝 [𝑖 ] 
+
+> 0
+
+is the population distribution for the class ‘ 𝑖 ’. Then, the estimate of the KL is finally given as: KL  −→𝑝 [ 𝐴 ]  
+
+> 𝑇 −𝑡
+
+|| −→𝑝 [ 𝐵 ] 
+
+> 𝑇 −𝑡
+
+ ≈ 1 
+
+> 𝑁 𝐴 𝑀 𝑁 𝐴
+
+∑︁ 
+
+> 𝑙 =1
+> 𝑀
+
+∑︁ 
+
+> 𝑘 =1
+
+log −→𝑝 [ 𝐴 ], 𝑁 𝐴 𝑇 −𝑡 (𝑋 𝑘,𝑙 )−→𝑝 [𝐵 ], 𝑁 𝐵 𝑇 −𝑡 (𝑋 𝑘,𝑙 )
+
+where 𝑋 𝑘,𝑙 = 𝑚 𝑇 −𝑡 𝑍 𝑙 + 𝜎 𝑇 −𝑡 𝜉 𝑘 , {𝜉 𝑘 }𝑘 =1,...,𝑀 i.i.d.
+
+∼ 𝑁 (0, 𝐼 𝐷 ), {𝑍 𝑗 } 𝑗 =1,..., 𝑁 𝐴 
+
+> i.i.d.
+
+∼ 𝑝 [ 𝐴 ] 
+
+> 0
+
+and 𝑀 is the number of MC samples for the white noise. Since the true posterior weight for general target distributions is intractable, we estimate it using the empirical forward density (81) again as follows: for the set of classes C,
+
+b𝑊 [𝑖 ], 𝑁 𝐷 (𝑡, 𝑥 ) =
+
+−→𝑝 [𝑖 ], 𝑁 𝑖   
+
+> 𝑇 −𝑡
+
+(𝑥 )
+
+Í𝑐 ∈ C −→𝑝 [𝑐 ], 𝑁 𝑐   
+
+> 𝑇 −𝑡
+
+(𝑥 ) , 𝑖 ∈ C , (𝑡, 𝑥 ) ∈ [ 0, 𝑇 ) × R𝐷 ,
+
+where 𝑁 𝑐 denotes the number of samples in the class 𝑐 ∈ C , and we assume equal priors across all the classes. 
+
+Reverse SDE with Empirical Score As mentioned in Section 4, we generate reverse trajectories using the empirical score function in the drift. Following the notation above, we write the reverse SDE as: 
+
+𝑑 ←−
+
+𝑋 𝑡 = (←−
+
+𝑋 𝑡 + 2∇ log −→𝑝 𝑁 𝑇 −𝑡 (←−
+
+𝑋 𝑡 )) 𝑑𝑡 + √2𝑑𝐵 𝑡 , ←−
+
+𝑋 0 ∼ 𝑁 (0, 𝐼 𝐷 ),38 Y. Iguchi and P. Fearnhead 
+
+where 𝑁 is the total number of empirical data, including all classes. In the above, the empirical score is given as 
+
+∇ log −→𝑝 𝑁 𝑇 −𝑡 (𝑥 ) =∑︁ 
+
+> 𝑐 ∈ C
+
+b𝑊 [𝑐 ], 𝑁 𝐷 (𝑡, 𝑥 ) · ∇ log −→𝑝 [𝑐 ], 𝑁 𝑐   
+
+> 𝑇 −𝑡
+
+(𝑥 ), 𝑥 ∈ R𝐷 ,
+
+where ∇ log −→𝑝 [𝑐 ], 𝑁 𝑐   
+
+> 𝑇 −𝑡
+
+(𝑥 ) is the cluster-wise empirical score with the number of samples 𝑁 𝑐 written as 
+
+∇ log −→𝑝 [𝑐 ], 𝑁 𝑐   
+
+> 𝑇 −𝑡
+
+(𝑥 ) = − 1 
+
+> 𝜎 2
+> 𝑇 −𝑡
+
+ 𝑥 − 𝑚 𝑇 −𝑡 E𝑁 𝑐 [−→
+
+𝑋 [𝑐 ] 
+
+> 0
+
+|−→
+
+𝑋 [𝑐 ]  
+
+> 𝑇 −𝑡
+
+= 𝑥 ],
+
+with 
+
+E𝑁 𝑐 [−→
+
+𝑋 [𝑐 ] 
+
+> 0
+
+|−→
+
+𝑋 [𝑐 ]  
+
+> 𝑇 −𝑡
+
+= 𝑥 ] = 1
+
+> 𝑁 𝑐
+> 𝑁 𝑐
+
+∑︁ 
+
+> 𝑗 =1
+
+𝑍 𝑗 · −→𝑝 𝑇 −𝑡 |0 ( 𝑥 | 𝑍 𝑗 )−→𝑝 [𝑐 ], 𝑁𝑐 𝑇 −𝑡 ( 𝑥 ) , {𝑍 𝑗 } 𝑗 =1,..., 𝑁 𝑐 
+
+> i.i.d.
+
+∼ 𝑝 [𝑐 ] 
+
+> 0
+
+.
+
+F.2. Additional Information 
+
+We present the empirical pairwise geometry for the PBMC dataset. We observe that the mean separation increases with the ambient dimension 𝐷 approximately linearly, while the maximum mean difference projection 𝑀 𝜇 is relatively stable across varying 𝐷 .
+
+Table 4. Pairwise empirical geometry of the PBMC clusters under variance-ordered feature truncation. The labels are the same as in Table 3. 
+
+Pair 𝐷 ∥ b𝜇 𝑖 − b𝜇 𝑗 ∥2 𝑀 𝜇 ∥bΣ𝑖 − bΣ 𝑗 ∥2
+
+> 𝐹
+
+CD4 T–CD14+ Monocyte 500 31 .55 1.48 1.34 ×10 3
+
+1000 91 .95 2.67 4.16 ×10 3
+
+2000 240 .40 4.37 1.55 ×10 4
+
+4000 352 .70 4.62 5.35 ×10 4
+
+8000 509 .33 5.68 1.90 ×10 5
+
+CD14+ Monocyte–CD19+ B 500 42 .77 1.24 2.40 ×10 3
+
+1000 111 .03 2.39 7.31 ×10 3
+
+2000 296 .89 3.41 2.94 ×10 4
+
+4000 440 .36 4.01 1.16 ×10 5
+
+8000 614 .00 5.29 4.04 ×10 5
+
+CD4 T–CD19+ B 500 20 .84 1.96 1.70 ×10 3
+
+1000 53 .11 1.49 5.21 ×10 3
+
+2000 133 .63 1.73 2.09 ×10 4
+
+4000 205 .03 1.60 8.85 ×10 4
+
+8000 271 .85 1.99 3.19 ×10 5

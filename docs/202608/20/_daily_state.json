@@ -1,0 +1,89 @@
+{
+  "date": "20260820",
+  "date_label": "",
+  "generated_at": "2026-08-20 20:17:40 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.18484v1",
+      "route": "202608/20/2608.18484v1-partition-the-support-reconstruct-the-residual-training-free-sparse-attention-for-video-generation-and-world-models",
+      "title": "Partition the Support, Reconstruct the Residual: Training-Free Sparse Attention for Video Generation and World Models",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "视频生成Transformer的免训练稀疏注意力",
+      "first_seen_at": "2026-08-20 20:17:40 UTC",
+      "updated_at": "2026-08-20 20:17:40 UTC"
+    },
+    {
+      "paper_id": "2608.19067v1",
+      "route": "202608/20/2608.19067v1-diffusion-models-for-high-dimensional-clustered-data-intrinsic-dimension-adaptivity-via-bayesian-classification",
+      "title": "Diffusion Models for High-Dimensional Clustered Data: Intrinsic-Dimension Adaptivity via Bayesian Classification",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "扩散模型作为生成模型在高维聚类数据上的理论分析",
+      "first_seen_at": "2026-08-20 20:17:40 UTC",
+      "updated_at": "2026-08-20 20:17:40 UTC"
+    },
+    {
+      "paper_id": "2608.18710v1",
+      "route": "202608/20/2608.18710v1-camworldqa-perceptual-quality-assessment-of-camera-controlled-world-video-generation",
+      "title": "CamWorldQA: Perceptual Quality Assessment of Camera-Controlled World Video Generation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "面向相机可控世界视频生成的基准与感知质量评估",
+      "first_seen_at": "2026-08-20 20:17:40 UTC",
+      "updated_at": "2026-08-20 20:17:40 UTC"
+    },
+    {
+      "paper_id": "2608.14038v1",
+      "route": "202608/20/2608.14038v1-adversarial-learning-of-classifier-free-guidance-schedules",
+      "title": "Adversarial Learning of Classifier-Free Guidance Schedules",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "学习随时间与条件变化的分类器无关引导调度，改善文生图扩散生成。",
+      "first_seen_at": "2026-08-20 20:17:40 UTC",
+      "updated_at": "2026-08-20 20:17:40 UTC"
+    },
+    {
+      "paper_id": "2608.15341v1",
+      "route": "202608/20/2608.15341v1-tea-text-encoder-alignment-for-robust-concept-erasure-in-text-to-image-models",
+      "title": "TEA: Text Encoder Alignment for Robust Concept Erasure in Text-to-Image Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "diff-video"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "通过对齐文本编码器实现文本到图像扩散模型的鲁棒概念消除",
+      "first_seen_at": "2026-08-20 20:17:40 UTC",
+      "updated_at": "2026-08-20 20:17:40 UTC"
+    }
+  ]
+}
