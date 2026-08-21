@@ -1,0 +1,745 @@
+{
+  "date": "20260723-20260821",
+  "date_label": "2026-07-23 ~ 2026-08-21",
+  "generated_at": "2026-08-21 06:31:37 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.00725v1",
+      "route": "20260723-20260821/2608.00725v1-selfwam-a-self-grounded-unified-world-action-model-for-fast-robot-control",
+      "title": "SelfWAM: A Self-Grounded Unified World Action Model for Fast Robot Control",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 10.0,
+      "evidence": "自接地世界动作模型，用于快速机器人视频控制",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.04657v1",
+      "route": "20260723-20260821/2608.04657v1-mobilewam-bridging-world-action-models-to-mobile-manipulation-with-chain-of-foresight",
+      "title": "MobileWAM: Bridging World Action Models to Mobile Manipulation with Chain-of-Foresight",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 10.0,
+      "evidence": "用于视频移动操作的世界动作模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.05706v1",
+      "route": "20260723-20260821/2608.05706v1-lawm-3d-learning-3d-aware-latent-actions-from-human-videos-for-generalizable-robot-world-models",
+      "title": "LAWM-3D: Learning 3D-Aware Latent Actions from Human Videos for Generalizable Robot World Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 10.0,
+      "evidence": "从无标注人类视频中以自监督方式学习潜在动作表示的模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.23969v2",
+      "route": "20260723-20260821/2607.23969v2-leapbot-wa-world-anchor-action-models-via-predictive-latent-alignments",
+      "title": "LeapBot-WA: World-Anchor Action Models via Predictive Latent Alignments",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "使用JEPA作为世界锚点的预测潜在世界动作模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.25918v1",
+      "route": "20260723-20260821/2607.25918v1-dc-wam-dynamic-centric-visual-supervision-and-reasoning-for-world-action-models",
+      "title": "DC-WAM: Dynamic-Centric Visual Supervision and Reasoning for World-Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "重新审视世界动作模型中视觉模态应学习的内容，从外观主导的未来视频预测转向动态中心监督",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.28993v1",
+      "route": "20260723-20260821/2607.28993v1-st-wam-semantic-temporal-world-action-model-for-robust-manipulation-under-visual-distribution-shifts",
+      "title": "ST-WAM: Semantic-Temporal World Action Model for Robust Manipulation under Visual Distribution Shifts",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "语义-时间世界动作模型，对视觉分布偏移具有鲁棒性",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.01127v2",
+      "route": "20260723-20260821/2608.01127v2-miniworld-democratizing-the-training-of-video-world-models-from-scratch",
+      "title": "MiniWorld: Democratizing the Training of Video World Models from Scratch",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "从零训练视频世界模型以学习控制信号下的动态",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.02365v1",
+      "route": "20260723-20260821/2608.02365v1-faster-wam-do-world-action-models-need-deep-action-modules",
+      "title": "Faster-WAM: Do World Action Models Need Deep Action Modules?",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "提出DoT视频中心设计原则，将轻量动作头对接至预训练视频Transformer，用于更快WAM",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.03701v1",
+      "route": "20260723-20260821/2608.03701v1-lila-wam-lightweight-latent-reasoning-world-action-model-for-robotic-manipulation",
+      "title": "LiLa-WAM: Lightweight Latent Reasoning World-Action Model for Robotic Manipulation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "在紧凑潜在空间中进行未来推理的世界动作模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.04404v1",
+      "route": "20260723-20260821/2608.04404v1-faster-wam-efficient-inference-time-future-conditioning-for-robust-world-action-models",
+      "title": "Faster-WAM: Efficient Inference-Time Future Conditioning for Robust World Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "高效未来条件化的世界动作模型，提升分布偏移下的鲁棒性",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.04964v1",
+      "route": "20260723-20260821/2608.04964v1-worldcycle-self-verifiable-reinforcement-learning-for-long-horizon-video-world-models",
+      "title": "WorldCycle: Self-Verifiable Reinforcement Learning for Long-Horizon Video World Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "用于自验证长时程交互式视频世界模型的强化学习框架",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.04996v1",
+      "route": "20260723-20260821/2608.04996v1-dreamwam-beyond-rgb-future-prediction-for-world-action-models",
+      "title": "DreamWAM: Beyond RGB Future Prediction for World Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "将世界动作模型未来预测重构为超越RGB的结构化建模",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.05903v2",
+      "route": "20260723-20260821/2608.05903v2-robust-wam-bridging-generative-pretraining-and-semantic-foresight-in-world-action-models",
+      "title": "Robust-WAM: Bridging Generative Pretraining and Semantic Foresight in World-Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向视频生成式世界动作模型的后训练方法，在保留VAE空间生成预训练的同时增强语义隐空间的鲁棒性",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.06332v1",
+      "route": "20260723-20260821/2608.06332v1-geniworld-a-generalizable-interactive-world-model-for-robotic-manipulation-via-visual-actions",
+      "title": "GeniWorld: A Generalizable Interactive World Model for Robotic Manipulation via Visual Actions",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "将数值动作转化为视觉动作表示的交互式世界模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.06375v1",
+      "route": "20260723-20260821/2608.06375v1--0-a-latent-predictive-world-action-model-for-concurrent-humanoid-loco-manipulation",
+      "title": "$ω$-0: A Latent Predictive World Action Model for Concurrent Humanoid Loco-Manipulation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "潜空间预测的全身世界动作模型，直接预测用于真机执行的动作隐变量",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.06994v1",
+      "route": "20260723-20260821/2608.06994v1-decoupling-intention-from-trajectory-a-representational-deduction-framework-for-world-action-models",
+      "title": "Decoupling Intention from Trajectory: A Representational Deduction Framework for World Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向世界动作模型的表示演绎框架，解耦意图与轨迹",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.08023v2",
+      "route": "20260723-20260821/2608.08023v2-4d-wam-infusing-spatiotemporal-awareness-into-world-action-models-through-trajectory-fields",
+      "title": "4D-WAM: Infusing Spatiotemporal Awareness into World Action Models through Trajectory Fields",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "通过轨迹场为世界动作模型注入时空感知",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.08558v1",
+      "route": "20260723-20260821/2608.08558v1-vid2wam-distilling-video-diffusion-priors-into-world-action-models",
+      "title": "Vid2WAM: Distilling Video Diffusion Priors into World Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "将视频扩散先验蒸馏到世界动作模型，减少对专家示范的依赖",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.08839v1",
+      "route": "20260723-20260821/2608.08839v1-sg-wam-text-grounded-and-spatial-aware-semantic-guidance-for-world-action-models",
+      "title": "SG-WAM: Text-Grounded and Spatial-aware Semantic Guidance for World-Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "使用视觉语言模型规划器为世界动作模型提供文本接地语义指导",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.09381v1",
+      "route": "20260723-20260821/2608.09381v1-jepa-wam-learning-vision-language-action-policies-with-joint-embedding-world-modeling",
+      "title": "JEPA-WAM: Learning Vision-Language-Action Policies with Joint-Embedding World Modeling",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "在V-JEPA空间中耦合转移与动作的潜在世界动作模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.09516v1",
+      "route": "20260723-20260821/2608.09516v1-harnesswam-bridging-prediction-and-deliberation-in-world-action-models",
+      "title": "HarnessWAM: Bridging Prediction and Deliberation in World Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向世界动作模型的agentic框架，弥合预测与深思之间的差距",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.10232v1",
+      "route": "20260723-20260821/2608.10232v1-fact-failure-aware-causal-training-for-world-action-models",
+      "title": "FACT: Failure-Aware Causal Training for World-Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "因果世界动作模型，同时预测好动作与坏动作的后果",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.10780v2",
+      "route": "20260723-20260821/2608.10780v2-jepa-wam-stage-level-joint-embedding-prediction-for-world-action-models-in-robot-manipulation",
+      "title": "JEPA-WAM: Stage-Level Joint-Embedding Prediction for World-Action Models in Robot Manipulation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "在世界动作模型基础上引入阶段级联合嵌入预测，用于机器人操作的短期物理未来与语义阶段未来建模",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.10860v2",
+      "route": "20260723-20260821/2608.10860v2-flex--a-multi-stream-world-action-model-with-compute-flexibility",
+      "title": "Flex-$π$: A Multi-Stream World-Action Model with Compute Flexibility",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "世界动作模型，在视频预测与控制中联合RGB、3D几何和对象语义的多流监督",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.11605v1",
+      "route": "20260723-20260821/2608.11605v1-foresight-without-seeing-latent-futures-for-world-action-models",
+      "title": "Foresight Without Seeing: Latent Futures for World Action Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向世界动作模型的潜在未来，无需视频解码即可提供预测上下文",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.13489v1",
+      "route": "20260723-20260821/2608.13489v1-dreamx-phi-10-action-conditioned-video-world-model-for-robotic-manipulation",
+      "title": "DreamX-Phi 1.0: Action-Conditioned Video World Model for Robotic Manipulation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "以观测帧、语言指令和动作序列为条件预测未来观测的视频世界模型，并采用几何编码保证动作路径相符",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.13552v2",
+      "route": "20260723-20260821/2608.13552v2-playworld-benchmarking-world-models-with-agent-players-over-long-horizon-objectives",
+      "title": "PlayWorld: Benchmarking World Models with Agent Players over Long-Horizon Objectives",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向视频世界模型的智能体长周期动作条件评测基准",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.14022v1",
+      "route": "20260723-20260821/2608.14022v1-forgewm-progressive-causal-training-for-few-step-action-conditioned-video-world-models",
+      "title": "ForgeWM: Progressive Causal Training for Few-Step Action-Conditioned Video World Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "渐进式因果训练实现少步动作条件视频世界模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.18077v1",
+      "route": "20260723-20260821/2608.18077v1-hydra-0-action-flow-for-generalist-world-modeling-and-control",
+      "title": "Hydra-0: Action Flow for Generalist World Modeling and Control",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "将机器人动作表示为像素运动的动作流，用于通用世界建模并涌现出逆世界动作模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.19574v1",
+      "route": "20260723-20260821/2608.19574v1-hitac-wam-a-hierarchical-tactile-world-action-model-for-contact-rich-robot-manipulation",
+      "title": "HiTac-WAM: A Hierarchical Tactile World Action Model for Contact-Rich Robot Manipulation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向机器人操作的层次触觉世界动作模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.20114v1",
+      "route": "20260723-20260821/2608.20114v1-decowam-decoupled-whole-body-world-action-model-for-legged-mobile-manipulation",
+      "title": "DECOWAM: Decoupled Whole-Body World-Action Model for Legged Mobile Manipulation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "针对腿式移动操作的去耦全身世界动作模型，将相机自运动、底盘动作和手臂动作分开建模",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.20988v1",
+      "route": "20260723-20260821/2607.20988v1-hyworldvla-a-vision-language-action-model-with-hybrid-world-modeling-for-autonomous-driving",
+      "title": "HyWorldVLA: A Vision-Language-Action Model with Hybrid World Modeling for Autonomous Driving",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向自动驾驶VLA的像素-潜在混合世界建模",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.22535v1",
+      "route": "20260723-20260821/2607.22535v1-robot-factored-world-models-via-robot-rendering",
+      "title": "Robot-Factored World Models via Robot Rendering",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "机器人因子化动作条件视频世界模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.26037v1",
+      "route": "20260723-20260821/2607.26037v1-wonder-video-world-model-done-better",
+      "title": "Wonder: Video World Model Done Better",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向实时交互式相机控制与长程探索的通用视频世界模型",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.26657v1",
+      "route": "20260723-20260821/2607.26657v1-enfold-folding-world-generator-computation-into-predictive-representations-for-efficient-embodied-control",
+      "title": "Enfold: Folding World-Generator Computation into Predictive Representations for Efficient Embodied Control",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "将世界生成器的计算折叠进预测表征中，用于高效具身控制",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.27036v1",
+      "route": "20260723-20260821/2607.27036v1-mitigating-compounding-error-via-video-representation-regularization",
+      "title": "Mitigating Compounding Error via Video Representation Regularization",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向长时程生成与控制的视频扩散世界模型，用表示正则化缓解复合误差",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.27599v1",
+      "route": "20260723-20260821/2607.27599v1-world-action-planner-generalizable-decision-making-with-action-conditioned-world-models",
+      "title": "World Action Planner: Generalizable Decision-Making with Action-Conditioned World Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "结合VLM推理的动作条件世界模型，用于规划与零样本泛化",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.28362v1",
+      "route": "20260723-20260821/2607.28362v1-shadowdancer-teaching-video-world-models-any-action-by-learning-unified-dynamics-representations-from-a-video-and-its-shadow",
+      "title": "ShadowDancer: Teaching Video World Models Any Action by Learning Unified Dynamics Representations from a Video and Its Shadow",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "通过统一动力学表示实现交互式视频世界模型的任意动作帧级控制",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2607.29031v1",
+      "route": "20260723-20260821/2607.29031v1-auto-jepa-a-latent-world-model-of-continuous-intent-for-end-to-end-autonomous-driving",
+      "title": "Auto-JEPA: A Latent World Model of Continuous Intent for End-to-End Autonomous Driving",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向驾驶的动作导向潜空间世界模型，从视觉观测预测连续意图",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.01397v1",
+      "route": "20260723-20260821/2608.01397v1-sg-wam-self-guided-world-modeling-in-geometry-aware-policy-space",
+      "title": "SG-WAM: Self-Guided World Modeling in Geometry-Aware Policy Space",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "在策略空间中用自引导学习几何感知的世界动作模型动态",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.04653v1",
+      "route": "20260723-20260821/2608.04653v1-overcoming-statistical-bias-in-action-controllable-world-models",
+      "title": "Overcoming Statistical Bias in Action-Controllable World Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "以反事实一致性降低动作可控世界模型的统计偏差",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.05523v1",
+      "route": "20260723-20260821/2608.05523v1-hera-historical-evidence-routing-adapter-for-physical-prediction-in-latent-world-models",
+      "title": "HERA: Historical Evidence Routing Adapter for Physical Prediction in Latent World Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向潜在视频世界模型的历史证据路由适配器",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.07409v1",
+      "route": "20260723-20260821/2608.07409v1-unijepa-a-unified-joint-embedding-predictive-architecture-for-task-agnostic-visual-world-modeling",
+      "title": "UniJEPA: A Unified Joint-Embedding Predictive Architecture for Task-Agnostic Visual World Modeling",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "统一联合嵌入预测世界模型，覆盖图像与视频尺度",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.08982v1",
+      "route": "20260723-20260821/2608.08982v1-twin-rollouts-noise-coupled-counterfactual-branching-in-interactive-video-world-models",
+      "title": "Twin Rollouts: Noise-Coupled Counterfactual Branching in Interactive Video World Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "交互式视频世界模型中的噪声耦合反事实分支，面向预测与控制",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.09730v1",
+      "route": "20260723-20260821/2608.09730v1-world-tokens-enhancing-embodied-policies-with-training-time-world-modeling",
+      "title": "World Tokens: Enhancing Embodied Policies with Training-Time World Modeling",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "用世界适配器在训练期对具身策略进行世界建模",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    },
+    {
+      "paper_id": "2608.12939v1",
+      "route": "20260723-20260821/2608.12939v1-diagnosing-jepa-world-models-with-action-conditioned-predictive-consistency",
+      "title": "Diagnosing JEPA World Models with Action-Conditioned Predictive Consistency",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "video-wm"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向JEPA世界模型的动作条件预测一致性诊断",
+      "first_seen_at": "2026-08-21 06:31:37 UTC",
+      "updated_at": "2026-08-21 06:31:37 UTC"
+    }
+  ]
+}
